@@ -1,6 +1,6 @@
 ---
 title: "Lecture 1 - Introduction to Statistics"
-author:   "Caspar J. van Lissa"
+author:   "Don van den Bergh"
 date:     "`r format(Sys.Date(), '%d %b %Y')`"
 format: revealjs
 ---
@@ -77,12 +77,25 @@ You grew up in the "digital age". There is data about your entire life...
 
 [Google Timeline](https://www.google.com/maps/timeline)
 
+```{.notes}
+TODO:
+- need different examples.
+- maybe in class data collection?
+
+```
+
 ## And everybody wants your data
 
 ```{r}
 #| out.width = "60%"
 knitr::include_graphics("images/Everybodywantsyourdata.png", dpi = NA)
 ```
+
+```{.notes}
+TODO:
+- different example.
+```
+
 
 ## What can you do with data?
 
@@ -93,6 +106,18 @@ knitr::include_graphics("images/Everybodywantsyourdata.png", dpi = NA)
     + Explore what activity in the brain is associated with observed behavior
 * Data analysis is one of the most marketable concrete skills we teach at university
 
+```{.notes}
+Basically every modern job uses data in some way.
+The obvious ones are related to the techonology, like apps and websites collecting your data.
+But also in healthcare, doctors make decisions based on data.
+Farmers decide what to plant based on data.
+In fact, one of the most famous statisticians, Ronald Fisher, originally applied statistics to improve farmers yield, e.g., so their crops would grow better.
+Here we focus more on social applications.
+For example, we use data to gain insights into <list in slide>.
+Altogether, Data analysis is one of the most marketable concrete skills taught at university
+```
+
+
 ## Difference between Methods and Statistics
 
 Methods is about the procedures of research:
@@ -102,16 +127,26 @@ Methods is about the procedures of research:
 * How to measure what we want to measure
 * How to design studies that are suitable for answering our research questions
 
+Methods involve the design of a study or data collection
+
 ## Difference between Methods and Statistics
 
 Statistics is about analyzing data
 
-* __Descriptive statistics__: describing/summarizing data 
+* __Descriptive statistics__: describing/summarizing data
 * __Inferential statistics__: Making best guesses about the population from a smaller sample
 * __Statistical modeling__: Representing a theory mathematically
 * Predicting important outcomes (sales, well-being, neurological disorders)
 * Exploring data to find interesting patterns
 * Performing tests to answer theoretical research questions
+
+Statistics are the mathematics behind going from _raw data_ to conclusions.
+
+```{.notes}
+TODO:
+
+Wooclap question with T/F statements about methods vs statistics
+```
 
 # Dictionary of basic concepts
 
@@ -123,7 +158,11 @@ Most data in the social sciences is tabular, where each row represents an indivi
 knitr::include_graphics("images/assumptions19.png")
 ```
 
-## About observations: Population
+## Unstructured data
+
+The obvious counterpart is unstructured data.
+
+## About Observations: Population
 
 **Population:**
 
@@ -131,13 +170,24 @@ knitr::include_graphics("images/assumptions19.png")
     + E.g., all people in NL, all students in this class
 * Number of individuals in the population: N
     + N = 17.53 million, N = 75
- 
-## About observations: Sample
+* The correlation (linear dependence) between language and mathematics ability across all humans on earth
+    + $\rho = .3$
+* The `true' effect of class attendance on grades in university students
+    + $\delta = 0.4$
+
+
+## About Observations: Sample
 
 **Sample:**
 
 * Observed part of the population
 * Number of observations: *n*
+* The correlation (linear dependence) between language and mathematics ability across all pupils measured as part of a study:
+    + $r = .25$
+* The effect size  of class attendance on grades observed at Tilburg University
+    + $d = 0.4$
+
+A common pattern is _upper case_ or _Greek_ symbols for the population and _lower case_ or _latin_ symbols for the sample.
 
 ## About variables: Construct
 
@@ -147,7 +197,7 @@ knitr::include_graphics("images/assumptions19.png")
     + E.g., Short Term Memory, intelligence, perseverance, education
 
 **Operational definition:**
-    
+
 * Concrete measurable representation of the construct
     + E.g., Number of words recalled, the Wechsler Adult Intelligence Scale (WAIS),
     ability to withstand a tasty treat, highest degree obtained
@@ -161,7 +211,7 @@ knitr::include_graphics("images/assumptions19.png")
 * You can refer to a variable without (yet) knowing its specific values
 
 *Data:*
-	
+
 * Specific values of a variable
 * Example of data: Jen's score on the variable `WAIS` is 138
 
@@ -228,7 +278,7 @@ knitr::include_graphics("images/sample_population.png")
 ## Samples: why?
 
 * If the sample is *representative* of the population, your best guess will generalize better to the entire population and to new samples
-* The best way to get a representative sample is *random sampling*    
+* The best way to get a representative sample is *random sampling*
 * Random sample:
     +	Every population individual has the same probability of being included
 
@@ -299,7 +349,7 @@ knitr::include_graphics("images/Thermo2.png", dpi = NA)
 * Qualitative variable: Difference in kind, Nominal
 * Quantitative variables: Differences in degree; ordinal, interval, ratio
 
-Edge cases: 
+Edge cases:
 
 * Number of children (discrete ratio)
 * Political orientation from liberal to conservative (ordinal, but which is higher/lower?)
@@ -450,16 +500,16 @@ But... most Australians are not!
 # df <- data.frame(x <- rnorm(rep(c(-5, 0, 5), each = 5), rep(c(.5, 1), each = 5)),
 #                  Distribution = paste0("M = ", rep(c(-5, 0, 5), each = 2000), ", SD = ", rep(c(.5, 1), each = 1000)))
 # ggplot(df, aes(x = x, color = Distribution, fill = Distribution)) + geom_density(alpha = .2)
-ggplot(data.frame(x = c(-4, 4)), aes(x)) + 
+ggplot(data.frame(x = c(-4, 4)), aes(x)) +
   mapply(function(mean, sd, col) {
     stat_function(fun = dnorm, args = list(mean = mean, sd = sd), col = col)
-  }, 
+  },
   # enter means, standard deviations and colors here
-  # mean = c(-5, 0, 5, -5, 0, 5), 
-  # sd = c(1, 1, 1, .5, .5, .5), 
+  # mean = c(-5, 0, 5, -5, 0, 5),
+  # sd = c(1, 1, 1, .5, .5, .5),
   # col = c('red', 'red', 'red', 'blue','blue','blue')
-  mean = c(0, 0), 
-  sd = c(1, .5), 
+  mean = c(0, 0),
+  sd = c(1, .5),
   col = c('red', 'blue')
 ) + theme_bw() + labs(x = "Value", y = "Probability")
 ```
