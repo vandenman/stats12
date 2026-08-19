@@ -6,6 +6,7 @@ format:
     revealjs:
         toc: true
         toc-depth: 1
+        toc-title: "Today"
 ---
 
 # Introduction
@@ -213,9 +214,8 @@ Wooclap question with T/F statements about methods vs statistics
 
 * Exam 1 (30%): 15-10-2026
 * Exam 2 (30%): 10-12-2026
-* Portfolio (40%): 06-01-2027
-
-* Combined resit (60%)
+* Portfolio (40%): TODO: due date
+* Combined resit (60%): 06-01-2027
 
 
 ## Typical Schedule
@@ -334,6 +334,11 @@ knitr::include_graphics("images/sample_population.png")
 ``` -->
 
 ![](images/sample_population.png){fig-align="center" width="90%"}
+
+::: {.notes}
+Cooking example
+
+:::
 
 
 ## Samples: why?
