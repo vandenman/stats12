@@ -2,24 +2,14 @@
 title: "Lecture 1 - Introduction to Statistics"
 author:   "Don van den Bergh"
 date:     "`r format(Sys.Date(), '%d %b %Y')`"
-format: revealjs
+format:
+    revealjs:
+        toc: true
+        toc-depth: 1
 ---
 
-```{r}
-library(kableExtra)
-library(tidySEM)
-options(knitr.kable.NA = '')
-set.seed(1)
-```
+# Introduction
 
-
-```{r}
-#| label = "setup",
-#| include = FALSE
-knitr::opts_chunk$set(echo = FALSE)
-library(ggplot2)
-source("functions.R")
-```
 
 <!-- ## Today -->
 
@@ -69,32 +59,48 @@ source("functions.R")
 
 <!-- ![](images/Lecture 13.png) -->
 
-# Introduction
+```{r}
+#| include = FALSE
+library(kableExtra)
+library(tidySEM)
+options(knitr.kable.NA = '')
+set.seed(1)
+```
+
+
+```{r}
+#| label = "setup",
+#| include = FALSE
+knitr::opts_chunk$set(echo = FALSE)
+library(ggplot2)
+source("functions.R")
+```
+
 
 ## Why statistics?
 
 You grew up in the "digital age". There is data about your entire life...
 
-[Google Timeline](https://www.google.com/maps/timeline)
-
-```{.notes}
-TODO:
-- need different examples.
-- maybe in class data collection?
-
-```
-
 ## And everybody wants your data
 
-```{r}
-#| out.width = "60%"
-knitr::include_graphics("images/Everybodywantsyourdata.png", dpi = NA)
-```
 
-```{.notes}
+::: {.r-stack style="height: 50vh;"}
+![](images2/groeigids.jpg){.fragment style="max-width: 70vw; max-height: 50vh; width: auto; height: auto; object-fit: contain;"}
+
+![](images2/groeiapp.jpg){.fragment style="max-width: 70vw; max-height: 50vh; width: auto; height: auto; object-fit: contain;"}
+
+![](images2/cookies_gg.png){.fragment style="max-width: 70vw; max-height: 50vh; width: auto; height: auto; object-fit: contain;"}
+
+![](images2/bol_security.png){.fragment style="max-width: 70vw; max-height: 50vh; width: auto; height: auto; object-fit: contain;"}
+:::
+
+<!--
+![](images/Everybodywantsyourdata.png){fig-align="center"}
+
+::: {.notes}
 TODO:
 - different example.
-```
+::: -->
 
 
 ## What can you do with data?
@@ -106,16 +112,16 @@ TODO:
     + Explore what activity in the brain is associated with observed behavior
 * Data analysis is one of the most marketable concrete skills we teach at university
 
-```{.notes}
+::: {.notes}
 Basically every modern job uses data in some way.
-The obvious ones are related to the techonology, like apps and websites collecting your data.
+The obvious ones are related to the technology, like apps and websites collecting your data.
 But also in healthcare, doctors make decisions based on data.
 Farmers decide what to plant based on data.
 In fact, one of the most famous statisticians, Ronald Fisher, originally applied statistics to improve farmers yield, e.g., so their crops would grow better.
 Here we focus more on social applications.
 For example, we use data to gain insights into <list in slide>.
 Altogether, Data analysis is one of the most marketable concrete skills taught at university
-```
+:::
 
 
 ## Difference between Methods and Statistics
@@ -142,11 +148,77 @@ Statistics is about analyzing data
 
 Statistics are the mathematics behind going from _raw data_ to conclusions.
 
-```{.notes}
+::: {.notes}
 TODO:
 
 Wooclap question with T/F statements about methods vs statistics
-```
+:::
+
+# Course Outline
+
+## Overview
+
+* What can you expect for this course?
+  * 14 lectures
+    * 10 common lectures\, 4 major specific lectures
+  * 11 lab sessions
+* What will the examination look like?
+  * Multiple choice exam \(1\-10\)
+  * SPSS test \(Pass/ Fail\)
+* What more do we offer you?
+  * Additional video lectures
+  * Short lecture quizzes
+  * Midterm quiz
+  * Practice exams online
+  * Practice workbook online
+
+## Learning Goals
+
+* compute and interpret commonly used descriptive statistics
+* recognize different probability distributions
+* explain the essential aspects of null-hypothesis significance testing
+* conduct statistical tests
+* choose the appropriate analysis technique for answering a specific research problem
+* use SPSS
+* draw valid conclusions from the results of empirical data analyses given specific research questions envisaged
+
+::: {.notes}
+
+:::
+
+<!--
+
+    Aims
+    This course covers the following learning goals:
+
+    compute and interpret commonly used descriptive statistics such as the sample mean, the median, the mode, variance and standard deviation, the standard error, and the correlation coefficient.
+    recognize different probability distributions such as the normal distribution, and make computations for these probability distributions.
+    explain the essential aspects of null-hypothesis significance testing, including sampling distributions, Type I and Type II errors, one-tailed versus two-tailed testing, and statistical power.
+    conduct statistical tests using the Z-distribution, the t-distribution, and the F-distribution
+    perform regression analysis with one continuous or categorical predictor, and explain concepts like sums of squares, explained variance (R squared), raw and standardized regression coefficients, predicted scores, residuals and the assumptions of linear models;
+    choose the appropriate analysis technique for answering a specific research problem from the range of techniques that are covered in the course.
+    use the software package SPSS to perform several statistical data analyses and be able to correctly interpret and report the output to an informed audience (e.g., Liberal arts students, researchers from the social sciences/business and economics/cognitive neuroscience).
+    draw valid conclusions from the results of empirical data analyses given specific research questions envisaged.
+
+    Content
+    The course uses challenge-based learning to convey the basics of statistics. You have access to all mandatory material for the course via a free interactive coursebook, complete with lecture videos, tutorial exercises, and formative tests. You will work in a small learning team of 4 students (minimum group size: 3 if a student drops out, 5 if there are not enough students to form an extra group) and choose your own dataset and any research question you are interested in (default datasets are available if you can't find one). With your learning team, you make two portfolio assignments in which you demonstrate that you master the learning goals and can use the techniques from this course to answer your own research questions.
+
+    The course uses a flipped classroom approach. Each week before the "lecture", you watch the respective video, make the formative assessment, and submit one discussion question to class. During the "lecture", we cover the most commonly asked discussion questions in more detail, have peer-to-peer and group discussions about reflection questions related to the material to ensure deeper processing, apply the material to your portfolio, and make two exam questions which contribute to your grade.
+
+    During the tutorial session, you practice working with statistical software to answer research questions, and you apply the same statistical software to work on your portfolio.
+-->
+
+
+## Grading
+
+* Exam 1 (30%): 15-10-2026
+* Exam 2 (30%): 10-12-2026
+* Portfolio (40%): 06-01-2027
+
+* Combined resit (60%)
+
+
+## Typical Schedule
 
 # Dictionary of basic concepts
 
@@ -154,9 +226,7 @@ Wooclap question with T/F statements about methods vs statistics
 
 Most data in the social sciences is tabular, where each row represents an individual $i$ observation, and each column $j$ represents that individual's data on several variables:
 
-```{r}
-knitr::include_graphics("images/assumptions19.png")
-```
+![](images/assumptions19.png){fig-align="center"}
 
 ## Unstructured data
 
@@ -187,7 +257,7 @@ The obvious counterpart is unstructured data.
 * The effect size  of class attendance on grades observed at Tilburg University
     + $d = 0.4$
 
-A common pattern is _upper case_ or _Greek_ symbols for the population and _lower case_ or _latin_ symbols for the sample.
+A common pattern is _upper case_ or _Greek_ symbols for the population and _lower case_ or _Roman_ symbols for the sample.
 
 ## About variables: Construct
 
@@ -222,14 +292,11 @@ A common pattern is _upper case_ or _Greek_ symbols for the population and _lowe
 
 De Groot (1961)
 
-```{r}
-knitr::include_graphics("images/empirical cycle.png")
-```
-
+![]("images/empirical cycle.png"){fig-align="center"}
 
 ## Relationship between theory and empiricism
 
-```{r}
+```{r, cache=TRUE}
 #| eval = T
 library(tidySEM)
 lo <- get_layout("Construct A", "Construct B",
@@ -261,10 +328,13 @@ Variable A predicts variable B
 
 ## Sampling theory
 
-```{r}
+<!-- ```{r}
 #| out.width = "90%"
 knitr::include_graphics("images/sample_population.png")
-```
+``` -->
+
+![](images/sample_population.png){fig-align="center" width="90%"}
+
 
 ## Samples: why?
 
@@ -322,17 +392,21 @@ Subsequent levels carry incremental information
 * Celsius and Fahrenheit are interval scales
 * Kelvin is a ratio scale
 
-```{r}
+<!-- ```{r}
 #| out.height = "400px"
 knitr::include_graphics("images/Thermo1.png", dpi = NA)
-```
+``` -->
+
+![](images/Thermo1.png){fig-align="center" height="400px"}
 
 ## Interval v Ratio
 
-```{r}
+<!-- ```{r}
 #| out.height = "400px"
 knitr::include_graphics("images/Thermo2.png", dpi = NA)
-```
+``` -->
+
+![](images/Thermo2.png){fig-align="center" height="400px"}
 
 ## Measurement level matters
 
@@ -392,7 +466,7 @@ knitr::kable(out, row.names = FALSE, digits = 2)
 ```{r}
 #| results = "asis"
 library(ggplot2)
-ggplot(out, aes(x = Major, y = Frequency)) + geom_bar(stat = "identity") + theme_bw()
+ggplot(out, aes(x = Major, y = Frequency)) + geom_bar(stat = "identity") + theme_bw(base_size = 20)
 ```
 
 ## An ordinal variable
@@ -412,14 +486,14 @@ knitr::kable(out, row.names = FALSE, digits = 2)
 ```{r}
 #| results = "asis"
 library(ggplot2)
-ggplot(out, aes(x = SES, y = Frequency)) + geom_bar(stat = "identity") + theme_bw()
+ggplot(out, aes(x = SES, y = Frequency)) + geom_bar(stat = "identity") + theme_bw(base_size = 20)
 ```
 
 ## A continuous variable
 
 ```{r}
 dat <- data.frame(Height = rnorm(75, mean = sample(c(175, 165), 75, replace = T), sd = 5))
-ggplot(dat, aes(x = Height)) + geom_histogram(bins = 20, colour = "white") + theme_bw()
+ggplot(dat, aes(x = Height)) + geom_histogram(bins = 20, colour = "white") + theme_bw(base_size = 20)
 ```
 
 ## Measures of central tendency
@@ -511,7 +585,7 @@ ggplot(data.frame(x = c(-4, 4)), aes(x)) +
   mean = c(0, 0),
   sd = c(1, .5),
   col = c('red', 'blue')
-) + theme_bw() + labs(x = "Value", y = "Probability")
+) + theme_bw(base_size = 20) + labs(x = "Value", y = "Probability")
 ```
 
 # Bivariate descriptives {.smaller}
@@ -561,4 +635,3 @@ Is there an association between gender and education?
 
 ![](images/Lecture 125.png)
 :::
-

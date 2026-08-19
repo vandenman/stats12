@@ -10,7 +10,7 @@
   <meta name="generator" content="quarto-1.10.18">
 
   <meta name="author" content="Don van den Bergh">
-  <meta name="dcterms.date" content="2026-08-18">
+  <meta name="dcterms.date" content="2026-08-19">
   <title>Lecture 1 - Introduction to Statistics</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -144,10 +144,24 @@ Don van den Bergh
 </div>
 </div>
 
-  <p class="date">2026-08-18</p>
+  <p class="date">2026-08-19</p>
+</section><section id="TOC">
+<nav role="doc-toc"> 
+<h2 id="toc-title">Table of contents</h2>
+<ul>
+<li><a href="#/introduction" id="/toc-introduction">Introduction</a></li>
+<li><a href="#/course-outline" id="/toc-course-outline">Course Outline</a></li>
+<li><a href="#/dictionary-of-basic-concepts" id="/toc-dictionary-of-basic-concepts">Dictionary of basic concepts</a></li>
+<li><a href="#/role-of-data-in-scientific-research" id="/toc-role-of-data-in-scientific-research">Role of data in scientific research</a></li>
+<li><a href="#/measurement-level" id="/toc-measurement-level">Measurement level</a></li>
+<li><a href="#/descriptive-statistics" id="/toc-descriptive-statistics">Descriptive statistics</a></li>
+<li><a href="#/bivariate-descriptives" id="/toc-bivariate-descriptives">Bivariate descriptives</a></li>
+</ul>
+</nav>
 </section>
-<section class="slide level2">
-
+<section>
+<section id="introduction" class="title-slide slide level1 center">
+<h1>Introduction</h1>
 <!-- ## Today -->
 <!--   * Lecture 1: Introduction -->
 <!--     * Welcome -->
@@ -186,20 +200,26 @@ Don van den Bergh
 <!--   * Lab session: https://bps\.uvt\.nl \(if you want\) -->
 <!-- ![](images/Lecture 13.png) -->
 </section>
-<section>
-<section id="introduction" class="title-slide slide level1 center">
-<h1>Introduction</h1>
-
-</section>
 <section id="why-statistics" class="slide level2">
 <h2>Why statistics?</h2>
 <p>You grew up in the “digital age”. There is data about your entire life…</p>
-<p><a href="https://www.google.com/maps/timeline">Google Timeline</a></p>
 </section>
 <section id="and-everybody-wants-your-data" class="slide level2">
 <h2>And everybody wants your data</h2>
+<div class="r-stack" style="height: 50vh;">
+<p><img data-src="images2/groeigids.jpg" class="fragment" style="max-width: 70vw; max-height: 50vh; width: auto; height: auto; object-fit: contain;"></p>
+<p><img data-src="images2/groeiapp.jpg" class="fragment" style="max-width: 70vw; max-height: 50vh; width: auto; height: auto; object-fit: contain;"></p>
+<p><img data-src="images2/cookies_gg.png" class="fragment" style="max-width: 70vw; max-height: 50vh; width: auto; height: auto; object-fit: contain;"></p>
+<p><img data-src="images2/bol_security.png" class="fragment" style="max-width: 70vw; max-height: 50vh; width: auto; height: auto; object-fit: contain;"></p>
+</div>
+<!--
+![](images/Everybodywantsyourdata.png){fig-align="center"}
 
-<img data-src="images/Everybodywantsyourdata.png" class="quarto-figure quarto-figure-center r-stretch" style="width:60.0%"></section>
+::: {.notes}
+TODO:
+- different example.
+::: -->
+</section>
 <section id="what-can-you-do-with-data" class="slide level2">
 <h2>What can you do with data?</h2>
 <ul>
@@ -212,6 +232,19 @@ Don van den Bergh
 </ul></li>
 <li>Data analysis is one of the most marketable concrete skills we teach at university</li>
 </ul>
+<aside class="notes">
+<p>Basically every modern job uses data in some way. The obvious ones are related to the technology, like apps and websites collecting your data. But also in healthcare, doctors make decisions based on data. Farmers decide what to plant based on data. In fact, one of the most famous statisticians, Ronald Fisher, originally applied statistics to improve farmers yield, e.g., so their crops would grow better. Here we focus more on social applications. For example, we use data to gain insights into <list in="" slide="">. Altogether, Data analysis is one of the most marketable concrete skills taught at university</list></p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="difference-between-methods-and-statistics" class="slide level2">
 <h2>Difference between Methods and Statistics</h2>
@@ -222,6 +255,7 @@ Don van den Bergh
 <li>How to measure what we want to measure</li>
 <li>How to design studies that are suitable for answering our research questions</li>
 </ul>
+<p>Methods involve the design of a study or data collection</p>
 </section>
 <section id="difference-between-methods-and-statistics-1" class="slide level2">
 <h2>Difference between Methods and Statistics</h2>
@@ -234,6 +268,110 @@ Don van den Bergh
 <li>Exploring data to find interesting patterns</li>
 <li>Performing tests to answer theoretical research questions</li>
 </ul>
+<p>Statistics are the mathematics behind going from <em>raw data</em> to conclusions.</p>
+<aside class="notes">
+<p>TODO:</p>
+<p>Wooclap question with T/F statements about methods vs statistics</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="course-outline" class="title-slide slide level1 center">
+<h1>Course Outline</h1>
+
+</section>
+<section id="overview" class="slide level2">
+<h2>Overview</h2>
+<ul>
+<li>What can you expect for this course?
+<ul>
+<li>14 lectures
+<ul>
+<li>10 common lectures, 4 major specific lectures</li>
+</ul></li>
+<li>11 lab sessions</li>
+</ul></li>
+<li>What will the examination look like?
+<ul>
+<li>Multiple choice exam (1-10)</li>
+<li>SPSS test (Pass/ Fail)</li>
+</ul></li>
+<li>What more do we offer you?
+<ul>
+<li>Additional video lectures</li>
+<li>Short lecture quizzes</li>
+<li>Midterm quiz</li>
+<li>Practice exams online</li>
+<li>Practice workbook online</li>
+</ul></li>
+</ul>
+</section>
+<section id="learning-goals" class="slide level2">
+<h2>Learning Goals</h2>
+<ul>
+<li>compute and interpret commonly used descriptive statistics</li>
+<li>recognize different probability distributions</li>
+<li>explain the essential aspects of null-hypothesis significance testing</li>
+<li>conduct statistical tests</li>
+<li>choose the appropriate analysis technique for answering a specific research problem</li>
+<li>use SPSS</li>
+<li>draw valid conclusions from the results of empirical data analyses given specific research questions envisaged</li>
+</ul>
+<aside class="notes">
+
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<!--
+
+    Aims
+    This course covers the following learning goals:
+
+    compute and interpret commonly used descriptive statistics such as the sample mean, the median, the mode, variance and standard deviation, the standard error, and the correlation coefficient.
+    recognize different probability distributions such as the normal distribution, and make computations for these probability distributions.
+    explain the essential aspects of null-hypothesis significance testing, including sampling distributions, Type I and Type II errors, one-tailed versus two-tailed testing, and statistical power.
+    conduct statistical tests using the Z-distribution, the t-distribution, and the F-distribution
+    perform regression analysis with one continuous or categorical predictor, and explain concepts like sums of squares, explained variance (R squared), raw and standardized regression coefficients, predicted scores, residuals and the assumptions of linear models;
+    choose the appropriate analysis technique for answering a specific research problem from the range of techniques that are covered in the course.
+    use the software package SPSS to perform several statistical data analyses and be able to correctly interpret and report the output to an informed audience (e.g., Liberal arts students, researchers from the social sciences/business and economics/cognitive neuroscience).
+    draw valid conclusions from the results of empirical data analyses given specific research questions envisaged.
+
+    Content
+    The course uses challenge-based learning to convey the basics of statistics. You have access to all mandatory material for the course via a free interactive coursebook, complete with lecture videos, tutorial exercises, and formative tests. You will work in a small learning team of 4 students (minimum group size: 3 if a student drops out, 5 if there are not enough students to form an extra group) and choose your own dataset and any research question you are interested in (default datasets are available if you can't find one). With your learning team, you make two portfolio assignments in which you demonstrate that you master the learning goals and can use the techniques from this course to answer your own research questions.
+
+    The course uses a flipped classroom approach. Each week before the "lecture", you watch the respective video, make the formative assessment, and submit one discussion question to class. During the "lecture", we cover the most commonly asked discussion questions in more detail, have peer-to-peer and group discussions about reflection questions related to the material to ensure deeper processing, apply the material to your portfolio, and make two exam questions which contribute to your grade.
+
+    During the tutorial session, you practice working with statistical software to answer research questions, and you apply the same statistical software to work on your portfolio.
+-->
+</section>
+<section id="grading" class="slide level2">
+<h2>Grading</h2>
+<ul>
+<li><p>Exam 1 (30%): 15-10-2026</p></li>
+<li><p>Exam 2 (30%): 10-12-2026</p></li>
+<li><p>Portfolio (40%): 06-01-2027</p></li>
+<li><p>Combined resit (60%)</p></li>
+</ul>
+</section>
+<section id="typical-schedule" class="slide level2">
+<h2>Typical Schedule</h2>
 </section></section>
 <section>
 <section id="dictionary-of-basic-concepts" class="title-slide slide level1 center">
@@ -244,9 +382,13 @@ Don van den Bergh
 <h2>Tabular data</h2>
 <p>Most data in the social sciences is tabular, where each row represents an individual <span class="math inline">\(i\)</span> observation, and each column <span class="math inline">\(j\)</span> represents that individual’s data on several variables:</p>
 
-<img data-src="images/assumptions19.png" class="quarto-figure quarto-figure-center r-stretch" style="width:100.0%"></section>
+<img data-src="images/assumptions19.png" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="unstructured-data" class="slide level2">
+<h2>Unstructured data</h2>
+<p>The obvious counterpart is unstructured data.</p>
+</section>
 <section id="about-observations-population" class="slide level2">
-<h2>About observations: Population</h2>
+<h2>About Observations: Population</h2>
 <p><strong>Population:</strong></p>
 <ul>
 <li>The complete set of objects of interest
@@ -257,15 +399,32 @@ Don van den Bergh
 <ul>
 <li>N = 17.53 million, N = 75</li>
 </ul></li>
+<li>The correlation (linear dependence) between language and mathematics ability across all humans on earth
+<ul>
+<li><span class="math inline">\(\rho = .3\)</span></li>
+</ul></li>
+<li>The `true’ effect of class attendance on grades in university students
+<ul>
+<li><span class="math inline">\(\delta = 0.4\)</span></li>
+</ul></li>
 </ul>
 </section>
 <section id="about-observations-sample" class="slide level2">
-<h2>About observations: Sample</h2>
+<h2>About Observations: Sample</h2>
 <p><strong>Sample:</strong></p>
 <ul>
 <li>Observed part of the population</li>
 <li>Number of observations: <em>n</em></li>
+<li>The correlation (linear dependence) between language and mathematics ability across all pupils measured as part of a study:
+<ul>
+<li><span class="math inline">\(r = .25\)</span></li>
+</ul></li>
+<li>The effect size of class attendance on grades observed at Tilburg University
+<ul>
+<li><span class="math inline">\(d = 0.4\)</span></li>
+</ul></li>
 </ul>
+<p>A common pattern is <em>upper case</em> or <em>Greek</em> symbols for the population and <em>lower case</em> or <em>Roman</em> symbols for the sample.</p>
 </section>
 <section id="about-variables-construct" class="slide level2">
 <h2>About variables: Construct</h2>
@@ -307,11 +466,11 @@ Don van den Bergh
 <h2>Empirical cycle</h2>
 <p>De Groot (1961)</p>
 
-<img data-src="images/empirical%20cycle.png" class="quarto-figure quarto-figure-center r-stretch" style="width:100.0%"></section>
+<img data-src="%22images/empirical%20cycle.png%22" class="quarto-figure quarto-figure-center r-stretch"></section>
 <section id="relationship-between-theory-and-empiricism" class="slide level2">
 <h2>Relationship between theory and empiricism</h2>
 
-<img data-src="lecture1_files/figure-revealjs/unnamed-chunk-5-1.png" class="quarto-figure quarto-figure-center r-stretch" style="width:100.0%"></section>
+<img data-src="lecture1_files/figure-revealjs/unnamed-chunk-2-1.png" class="quarto-figure quarto-figure-center r-stretch" style="width:100.0%"></section>
 <section id="relationship-between-theory-and-empiricism-1" class="slide level2">
 <h2>Relationship between theory and empiricism</h2>
 <p>Theory:</p>
@@ -327,6 +486,10 @@ Don van den Bergh
 </section>
 <section id="sampling-theory" class="slide level2">
 <h2>Sampling theory</h2>
+<!-- ```{r}
+#| out.width = "90%"
+knitr::include_graphics("images/sample_population.png")
+``` -->
 
 <img data-src="images/sample_population.png" class="quarto-figure quarto-figure-center r-stretch" style="width:90.0%"></section>
 <section id="samples-why" class="slide level2">
@@ -406,26 +569,26 @@ Don van den Bergh
 <li>Celsius and Fahrenheit are interval scales</li>
 <li>Kelvin is a ratio scale</li>
 </ul>
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
+<!-- ```{r}
+#| out.height = "400px"
+knitr::include_graphics("images/Thermo1.png", dpi = NA)
+``` -->
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="images/Thermo1.png" class="quarto-figure quarto-figure-center" style="width:100.0%" height="400"></p>
+<p><img data-src="images/Thermo1.png" class="quarto-figure quarto-figure-center" height="400"></p>
 </figure>
-</div>
-</div>
 </div>
 </section>
 <section id="interval-v-ratio-1" class="slide level2">
 <h2>Interval v Ratio</h2>
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
+<!-- ```{r}
+#| out.height = "400px"
+knitr::include_graphics("images/Thermo2.png", dpi = NA)
+``` -->
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="images/Thermo2.png" class="quarto-figure quarto-figure-center" style="width:100.0%" height="400"></p>
+<p><img data-src="images/Thermo2.png" class="quarto-figure quarto-figure-center" height="400"></p>
 </figure>
-</div>
-</div>
 </div>
 </section>
 <section id="measurement-level-matters" class="slide level2">
@@ -544,7 +707,7 @@ Don van den Bergh
 <section id="bar-chart" class="slide level2">
 <h2>Bar chart</h2>
 
-<img data-src="lecture1_files/figure-revealjs/unnamed-chunk-10-1.png" class="quarto-figure quarto-figure-center r-stretch" style="width:100.0%"></section>
+<img data-src="lecture1_files/figure-revealjs/unnamed-chunk-4-1.png" class="quarto-figure quarto-figure-center r-stretch" style="width:100.0%"></section>
 <section id="an-ordinal-variable" class="slide level2">
 <h2>An ordinal variable</h2>
 <div class="cell" data-layout-align="center">
@@ -583,11 +746,11 @@ Don van den Bergh
 <section id="bar-chart-1" class="slide level2">
 <h2>Bar chart</h2>
 
-<img data-src="lecture1_files/figure-revealjs/unnamed-chunk-12-1.png" class="quarto-figure quarto-figure-center r-stretch" style="width:100.0%"></section>
+<img data-src="lecture1_files/figure-revealjs/unnamed-chunk-6-1.png" class="quarto-figure quarto-figure-center r-stretch" style="width:100.0%"></section>
 <section id="a-continuous-variable" class="slide level2">
 <h2>A continuous variable</h2>
 
-<img data-src="lecture1_files/figure-revealjs/unnamed-chunk-13-1.png" class="quarto-figure quarto-figure-center r-stretch" style="width:100.0%"></section>
+<img data-src="lecture1_files/figure-revealjs/unnamed-chunk-7-1.png" class="quarto-figure quarto-figure-center r-stretch" style="width:100.0%"></section>
 <section id="measures-of-central-tendency" class="slide level2">
 <h2>Measures of central tendency</h2>
 <p>What is the average or most common response?</p>
@@ -690,7 +853,7 @@ S_X^2 = \frac{\sum_{i=1}^n(X_i-\bar{X})^2}{n-1}
 <section id="mean-variance" class="slide level2">
 <h2>Mean, variance</h2>
 
-<img data-src="lecture1_files/figure-revealjs/unnamed-chunk-14-1.png" class="quarto-figure quarto-figure-center r-stretch" style="width:100.0%"></section></section>
+<img data-src="lecture1_files/figure-revealjs/unnamed-chunk-8-1.png" class="quarto-figure quarto-figure-center r-stretch" style="width:100.0%"></section></section>
 <section>
 <section id="bivariate-descriptives" class="title-slide slide level1 smaller center">
 <h1>Bivariate descriptives</h1>
