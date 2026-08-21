@@ -64,6 +64,8 @@ format:
 #| include = FALSE
 library(kableExtra)
 library(tidySEM)
+library(gt)
+library(dplyr)
 options(knitr.kable.NA = '')
 set.seed(1)
 ```
@@ -77,6 +79,29 @@ library(ggplot2)
 source("functions.R")
 ```
 
+## Who are we? {.center}
+
+::: {layout-ncol=2}
+
+::: {style="display: flex; justify-content: center;"}
+![](lecture1_images/dvdb.jpg){fig-align="center" style="width: 250px; height: 250px; object-fit: cover; border-radius: 50%;"}
+
+::: {.r-stack}
+Don van den Bergh
+:::
+
+:::
+
+::: {style="display: flex; justify-content: center;"}
+![](lecture1_images/amirali.jpg){fig-align="center" style="width: 250px; height: 250px; object-fit: cover; border-radius: 50%;"}
+
+::: {.r-stack}
+Amirali Rezazadeh
+:::
+
+:::
+
+:::
 
 ## Why statistics?
 
@@ -94,14 +119,6 @@ You grew up in the "digital age". There is data about your entire life...
 
 ![](images2/bol_security.png){.fragment style="max-width: 70vw; max-height: 50vh; width: auto; height: auto; object-fit: contain;"}
 :::
-
-<!--
-![](images/Everybodywantsyourdata.png){fig-align="center"}
-
-::: {.notes}
-TODO:
-- different example.
-::: -->
 
 
 ## What can you do with data?
@@ -161,9 +178,8 @@ Wooclap question with T/F statements about methods vs statistics
 
 * What can you expect for this course?
   * 14 lectures
-    * 10 common lectures\, 4 major specific lectures
-  * 11 lab sessions
-* What will the examination look like?
+  * 10 lab sessions
+* What will the exam look like?
   * Multiple choice exam \(1\-10\)
   * SPSS test \(Pass/ Fail\)
 * What more do we offer you?
@@ -212,15 +228,31 @@ Wooclap question with T/F statements about methods vs statistics
 
 ## Grading
 
-* Exam 1 (30%): 15-10-2026
-* Exam 2 (30%): 10-12-2026
-* Portfolio (40%): TODO: due date
-* Combined resit (60%): 06-01-2027
+* Two Exams (each 30%): on 15-10-2026 and 10-12-2026
+* Two Assignments (Portfolio; 40%): due 13-10-2026 and 14-12-2026
+* Combined resit for both exams (60%): 06-01-2027
 
 
 ## Typical Schedule
 
+* Monday: Lecture (either 10:45 - 12:30 or 16:45 - 18:30)
+* Thursday/ Friday: Tutorial (12:45 - 14:30 or 14:45 - 16:30)
+
+::: {.callout-note}
+Always check TimeEdit for the most up to date information!
+:::
+
 # Dictionary of basic concepts
+
+## Is life worth living?
+
+9 out of 10 adults in the Netherlands think life is worth living
+
+![](lecture1_images/happiness.jpg){fig-align="center"}
+
+::: footer
+Source: <www.cbs.nl/nl-nl/nieuws/2026/31/9-op-de-10-volwassenen-vinden-het-leven-de-moeite-waard>
+:::
 
 ## Tabular data
 
@@ -228,13 +260,83 @@ Most data in the social sciences is tabular, where each row represents an indivi
 
 ![](images/assumptions19.png){fig-align="center"}
 
-## Unstructured data
 
-The obvious counterpart is unstructured data.
+## Items
+
+- I find my life worthwhile.
+- I feel that I contribute something to society.
+- I feel useful.
+- I am able to do the things that I want to do and consider important in my life.
+- How important are social contacts and relationships in your life?
+- How important is personal development to you?
+- How hopeful are you about the future? (1 - 10)
+
+## Tabular data: Example
+
+<!-- ```{r, cache=TRUE}
+#| tbl-cap: "Happiness Data"
+dataset <- read.csv("lecture1_scripts/cbs_zingeving_synthetic_2025.csv")
+dataset |>
+  slice_head(n = 5) |>
+  gt() |>
+  tab_options(quarto.disable_processing = TRUE)
+``` -->
+
+```{r}
+#| echo: false
+library(htmltools)
+
+# 1. Build a beautiful 'gt' table
+dataset <- read.csv("lecture1_scripts/cbs_zingeving_synthetic_2025.csv")
+fancy_table <- dataset |>
+  gt(rownames_to_stub = TRUE) |>
+  tab_header(
+    title = "Example responses",
+    # subtitle = "Styled elegantly using the native {gt} package"
+  ) |>
+  # Apply professional formatting options
+  tab_options(
+    table.background.color = "white",
+    row.striping.background_color = "#f9f9f9",
+    container.height = px(400), # Keeps the header fixed while scrolling
+    container.overflow.y = TRUE,
+    table.width = pct(100),
+    data_row.padding = px(6)    # Compact row sizing for slides
+  ) |>
+  opt_row_striping()
+
+# 2. Output inside a scroll container to strictly enforce slide layout bounds
+div(
+  style = "max-height: 450px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 4px;",
+  fancy_table
+)
+```
+
+
+::: footer
+simulated based on the article
+:::
+
+
+
+<!-- ## Unstructured data
+
+The counterpart is unstructured data.
+
+For example:
+
+* All posts someone makes on social media
+    + The no. text posts differs per person
+    + Text itself is often not
+    + Uploaded photos/ videos don't quite fit in a rectangle
+
+. . .
+
+Confusingly, this does not mean this data is not interesting, and often also not that it truly has no structure.
+It is not the data we focus on in the course.
+ -->
 
 ## About Observations: Population
-
-**Population:**
 
 * The complete set of objects of interest
     + E.g., all people in NL, all students in this class
@@ -245,6 +347,15 @@ The obvious counterpart is unstructured data.
 * The `true' effect of class attendance on grades in university students
     + $\delta = 0.4$
 
+## Population: Example
+
+In the survey on happiness, the CBS interviewed 7,551 participants aged 15 and above.
+
+What is the population?
+
+. . .
+
+Adults in the Netherlands / Above 15 year olds.
 
 ## About Observations: Sample
 
@@ -272,6 +383,7 @@ A common pattern is _upper case_ or _Greek_ symbols for the population and _lowe
     + E.g., Number of words recalled, the Wechsler Adult Intelligence Scale (WAIS),
     ability to withstand a tasty treat, highest degree obtained
 
+
 ## About variables: Variable
 
 **Variable:**
@@ -280,11 +392,42 @@ A common pattern is _upper case_ or _Greek_ symbols for the population and _lowe
 * E.g., `WAIS` is a variable representing scores on the WAIS
 * You can refer to a variable without (yet) knowing its specific values
 
-*Data:*
+**Data:**
 
 * Specific values of a variable
 * Example of data: Jen's score on the variable `WAIS` is 138
 
+## Example
+
+* Construct: Happiness
+* Operational definition: “On a scale from 1 to 10, to what extent do you consider yourself a happy person?”
+* Variable: `happiness`, taking values 1–10
+* Data: respondent 382 answered 8
+
+## Wooclap
+
+1. Methods vs. Statistics: which statement(s) are true?
+- Methods involve mathematics, and statistics involve the design of a study.
+- Methodology concerns itself with the best way to collect data to answer a question.
+- Statistics can tell us if the data support the claim "older people feel like they contribute less to society than younger people".
+- Statistics can guide answer which
+- Statistics are a collection of different tests for different types of data.
+
+2. Population vs. Sample: which statement(s) are true?
+- 'Population' always refers to all people in a country
+- If we could measure data for all subjects in a population, we wouldn't need statistics
+- Sample statistics uses _Roman_ letters and population statistics use _Greek_ letters.
+-
+
+3. Constructs: which statement(s) are true?
+- IQ score is a construct.
+- Education is an operationalization of intelligence.
+- We can observe and measure constructs directly.
+- Scientific theories are typically on the level of operational definitions.
+
+# Break {.unlisted}
+
+See you in ~10 minutes!
 
 # Role of data in scientific research
 
@@ -292,7 +435,7 @@ A common pattern is _upper case_ or _Greek_ symbols for the population and _lowe
 
 De Groot (1961)
 
-![]("images/empirical cycle.png"){fig-align="center"}
+![](lecture1_images/empirical_cycle.png){fig-align="center"}
 
 ## Relationship between theory and empiricism
 
@@ -433,6 +576,15 @@ Edge cases:
 * Number of children (discrete ratio)
 * Political orientation from liberal to conservative (ordinal, but which is higher/lower?)
 
+::: {.notes}
+
+TODO: use age as another edge case.
+
+Is it a count variable? So no. years? Is that ordinal or Ratio?
+If we do age groups < 15 years, < 25, etc. what then?
+If we examine no. milliseconds since birth, what then?
+
+:::
 
 # Descriptive statistics
 
@@ -446,6 +598,17 @@ Edge cases:
     + What's the gender distribution?
 * Descriptive statistics *may* also be relevant to answer research questions
     + E.g.: When evaluating exam questions: Is the proportion of correct answers on this MC question greater than chance?
+
+
+::: {.notes}
+
+TODO: use age as another edge case.
+
+Is it a count variable? So no. years? Is that ordinal or Ratio?
+If we do age groups < 15 years, < 25, etc. what then?
+If we examine no. milliseconds since birth, what then?
+
+:::
 
 ## Distributions
 
@@ -629,6 +792,13 @@ Is there an association between gender and education?
 
 ## Correlations
 
+![](lecture1_images/cor_without_strip.jpg){fig-align="center"}
+
+## Correlations
+
+![](lecture1_images/cor_with_strip.jpg){fig-align="center"}
+
+<!--
 ::: {layout-nrow=2}
 ![](images/Lecture 121.png)
 
@@ -639,4 +809,4 @@ Is there an association between gender and education?
 ![](images/Lecture 124.png)
 
 ![](images/Lecture 125.png)
-:::
+::: -->

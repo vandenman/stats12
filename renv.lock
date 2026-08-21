@@ -28,9 +28,6 @@
       }
     ]
   },
-  "Bioconductor": {
-    "Version": "3.21"
-  },
   "Packages": {
     "AsioHeaders": {
       "Package": "AsioHeaders",
@@ -2309,6 +2306,50 @@
       "NeedsCompilation": "yes",
       "Author": "Jeroen Ooms [aut, cre] (ORCID: <https://orcid.org/0000-0002-4035-0289>), Hadley Wickham [ctb], Posit Software, PBC [cph]",
       "Maintainer": "Jeroen Ooms <jeroenooms@gmail.com>",
+      "Repository": "CRAN"
+    },
+    "dagitty": {
+      "Package": "dagitty",
+      "Version": "0.3-4",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Graphical Analysis of Structural Causal Models",
+      "Date": "2023-12-07",
+      "Author": "Johannes Textor, Benito van der Zander, Ankur Ankan",
+      "Maintainer": "Johannes Textor <johannes.textor@gmx.de>",
+      "Description": "A port of the web-based software 'DAGitty', available at  <https://dagitty.net>, for analyzing structural causal models  (also known as directed acyclic graphs or DAGs). This package computes covariate adjustment sets for estimating causal effects, enumerates instrumental variables, derives testable implications (d-separation and vanishing tetrads), generates equivalent models, and includes a simple facility for data simulation.",
+      "VignetteBuilder": "knitr",
+      "Encoding": "UTF-8",
+      "License": "GPL-2",
+      "URL": "https://www.dagitty.net, https://github.com/jtextor/dagitty",
+      "BugReports": "https://github.com/jtextor/dagitty/issues",
+      "Depends": [
+        "R (>= 3.0.0)"
+      ],
+      "Imports": [
+        "V8",
+        "jsonlite",
+        "boot",
+        "MASS",
+        "methods",
+        "grDevices",
+        "stats",
+        "utils",
+        "graphics"
+      ],
+      "Suggests": [
+        "igraph",
+        "knitr",
+        "base64enc (>= 0.1-3)",
+        "testthat",
+        "markdown",
+        "rmarkdown",
+        "lavaan",
+        "CCP",
+        "fastDummies"
+      ],
+      "RoxygenNote": "7.2.1",
+      "NeedsCompilation": "no",
       "Repository": "CRAN"
     },
     "data.table": {
@@ -6174,6 +6215,25 @@
       "Maintainer": "Hadley Wickham <hadley@rstudio.com>",
       "Repository": "CRAN"
     },
+    "png": {
+      "Package": "png",
+      "Version": "0.1-9",
+      "Source": "Repository",
+      "Title": "Read and write PNG images",
+      "Author": "Simon Urbanek [aut, cre, cph] (https://urbanek.nz, ORCID: <https://orcid.org/0000-0003-2297-1732>)",
+      "Authors@R": "person(\"Simon\", \"Urbanek\", role=c(\"aut\",\"cre\",\"cph\"), email=\"Simon.Urbanek@r-project.org\", comment=c(\"https://urbanek.nz\", ORCID=\"0000-0003-2297-1732\"))",
+      "Maintainer": "Simon Urbanek <Simon.Urbanek@r-project.org>",
+      "Depends": [
+        "R (>= 2.9.0)"
+      ],
+      "Description": "This package provides an easy and simple way to read, write and display bitmap images stored in the PNG format. It can read and write both files and in-memory raw vectors.",
+      "License": "GPL-2 | GPL-3",
+      "SystemRequirements": "libpng",
+      "URL": "https://www.rforge.net/png/",
+      "BugReports": "https://github.com/s-u/png/issues/",
+      "NeedsCompilation": "yes",
+      "Repository": "CRAN"
+    },
     "polyclip": {
       "Package": "polyclip",
       "Version": "1.10-7",
@@ -6817,6 +6877,26 @@
       "NeedsCompilation": "no",
       "Author": "JJ Allaire [aut] (ORCID: <https://orcid.org/0000-0003-0174-9868>), Christophe Dervieux [cre, aut] (ORCID: <https://orcid.org/0000-0003-4474-2498>), Posit Software, PBC [cph, fnd], Gordon Woodhull [ctb]",
       "Maintainer": "Christophe Dervieux <cderv@posit.co>",
+      "Repository": "CRAN"
+    },
+    "rJava": {
+      "Package": "rJava",
+      "Version": "1.0-18",
+      "Source": "Repository",
+      "Title": "Low-Level R to Java Interface",
+      "Author": "Simon Urbanek [aut, cre, cph] (https://urbanek.nz, ORCID: <https://orcid.org/0000-0003-2297-1732>)",
+      "Maintainer": "Simon Urbanek <Simon.Urbanek@r-project.org>",
+      "Authors@R": "person(\"Simon\", \"Urbanek\", role=c(\"aut\",\"cre\",\"cph\"), email=\"Simon.Urbanek@r-project.org\", comment=c(\"https://urbanek.nz\", ORCID=\"0000-0003-2297-1732\"))",
+      "Depends": [
+        "R (>= 3.6.0)",
+        "methods"
+      ],
+      "Description": "Low-level interface to Java VM very much like .C/.Call and friends. Allows creation of objects, calling methods and accessing fields.",
+      "License": "LGPL-2.1",
+      "URL": "https://www.rforge.net/rJava/",
+      "SystemRequirements": "Java JDK 1.2 or higher (for JRI/REngine JDK 1.4 or higher), GNU make",
+      "BugReports": "https://github.com/s-u/rJava/issues",
+      "NeedsCompilation": "yes",
       "Repository": "CRAN"
     },
     "ragg": {
@@ -9326,6 +9406,64 @@
       "NeedsCompilation": "yes",
       "Author": "Yihui Xie [aut, cre, cph] (ORCID: <https://orcid.org/0000-0003-0645-5666>, URL: https://yihui.org), Wush Wu [ctb], Daijiang Li [ctb], Xianying Tan [ctb], Salim Brüggemann [ctb] (ORCID: <https://orcid.org/0000-0002-5329-5987>), Christophe Dervieux [ctb]",
       "Maintainer": "Yihui Xie <xie@yihui.name>",
+      "Repository": "CRAN"
+    },
+    "xlsx": {
+      "Package": "xlsx",
+      "Version": "0.6.5",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Read, Write, Format Excel 2007 and Excel 97/2000/XP/2003 Files",
+      "Imports": [
+        "rJava",
+        "xlsxjars",
+        "grDevices",
+        "utils"
+      ],
+      "LazyLoad": "yes",
+      "Authors@R": "c(person(given = \"Adrian\", family = \"Dragulescu\", role = c(\"aut\"), email = \"adrian.dragulescu@gmail.com\"), person(given = \"Cole\", family = \"Arendt\", role = c(\"aut\", \"cre\"), email = \"cole.arendt@outlook.com\") )",
+      "Description": "Provide R functions to read/write/format Excel 2007 and Excel 97/2000/XP/2003 file formats.",
+      "License": "GPL-3",
+      "URL": "https://github.com/colearendt/xlsx",
+      "BugReports": "https://github.com/colearendt/xlsx/issues",
+      "SystemRequirements": "java (>= 1.6)",
+      "Suggests": [
+        "rprojroot",
+        "testthat",
+        "covr",
+        "tibble",
+        "knitr",
+        "rmarkdown"
+      ],
+      "RoxygenNote": "7.1.0",
+      "VignetteBuilder": "knitr",
+      "NeedsCompilation": "no",
+      "Author": "Adrian Dragulescu [aut], Cole Arendt [aut, cre]",
+      "Maintainer": "Cole Arendt <cole.arendt@outlook.com>",
+      "Repository": "CRAN"
+    },
+    "xlsxjars": {
+      "Package": "xlsxjars",
+      "Version": "0.9.0",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Package Required POI Jars for the xlsx Package",
+      "Date": "2025-07-02",
+      "Depends": [
+        "rJava"
+      ],
+      "LazyLoad": "yes",
+      "Authors@R": "c(person(\"Cole\", \"Arendt\",  role = c(\"aut\", \"cre\"), email = \"cole.arendt@outlook.com\"), person(c(\"Adrian\", \"A.\"), \"Dragulescu\",  role = \"aut\", email = \"adrian.dragulescu@gmail.com\"),  person(\"The Apache Software Foundation\",  role = c(\"ctb\", \"cph\"),  comment = \"Apache POI, Apache XMLBeans, Apache Commons Codec\"))",
+      "Description": "The xlsxjars package collects all the external jars required for the xlxs package. This release corresponds to POI 3.13.",
+      "License": "GPL-3",
+      "Copyright": "See file COPYRIGHTS",
+      "NeedsCompilation": "no",
+      "SystemRequirements": "java (>= 1.6)",
+      "Suggests": [
+        "testthat (>= 3.0.0)"
+      ],
+      "Author": "Cole Arendt [aut, cre], Adrian A. Dragulescu [aut], The Apache Software Foundation [ctb, cph] (Apache POI, Apache XMLBeans, Apache Commons Codec)",
+      "Maintainer": "Cole Arendt <cole.arendt@outlook.com>",
       "Repository": "CRAN"
     },
     "xml2": {
