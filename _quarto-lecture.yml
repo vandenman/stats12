@@ -1,3 +1,7 @@
 project:
   type: default
   output-dir: _preview
+  resources: []
+  preview:
+    port: 4200
+    browser: false

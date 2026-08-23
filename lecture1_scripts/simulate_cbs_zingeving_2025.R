@@ -31,13 +31,13 @@ set.seed(20260820)
 n <- 7551L
 
 age_levels <- c(
-  "18 tot 25 jaar",
-  "25 tot 35 jaar",
-  "35 tot 45 jaar",
-  "45 tot 55 jaar",
-  "55 tot 65 jaar",
-  "65 tot 75 jaar",
-  "75 jaar of ouder"
+  "18 - 25",
+  "25 - 35",
+  "35 - 45",
+  "45 - 55",
+  "55 - 65",
+  "65 - 75",
+  "above 75"
 )
 
 # Plausible adult age distribution chosen so that the published age-specific
@@ -58,13 +58,13 @@ fig1_targets <- c(
 
 # Figure 2: feeling that one contributes, by age
 contribution_age_targets <- c(
-  "18 tot 25 jaar" = 0.588,
-  "25 tot 35 jaar" = 0.701,
-  "35 tot 45 jaar" = 0.751,
-  "45 tot 55 jaar" = 0.760,
-  "55 tot 65 jaar" = 0.718,
-  "65 tot 75 jaar" = 0.706,
-  "75 jaar of ouder" = 0.603
+  "18 - 25" = 0.588,
+  "25 - 35" = 0.701,
+  "35 - 45" = 0.751,
+  "45 - 55" = 0.760,
+  "55 - 65" = 0.718,
+  "65 - 75" = 0.706,
+  "above 75" = 0.603
 )
 
 # Figure 3: meaning in life by societal participation
@@ -78,23 +78,36 @@ worthwhile_contact_targets   <- c(`FALSE` = 0.728, `TRUE` = 0.907)
 # These are used only to create realistic raw response variables while
 # preserving the calibrated binary outcomes.
 worthwhile_likert_positive <- c(
-  "Helemaal mee eens" = 43.0,
-  "Mee eens" = 46.8
+  "Strongly Agree" = 43.0,
+  "Agree" = 46.8
 )
 worthwhile_likert_negative <- c(
-  "Niet mee eens, niet mee oneens" = 8.2,
-  "Mee oneens" = 1.6,
-  "Helemaal mee oneens" = 0.5
+  "Undecided" = 8.2,
+  "Disagree" = 1.6,
+  "Strongly Disagree" = 0.5
 )
 
 contribution_likert_positive <- c(
-  "Helemaal mee eens" = 20.5,
-  "Mee eens" = 49.3
+  "Strongly Agree" = 20.5,
+  "Agree" = 49.3
 )
 contribution_likert_negative <- c(
-  "Niet mee eens, niet mee oneens" = 22.6,
-  "Mee oneens" = 6.5,
-  "Helemaal mee oneens" = 1.1
+  "Undecided" = 22.6,
+  "Disagree" = 6.5,
+  "Strongly Disagree" = 1.1
+)
+
+# The article does not publish the five-category margins for the other five
+# dimensions. Use a common, plausible split for those items. The calibrated
+# binary indicator remains the sum of "Agree" and "Strongly Agree".
+other_likert_positive <- c(
+  "Strongly Agree" = 45,
+  "Agree" = 55
+)
+other_likert_negative <- c(
+  "Undecided" = 70,
+  "Disagree" = 25,
+  "Strongly Disagree" = 5
 )
 
 # -----------------------------------------------------------------------------
@@ -122,13 +135,13 @@ weighted_binary_exact <- function(prob, k) {
 # Create a numeric age within each age category.
 simulate_age <- function(age_group) {
   ranges <- list(
-    "18 tot 25 jaar" = 18:24,
-    "25 tot 35 jaar" = 25:34,
-    "35 tot 45 jaar" = 35:44,
-    "45 tot 55 jaar" = 45:54,
-    "55 tot 65 jaar" = 55:64,
-    "65 tot 75 jaar" = 65:74,
-    "75 jaar of ouder" = 75:90
+    "18 - 25" = 18:24,
+    "25 - 35" = 25:34,
+    "35 - 45" = 35:44,
+    "45 - 55" = 45:54,
+    "55 - 65" = 55:64,
+    "65 - 75" = 65:74,
+    "above 75" = 75:90
   )
 
   vapply(
@@ -237,7 +250,7 @@ calibrate_cell_probabilities <- function(
   q
 }
 
-# Turn calibrated cell probabilities into binary respondent-level data.
+# Turn calibrated cell probabilities into binary respondent-level indicators.
 # The exact number of TRUE observations in every cell is round(q * n_cell).
 # The shared latent score makes the two main outcomes positively correlated.
 assign_binary_by_cell <- function(dat, cells, q, score) {
@@ -309,11 +322,11 @@ make_likert_from_binary <- function(binary, score, positive_pct, negative_pct) {
   factor(
     result,
     levels = c(
-      "Helemaal mee oneens",
-      "Mee oneens",
-      "Niet mee eens, niet mee oneens",
-      "Mee eens",
-      "Helemaal mee eens"
+      "Strongly Disagree",
+      "Disagree",
+      "Undecided",
+      "Agree",
+      "Strongly Agree"
     ),
     ordered = TRUE
   )
@@ -339,23 +352,23 @@ age <- simulate_age(age_group)
 #
 # The age patterns below are plausible synthetic patterns, not CBS estimates.
 volunteer_base <- c(
-  "18 tot 25 jaar" = 0.34,
-  "25 tot 35 jaar" = 0.40,
-  "35 tot 45 jaar" = 0.47,
-  "45 tot 55 jaar" = 0.52,
-  "55 tot 65 jaar" = 0.55,
-  "65 tot 75 jaar" = 0.54,
-  "75 jaar of ouder" = 0.45
+  "18 - 25" = 0.34,
+  "25 - 35" = 0.40,
+  "35 - 45" = 0.47,
+  "45 - 55" = 0.52,
+  "55 - 65" = 0.55,
+  "65 - 75" = 0.54,
+  "above 75" = 0.45
 )
 
 contact_base <- c(
-  "18 tot 25 jaar" = 0.965,
-  "25 tot 35 jaar" = 0.960,
-  "35 tot 45 jaar" = 0.955,
-  "45 tot 55 jaar" = 0.950,
-  "55 tot 65 jaar" = 0.945,
-  "65 tot 75 jaar" = 0.940,
-  "75 jaar of ouder" = 0.925
+  "18 - 25" = 0.965,
+  "25 - 35" = 0.960,
+  "35 - 45" = 0.955,
+  "45 - 55" = 0.950,
+  "55 - 65" = 0.945,
+  "65 - 75" = 0.940,
+  "above 75" = 0.925
 )
 
 p_volunteer <- volunteer_base[as.character(age_group)]
@@ -437,34 +450,45 @@ synthetic$worthwhile <- assign_binary_by_cell(
 # Each variable gets the exact marginal count corresponding to the published
 # percentage (up to unavoidable integer rounding), while retaining realistic
 # positive correlations through latent_meaning.
+social_contacts_score <- 0.70 * latent_meaning + rnorm(n)
 synthetic$social_contacts_important <- make_binary_margin(
   fig1_targets["social_contacts_important"],
-  0.70 * latent_meaning + rnorm(n)
+  social_contacts_score
 )
 
+personal_development_score <- 0.55 * latent_meaning + rnorm(n)
 synthetic$personal_development_important <- make_binary_margin(
   fig1_targets["personal_development_important"],
-  0.55 * latent_meaning + rnorm(n)
+  personal_development_score
 )
 
+autonomy_score <- 0.90 * latent_meaning + rnorm(n, sd = 0.8)
 synthetic$autonomy <- make_binary_margin(
   fig1_targets["autonomy"],
-  0.90 * latent_meaning + rnorm(n, sd = 0.8)
+  autonomy_score
 )
 
+useful_score <- 1.00 * latent_meaning +
+  0.60 * synthetic$contributes +
+  rnorm(n, sd = 0.8)
 synthetic$useful <- make_binary_margin(
   fig1_targets["useful"],
-  1.00 * latent_meaning + 0.60 * synthetic$contributes + rnorm(n, sd = 0.8)
+  useful_score
 )
 
+hopeful_score <- 0.85 * latent_meaning + rnorm(n, sd = 0.9)
 synthetic$hopeful <- make_binary_margin(
   fig1_targets["hopeful"],
-  0.85 * latent_meaning + rnorm(n, sd = 0.9)
+  hopeful_score
 )
 
 # -----------------------------------------------------------------------------
-# 5. Reconstruct five-category responses for the two main questions
+# 5. Create five-category Likert responses
 # -----------------------------------------------------------------------------
+
+# Keep the binary indicators above because the CBS figures report the
+# percentage giving a positive answer. The *_response variables are the raw
+# ordered responses shown to students.
 
 synthetic$worthwhile_response <- make_likert_from_binary(
   synthetic$worthwhile,
@@ -480,7 +504,42 @@ synthetic$contribution_response <- make_likert_from_binary(
   contribution_likert_negative
 )
 
-# Put the raw response immediately before its dichotomized version.
+synthetic$social_contacts_important_response <- make_likert_from_binary(
+  synthetic$social_contacts_important,
+  social_contacts_score,
+  other_likert_positive,
+  other_likert_negative
+)
+
+synthetic$personal_development_important_response <- make_likert_from_binary(
+  synthetic$personal_development_important,
+  personal_development_score,
+  other_likert_positive,
+  other_likert_negative
+)
+
+synthetic$autonomy_response <- make_likert_from_binary(
+  synthetic$autonomy,
+  autonomy_score,
+  other_likert_positive,
+  other_likert_negative
+)
+
+synthetic$useful_response <- make_likert_from_binary(
+  synthetic$useful,
+  useful_score,
+  other_likert_positive,
+  other_likert_negative
+)
+
+synthetic$hopeful_response <- make_likert_from_binary(
+  synthetic$hopeful,
+  hopeful_score,
+  other_likert_positive,
+  other_likert_negative
+)
+
+# Put each raw response immediately before its dichotomized version.
 synthetic <- synthetic[c(
   "id",
   "age",
@@ -491,10 +550,15 @@ synthetic <- synthetic[c(
   "worthwhile",
   "contribution_response",
   "contributes",
+  "social_contacts_important_response",
   "social_contacts_important",
+  "personal_development_important_response",
   "personal_development_important",
+  "autonomy_response",
   "autonomy",
+  "useful_response",
   "useful",
+  "hopeful_response",
   "hopeful",
   "cell_id"
 )]
@@ -508,7 +572,7 @@ synthetic$cell_id <- NULL
 
 write.csv(
   synthetic,
-  file = "cbs_zingeving_synthetic_2025.csv",
+  file = "lecture1_scripts/cbs_zingeving_synthetic_2025.csv",
   row.names = FALSE,
   fileEncoding = "UTF-8"
 )

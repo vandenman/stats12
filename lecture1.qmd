@@ -1,15 +1,20 @@
 ---
-title: "Lecture 1 - Introduction to Statistics"
+title: "Introduction to Statistics"
+subtitle: "Lecture 1 - LAS"
 author:   "Don van den Bergh"
-date:     "`r format(Sys.Date(), '%d %b %Y')`"
+date: last-modified
 format:
-    revealjs:
+    dtslides-revealjs:
+        theme: [tilburg-university.scss]
+        logo: logo_tu_small.svg
+        slide-number: c/t
+        chalkboard: true
         toc: true
         toc-depth: 1
         toc-title: "Today"
 ---
 
-# Introduction
+# Introduction {.section-slide}
 
 
 <!-- ## Today -->
@@ -61,23 +66,18 @@ format:
 <!-- ![](images/Lecture 13.png) -->
 
 ```{r}
-#| include = FALSE
+#| include = FALSE,
+#| label = "setup"
 library(kableExtra)
 library(tidySEM)
 library(gt)
 library(dplyr)
+library(ggplot2)
 options(knitr.kable.NA = '')
+knitr::opts_chunk$set(echo = FALSE)
 set.seed(1)
 ```
 
-
-```{r}
-#| label = "setup",
-#| include = FALSE
-knitr::opts_chunk$set(echo = FALSE)
-library(ggplot2)
-source("functions.R")
-```
 
 ## Who are we? {.center}
 
@@ -142,37 +142,7 @@ Altogether, Data analysis is one of the most marketable concrete skills taught a
 :::
 
 
-## Difference between Methods and Statistics
-
-Methods is about the procedures of research:
-
-* What actions do we take to collect good data
-* Which participants to include
-* How to measure what we want to measure
-* How to design studies that are suitable for answering our research questions
-
-Methods involve the design of a study or data collection
-
-## Difference between Methods and Statistics
-
-Statistics is about analyzing data
-
-* __Descriptive statistics__: describing/summarizing data
-* __Inferential statistics__: Making best guesses about the population from a smaller sample
-* __Statistical modeling__: Representing a theory mathematically
-* Predicting important outcomes (sales, well-being, neurological disorders)
-* Exploring data to find interesting patterns
-* Performing tests to answer theoretical research questions
-
-Statistics are the mathematics behind going from _raw data_ to conclusions.
-
-::: {.notes}
-TODO:
-
-Wooclap question with T/F statements about methods vs statistics
-:::
-
-# Course Outline
+# Course Outline {.section-slide}
 
 ## Overview
 
@@ -189,15 +159,23 @@ Wooclap question with T/F statements about methods vs statistics
   * Practice exams online
   * Practice workbook online
 
+## GitBook
+
+TODO:
+- quick explanation of how this works
+- quizzes
+- formative tests
+- assignment in formation
+
 ## Learning Goals
 
-* compute and interpret commonly used descriptive statistics
-* recognize different probability distributions
-* explain the essential aspects of null-hypothesis significance testing
-* conduct statistical tests
-* choose the appropriate analysis technique for answering a specific research problem
-* use SPSS
-* draw valid conclusions from the results of empirical data analyses given specific research questions envisaged
+* Compute and interpret commonly used descriptive statistics
+* Recognize different probability distributions
+* Explain the essential aspects of null-hypothesis significance testing
+* Conduct statistical tests
+* Choose the appropriate analysis technique for answering a specific research problem
+* Use SPSS
+* Draw valid conclusions from the results of empirical data analyses given specific research questions envisaged
 
 ::: {.notes}
 
@@ -237,12 +215,13 @@ Wooclap question with T/F statements about methods vs statistics
 
 * Monday: Lecture (either 10:45 - 12:30 or 16:45 - 18:30)
 * Thursday/ Friday: Tutorial (12:45 - 14:30 or 14:45 - 16:30)
+  + You can work on the weekly quizes and also on the assignments
 
 ::: {.callout-note}
 Always check TimeEdit for the most up to date information!
 :::
 
-# Dictionary of basic concepts
+# Dictionary of Basic Concepts {.section-slide}
 
 ## Is life worth living?
 
@@ -251,10 +230,35 @@ Always check TimeEdit for the most up to date information!
 ![](lecture1_images/happiness.jpg){fig-align="center"}
 
 ::: footer
-Source: <www.cbs.nl/nl-nl/nieuws/2026/31/9-op-de-10-volwassenen-vinden-het-leven-de-moeite-waard>
+Source: <https://www.cbs.nl/nl-nl/nieuws/2026/31/9-op-de-10-volwassenen-vinden-het-leven-de-moeite-waard>
 :::
 
-## Tabular data
+## Methods and Statistics
+
+Methods is about the procedures of research:
+
+* What actions do we take to collect good data
+* Which participants to include
+* How to measure what we want to measure
+* How to design studies that are suitable for answering our research questions
+
+Methods involve the design of a study or data collection
+
+## Methods and Statistics
+
+Statistics is about analyzing data
+
+* __Descriptive statistics__: describing/summarizing data
+* __Inferential statistics__: Making best guesses about the population from a smaller sample
+* __Statistical modeling__: Representing a theory mathematically
+* Predicting important outcomes (sales, well-being, neurological disorders)
+* Exploring data to find interesting patterns
+* Performing tests to answer theoretical research questions
+
+Statistics are the mathematics behind going from _raw data_ to conclusions.
+
+
+## Tabular Data
 
 Most data in the social sciences is tabular, where each row represents an individual $i$ observation, and each column $j$ represents that individual's data on several variables:
 
@@ -271,47 +275,32 @@ Most data in the social sciences is tabular, where each row represents an indivi
 - How important is personal development to you?
 - How hopeful are you about the future? (1 - 10)
 
-## Tabular data: Example
+## Tabular Data: Example
 
-<!-- ```{r, cache=TRUE}
-#| tbl-cap: "Happiness Data"
-dataset <- read.csv("lecture1_scripts/cbs_zingeving_synthetic_2025.csv")
-dataset |>
-  slice_head(n = 5) |>
-  gt() |>
-  tab_options(quarto.disable_processing = TRUE)
-``` -->
 
 ```{r}
 #| echo: false
-library(htmltools)
+#| label: "example dataset"
+library(DT)
 
 # 1. Build a beautiful 'gt' table
 dataset <- read.csv("lecture1_scripts/cbs_zingeving_synthetic_2025.csv")
-fancy_table <- dataset |>
-  gt(rownames_to_stub = TRUE) |>
-  tab_header(
-    title = "Example responses",
-    # subtitle = "Styled elegantly using the native {gt} package"
-  ) |>
-  # Apply professional formatting options
-  tab_options(
-    table.background.color = "white",
-    row.striping.background_color = "#f9f9f9",
-    container.height = px(400), # Keeps the header fixed while scrolling
-    container.overflow.y = TRUE,
-    table.width = pct(100),
-    data_row.padding = px(6)    # Compact row sizing for slides
-  ) |>
-  opt_row_striping()
-
-# 2. Output inside a scroll container to strictly enforce slide layout bounds
-div(
-  style = "max-height: 450px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 4px;",
-  fancy_table
+mydata <- head(dataset, 50)
+DT::datatable(
+  mydata,
+  options = list(
+  searching = FALSE,
+  info = FALSE,
+  paging = FALSE,
+  scrollX = TRUE,
+  scrollY = "350px",
+  scrollCollapse = TRUE,
+  autoWidth = TRUE
+),
+  rownames = FALSE
 )
-```
 
+```
 
 ::: footer
 simulated based on the article
@@ -344,7 +333,7 @@ It is not the data we focus on in the course.
     + N = 17.53 million, N = 75
 * The correlation (linear dependence) between language and mathematics ability across all humans on earth
     + $\rho = .3$
-* The `true' effect of class attendance on grades in university students
+* The "true" effect of class attendance on grades in students
     + $\delta = 0.4$
 
 ## Population: Example
@@ -359,7 +348,25 @@ Adults in the Netherlands / Above 15 year olds.
 
 ## About Observations: Sample
 
-**Sample:**
+What is a sample?
+
+. . .
+
+
+::: {.r-stack style="height: 50vh;"}
+![](lecture1_images/sample_definition.png){.fragment style="max-width: 70vw; max-height: 50vh; width: auto; height: auto; object-fit: contain;"}
+
+![](lecture1_images/sample_supermarket1.jpg){.fragment style="max-width: 70vw; max-height: 50vh; width: auto; height: auto; object-fit: contain;"}
+
+![](lecture1_images/sample_supermarket2.jpg){.fragment style="max-width: 70vw; max-height: 50vh; width: auto; height: auto; object-fit: contain;"}
+
+![](lecture1_images/sample_paint.jpg){.fragment style="max-width: 70vw; max-height: 50vh; width: auto; height: auto; object-fit: contain;"}
+:::
+
+
+
+
+## About Observations: Sample
 
 * Observed part of the population
 * Number of observations: *n*
@@ -368,9 +375,9 @@ Adults in the Netherlands / Above 15 year olds.
 * The effect size  of class attendance on grades observed at Tilburg University
     + $d = 0.4$
 
-A common pattern is _upper case_ or _Greek_ symbols for the population and _lower case_ or _Roman_ symbols for the sample.
+A common pattern is _upper case_ or _Greek_ symbols ($\sigma$) for the population and _lower case_ or _Roman_ symbols ($s$) for the sample.
 
-## About variables: Construct
+## About Variables: Construct
 
 **Construct:**
 
@@ -384,7 +391,7 @@ A common pattern is _upper case_ or _Greek_ symbols for the population and _lowe
     ability to withstand a tasty treat, highest degree obtained
 
 
-## About variables: Variable
+## About Variables: Variable
 
 **Variable:**
 
@@ -404,7 +411,7 @@ A common pattern is _upper case_ or _Greek_ symbols for the population and _lowe
 * Variable: `happiness`, taking values 1–10
 * Data: respondent 382 answered 8
 
-## Wooclap
+<!-- ## Wooclap
 
 1. Methods vs. Statistics: which statement(s) are true?
 - Methods involve mathematics, and statistics involve the design of a study.
@@ -423,13 +430,13 @@ A common pattern is _upper case_ or _Greek_ symbols for the population and _lowe
 - IQ score is a construct.
 - Education is an operationalization of intelligence.
 - We can observe and measure constructs directly.
-- Scientific theories are typically on the level of operational definitions.
+- Scientific theories are typically on the level of operational definitions. -->
 
-# Break {.unlisted}
+# Break {.section-slide .unlisted}
 
 See you in ~10 minutes!
 
-# Role of data in scientific research
+# Role of Data in Scientific Research {.section-slide}
 
 ## Empirical cycle
 
@@ -437,7 +444,7 @@ De Groot (1961)
 
 ![](lecture1_images/empirical_cycle.png){fig-align="center"}
 
-## Relationship between theory and empiricism
+## Relationship between Theory and Empiricism
 
 ```{r, cache=TRUE}
 #| eval = T
@@ -455,7 +462,7 @@ p$edges$linetype <- c(2, 1)
 plot(p)+geom_label(aes(x = c(3, 3), y = c(5, 3), label = c("Theoretical level", "Empirical level"), size = 20))
 ```
 
-## Relationship between theory and empiricism
+## Relationship between Theory and Empiricism
 
 Theory:
 
@@ -468,6 +475,32 @@ Empirical test:
 Variable A predicts variable B
 
 * E.g., being deployed (yes/no) predicts scores on the SCL-90 depression questionnaire
+
+
+## Relationship between theory and empiricism
+
+- CBS reports that 87.4% of Dutch adults are "happy".
+- What does "happy" mean?
+
+. . .
+
+- CBS classifies a responses as:
+  + 7–10: happy
+  + 5–6: as neither happy nor unhappy
+  + 1–4: unhappy
+
+. . .
+
+Note: Happiness is not "answered >6 on this particular question".
+
+This is just a (necessary) operationalization.
+
+. . .
+
+Theory: Having meaningful social relationships makes people happier.
+
+Empirical hypothesis: Respondents who have frequent contact with family/friends report higher happiness scores.
+
 
 ## Sampling theory
 
@@ -507,7 +540,14 @@ Cooking example
 * Sampling bias
     + E.g., Individuals that are easy to access ave higher probability of being included
 
-# Measurement level
+## A lot of sampling theory is just _cooking_
+
+* Suppose you want to know if your soup tastes good or needs more salt.
+    + You don't eat the whole soup, you _sample_ it.
+    + You stir the soup so to take a _random_ sample.
+    + If you keep tasting from the spoon while adding salt to the soup, you're using a _convenience_ sample.
+
+# Measurement Level {.section-slide}
 
 ## NOIR measurement levels
 
@@ -520,39 +560,25 @@ Subsequent levels carry incremental information
 
 ## NOIR measurement levels
 
-<small>
-
-* Nominal
+* `N`ominal
     + Categories; values differ in name only (e.g., majors)
-* Ordinal
+* `O`rdinal
     + Categories; additionally, values have meaningful order (e.g., SES groups, bachelor year 1, 2, 3)
-* Interval
+* `I`nterval
     + Numeric; additionally, distance between values is meaningful
     + A step from 1 to 2 is equally large as a step from 2 to 3, or 5 to 6
-* Ratio
+* `R`atio
     + Numeric; additionally has a meaningful zero-point
     + Because of this, ratios between two values are also meaningful
-
-</small>
 
 ## Interval v Ratio
 
 * Celsius and Fahrenheit are interval scales
 * Kelvin is a ratio scale
 
-<!-- ```{r}
-#| out.height = "400px"
-knitr::include_graphics("images/Thermo1.png", dpi = NA)
-``` -->
-
 ![](images/Thermo1.png){fig-align="center" height="400px"}
 
 ## Interval v Ratio
-
-<!-- ```{r}
-#| out.height = "400px"
-knitr::include_graphics("images/Thermo2.png", dpi = NA)
-``` -->
 
 ![](images/Thermo2.png){fig-align="center" height="400px"}
 
@@ -586,9 +612,9 @@ If we examine no. milliseconds since birth, what then?
 
 :::
 
-# Descriptive statistics
+# Descriptive statistics {.section-slide}
 
-## Descriptive Statistics {.smaller}
+## Descriptive Statistics
 
 * Descriptive statistics summarize data across a sample
 * You nearly always examine them to get a sense of your dataset
@@ -724,18 +750,6 @@ But... most Australians are not!
 
 <!-- __Q:__  Can you think of variables that typically have skewed distributions? -->
 
-<!-- ![](images/Lecture 113.png) -->
-
-<!-- ![](images/Lecture 114.png) -->
-
-<!-- ![](images/Lecture 115.png) -->
-
-<!-- ![](images/Lecture 116.jpg) -->
-
-<!-- ![](images/Lecture 117.png) -->
-
-<!-- ![](images/Lecture 118.png) -->
-
 ## Mean, variance
 
 ```{r}
@@ -798,15 +812,8 @@ Is there an association between gender and education?
 
 ![](lecture1_images/cor_with_strip.jpg){fig-align="center"}
 
-<!--
-::: {layout-nrow=2}
-![](images/Lecture 121.png)
+<!-- https://www.tylervigen.com/spurious/correlation/4994_popularity-of-the-like-a-boss-meme_correlates-with_google-searches-for-how-to-cut-own-hair -->
 
-![](images/Lecture 122.png)
+<!-- https://www.tylervigen.com/spurious/correlation/5950_popularity-of-the-first-name-lamont_correlates-with_burglary-rates-in-the-us -->
 
-![](images/Lecture 123.png)
-
-![](images/Lecture 124.png)
-
-![](images/Lecture 125.png)
-::: -->
+## Wooclap
