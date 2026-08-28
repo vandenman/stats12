@@ -23,11 +23,17 @@ library(ggplot2)
 library(kableExtra)
 ```
 
-# Today {.section-slide .unlisted}
+## Today {.unlisted}
 
 [Chapter 2](https://cjvanlissa.github.io/stats12/chapter2_descriptive_statistics.html) and [Chapter 4](https://cjvanlissa.github.io/stats12/probability.html) from the gitbook.
 
 
+::: callout-important
+# Mistake in slide from last week!
+
+- Deadline assignment #1 is Sunday October 18th.
+- Deadline on Canvas is always guiding!
+:::
 # Descriptives Statistics
 
 ## Why do We use Descriptives Statistics?
@@ -40,13 +46,13 @@ library(kableExtra)
 
 ::: {.r-stack style="height: 100vh;"}
 
-![](images/empirical_cycle2.png){.fragment fig-align="center"  style="max-width: 100vw; max-height: 100vh; width: auto; height: auto; object-fit: contain;"}
+![](images/empirical_cycle2.png){.fragment fig-align="center"  style="width: auto; height: auto; object-fit: contain;"}
 
-![](images/empirical_cycle2_1.png){.fragment fig-align="center"  style="max-width: 100vw; max-height: 100vh; width: auto; height: auto; object-fit: contain;"}
+![](images/empirical_cycle2_1.png){.fragment fig-align="center"  style="width: auto; height: auto; object-fit: contain;"}
 
-![](images/empirical_cycle2_2.png){.fragment fig-align="center" style="max-width: 100vw; max-height: 100vh; width: auto; height: auto; object-fit: contain;"}
+![](images/empirical_cycle2_2.png){.fragment fig-align="center" style="width: auto; height: auto; object-fit: contain;"}
 
-![](images/empirical_cycle2_3.png){.fragment fig-align="center" style="max-width: 100vw; max-height: 100vh; width: auto; height: auto; object-fit: contain;"}
+![](images/empirical_cycle2_3.png){.fragment fig-align="center" style="width: auto; height: auto; object-fit: contain;"}
 :::
 
 
@@ -66,14 +72,54 @@ Wagenmakers, E. J., Dutilh, G., & Sarafoglou, A. (2018). The creativity-verifica
 
 . . .
 
-## Data Example
-- dataset
+## Data Example: Bechdel Test
+
+. . .
+
+[![](https://upload.wikimedia.org/wikipedia/en/b/bf/Dykes_to_Watch_Out_For_%28Bechdel_test_origin%29.jpg?utm_source=en.wikipedia.org&utm_campaign=index&utm_content=original){fig-align="center"}](https://en.wikipedia.org/wiki/File:Dykes_to_Watch_Out_For_(Bechdel_test_origin).jpg)
+
+
+
+## Data Example: Bechdel Test
+
+```{r}
+#| echo: false
+#| label: "Bechdel dataset"
+library(DT)
+
+d <- read.csv("scripts/movies.csv")
+mydata <- head(d, 30)
+# minor fixes to presentation
+mydata$title[1] <- "21 & Over"
+DT::datatable(
+  mydata,
+  options = list(
+  searching = FALSE,
+  info = FALSE,
+  paging = FALSE,
+  scrollX = TRUE,
+  scrollY = "350px",
+  scrollCollapse = TRUE,
+  autoWidth = TRUE
+),
+  rownames = FALSE
+)
+
+```
+
+::: footer
+[Source](https://github.com/fivethirtyeight/data/blob/4c1ff5e3aef1816ae04af63218015066e186c147/bechdel/movies.csv)
+:::
 
 ## Measures of Central Tendency
 
-- most "common" value, one "representative" number
-    - average student
-    - most popular show on netflix
+The most "common" value, one "representative" number
+
+- average student
+- most popular show on Netflix
+- proportion of movies that passes the bechdel test
+- average movie budget
+- most common bechdel test result
 
 ## Central Tendency: Mean
 
