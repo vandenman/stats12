@@ -1,0 +1,70 @@
+<div id="shash-shape" class="normal-demo">
+
+<div class="normal-top">
+
+<div class="normal-controls">
+
+<label class="normal-control">
+<span>Mean</span>
+<input
+  data-param="location"
+  type="range"
+  min="-2"
+  max="2"
+  step="0.1"
+  value="0">
+<span data-value="location"></span>
+</label>
+
+<label class="normal-control">
+<span>SD</span>
+<input
+  data-param="scale"
+  type="range"
+  min="0.3"
+  max="2"
+  step="0.1"
+  value="1">
+<span data-value="scale"></span>
+</label>
+
+<label class="normal-control">
+<span>Skewness</span>
+<input
+  data-param="skew"
+  type="range"
+  min="-2"
+  max="2"
+  step="0.1"
+  value="0">
+<span data-value="skew"></span>
+</label>
+
+<label class="normal-control">
+<span>Kurtosis</span>
+<input
+  data-param="tail"
+  type="range"
+  min="0.4"
+  max="2"
+  step="0.1"
+  value="1">
+<span data-value="tail"></span>
+</label>
+
+</div>
+
+</div>
+
+<svg></svg>
+
+</div>
+
+<script>
+shashDemo("#shash-shape", {
+  xmin: -6,
+  xmax: 6,
+  ymax: 1.2,
+  height: 300
+});
+</script>

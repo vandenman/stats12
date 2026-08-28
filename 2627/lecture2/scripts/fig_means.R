@@ -54,4 +54,4 @@ plot2 <- ggplot(tb) + layers +
   labs(x = NULL, y = NULL) +
   theme(strip.text = element_blank(), axis.text = element_blank(), axis.ticks = element_blank())
 
-ggsave(filename = "lecture2/scripts/fig_means_medians.jpg", plot = plot)
+ggsave(filename = "lecture2/scripts/fig_means_medians.jpg", plot = plot2)

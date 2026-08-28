@@ -13,6 +13,11 @@ format:
         toc-depth: 1
         toc-title: "Today"
         embed-resources: true
+        include-in-header:
+        - text: |
+            <script src="https://cdn.jsdelivr.net/npm/jstat@1.9.6/dist/jstat.min.js"></script>
+            <link rel="stylesheet" href="../common_resources/components/distributions.css">
+            <script src="../common_resources/components/distributions.js"></script>
 ---
 
 ```{r}
@@ -59,9 +64,9 @@ dtriangle <- function(x, a = -1, b = 1, c = 0) {
 
 ## When do We use Descriptives Statistics?
 
-::: {.r-stack style="height: 100vh;"}
+::: {.r-stack style="height: 40vh;"}
 
-![](images/empirical_cycle2.png){.fragment fig-align="center"  style="width: auto; height: auto; object-fit: contain;"}
+![](images/empirical_cycle2.png){ fig-align="center"  style="width: auto; height: auto; object-fit: contain;"}
 
 ![](images/empirical_cycle2_1.png){.fragment fig-align="center"  style="width: auto; height: auto; object-fit: contain;"}
 
@@ -84,8 +89,6 @@ Wagenmakers, E. J., Dutilh, G., & Sarafoglou, A. (2018). The creativity-verifica
 - Dispersion/ Spread/ Variability
 - Skewness
 - Kurtosis
-
-. . .
 
 ## Data Example: Bechdel Test
 
@@ -162,11 +165,13 @@ The proportion of movies that passed the Bechdel test.
 
 . . .
 
+No. "PASS" (`{r} sum(d$binary=="PASS", na.rm = TRUE)`) / No. Movies (`{r} nrow(d)`) =
 `{r} round(mean(d$binary=="PASS", na.rm = TRUE), 3)`
 
 ## Central Tendency: Mean
 
 ![](scripts/fig_means.jpg){fig-align="center"}
+
 
 ## Central Tendency: Median
 
@@ -179,29 +184,133 @@ If you were to order all scores of your variable from lowest to highest, then th
 
 - If the distribution is symmetric, then the median equals the mean
 
+## Central Tendency: Median {.scrollable}
+
+```{r}
+#| echo: false
+#| label: "Freq table"
+gt::gt(as.data.frame(table(Year = d$year)))
+```
+
 ## Central Tendency: Median
 
-- Example with numbers
+::: {.r-stack}
+
+![](scripts/fig_median_year0.jpg){ fig-align="center"}
+
+![](scripts/fig_median_year1.jpg){.fragment fig-align="center"}
+
+![](scripts/fig_median_year2.jpg){.fragment fig-align="center"}
+
+:::
 
 ## Central Tendency: Median
 
-- Example with four distributions once more
+![](scripts/fig_means_medians.jpg){fig-align="center"}
 
 
 ## Central Tendency: Mode
 
+- The most common value
 
 
 ## Central Tendency: Mode
 
-- Example with numbers
+![](scripts/fig_median_year3.jpg){fig-align="center"}
 
 ## Dispersion
 
+- Range
+- Sum of Squared Distances to the Mean
+- Variance: mean squared distance
+- Standard Deviation
+- Mean absolute deviation (MAD)
 
-# Break {.section-slide .unlisted}
+## Range
 
-See you in ~10 minutes!
+$$
+R = x_{\mathrm{largest}} - x_{\mathrm{smallest}}
+$$
+
+. . .
+
+$R_\mathrm{year}$: `{r} max(d$year)` $-$ `{r} min(d$year)` $=$ `{r} diff(range(d$year))`.
+
+. . .
+
+## Sum of Squared Distances to the Mean: $SS_x$ {.small-slide}
+
+$$
+\begin{align}
+\bar{x} &= \frac{\sum_{i=1}^{n}x_i}{n} &&= \frac{x_1 + x_2 +\, ... + x_n}{n}\\
+SS_x &= \sum_{i=1}^{n}(x_i - \bar{x})^2 &&= (x_1 -\bar{x})^2 + (x_2 -\bar{x})^2 +\, ... + (x_n -\bar{x})^2
+\end{align}
+$$
+
+. . .
+
+- $\overline{\mathrm{year}} =$ `{r} mean(d$year)`
+- $SS_{\mathrm{year}} =$ `{r} format(sum((d$year - mean(d$year))^2))`
+
+## Variance: mean squared distance {.small-slide}
+
+$$
+\begin{align}
+\bar{x} &= \frac{\sum_{i=1}^{n}x_i}{n} &&= \frac{x_1 + x_2 +\, ... + x_n}{n}\\
+SS_x &= \sum_{i=1}^{n}(x_i - \bar{x})^2 &&= (x_1 -\bar{x})^2 + (x_2 -\bar{x})^2 +\, ... + (x_n -\bar{x})^2\\
+s^2_x &= \frac{SS_x}{n}&&
+\end{align}
+$$
+
+- $\overline{\mathrm{year}} =$ `{r} mean(d$year)`
+- $SS_{\mathrm{year}} =$ `{r} format(sum((d$year - mean(d$year))^2))`
+- $s^2_{\mathrm{year}} =$ `{r} sum((d$year - mean(d$year))^2) / nrow(d)`
+
+
+## Standard Deviation: root mean squared distance {.small-slide}
+
+$$
+\begin{align}
+\bar{x} &= \frac{\sum_{i=1}^{n}x_i}{n} &&= \frac{x_1 + x_2 +\, ... + x_n}{n}\\
+SS_x &= \sum_{i=1}^{n}(x_i - \bar{x})^2 &&= (x_1 -\bar{x})^2 + (x_2 -\bar{x})^2 +\, ... + (x_n -\bar{x})^2\\
+s^2_x &= \frac{SS_x}{n}&&\\
+s_x &= \sqrt{s^2_x}&&
+\end{align}
+$$
+
+
+- $\overline{\mathrm{year}}$ = `{r} mean(d$year)`
+- $SS_{\mathrm{year}}$ = `{r} format(sum((d$year - mean(d$year))^2))`
+- $s^2_{\mathrm{year}}$ = `{r} sum((d$year - mean(d$year))^2) / nrow(d)`
+- $s_{\mathrm{year}}$ = `{r} sqrt(sum((d$year - mean(d$year))^2) / nrow(d))`
+
+## Mean absolute deviation (MAD)
+
+$$
+\matrm{MAD}_{x} = \frac{\sum_{i=1}^{n}|x_i - \bar{x}|}{n} = \frac{|x_1 -\bar{x}| + |x_2 -\bar{x}| +\, ... + |x_n -\bar{x}|}{n}\\
+$$
+
+- $\mathrm{MAD}_{\mathrm{year}} =$ `{r} mean(abs(d$year - mean(d$year)))`
+
+## Skewness and Kurtosis
+
+- Skewness governs symmetry
+  + positive skew / right tailed / larger observations _more_ likely than smaller observations
+  + negative skew left tailed  / larger observations _less_ likely than smaller observations
+  + no skew / symmetric / / larger observations _equally_ likely as smaller observations
+- Kurtosis governs extreme values
+  + High kurtosis: extreme values are rare relative to values near the median
+  + Low kurtosis: extreme values are common relative to values near the median
+
+## Skewness and Kurtosis
+
+{{< include ../common_resources/components/shash.qmd >}}
+
+## What have we learned?
+
+- Most movies did not pass the Bechdel test.
+- Most movies are from 2000 - 2010.
+- The distribution of years is _left skewed_.
 
 # Probability
 
@@ -209,6 +318,7 @@ See you in ~10 minutes!
 
 - The "Descriptive Statistics" before were doing inference on a sample.
 - We will now see that each of these has a population counterpart.
+- For this, we first need to some probability theory.
 
 ## Defining probability
 
@@ -249,7 +359,7 @@ Not probability:
 
 # Discrete probability distributions
 
-![](images/Lecture_28.gif){width=80%}
+![](scripts/fig_freq_year.jpg){fig-align="center"}
 
 ## Frequency vs probability
 
@@ -267,9 +377,9 @@ A probability distribution is similar, but
 
 ## Discrete distributions
 
--   Probability mass function
+-   Probability mass function (pmf)
     - 100% of the probability mass is distributed among finite discrete outcomes
--   Finite number of outcomes
+-   Discrete => Finite number of outcomes
     - Dutch student / foreign student
     - Student has tattoos / no tattoos
     - Describe using contingency table or bar chart
@@ -464,6 +574,10 @@ kable(df, escape = FALSE, align = rep('l', length(df[,1]))) %>%
   kable_styling("striped") %>%
   add_header_above(c(" " = 1, "Tattoo" = 2, " " = 1))
 ```
+
+# Break {.section-slide .unlisted}
+
+See you in ~10 minutes!
 
 # Continuous probability distributions
 
