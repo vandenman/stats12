@@ -601,13 +601,13 @@ add_validation <- function(figure, quantity, target, estimate) {
 
 # Figure 1
 fig1_names <- c(
-  worthwhile = "Vindt het leven de moeite waard",
-  contributes = "Heeft het gevoel iets bij te dragen",
-  social_contacts_important = "Hecht (veel) belang aan sociale contacten",
-  personal_development_important = "Hecht (veel) belang aan persoonlijke ontwikkeling",
-  autonomy = "Kan de dingen doen die men wil en belangrijk vindt",
-  useful = "Heeft het gevoel nuttig te zijn",
-  hopeful = "Is (heel) hoopvol over de toekomst"
+  worthwhile = "Believes life is worth living",
+  contributes = "Has the feeling they contribute to society",
+  social_contacts_important = "Finds social contacts very important",
+  personal_development_important = "Finds personal development very important",
+  autonomy = "Can do things that they want and find important",
+  useful = "Feels useful",
+  hopeful = "Is hopefule about the future"
 )
 
 for (v in names(fig1_targets)) {

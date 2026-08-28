@@ -1,0 +1,13 @@
+base
+methods
+utils
+stats
+knitr
+webexercises
+glossary
+datasets
+grDevices
+graphics
+kableExtra
+tidySEM
+ggplot2

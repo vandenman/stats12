@@ -1,0 +1,7 @@
+project:
+  type: default
+  output-dir: slides
+  resources: [common_resources/css, common_resources/logos]
+  preview:
+    port: 4200
+    browser: false

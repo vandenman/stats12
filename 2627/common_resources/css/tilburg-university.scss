@@ -63,3 +63,37 @@ $font-family-sans-serif: Arial, Helvetica, sans-serif;
 .reveal .slides section.section-slide > h1 {
   border-bottom-color: $tu-bronze;
 }
+
+// Footer is hidden by default, but should be visible in print.
+// @media print {
+//   .reveal .footer {
+//     display: block !important;
+//     position: absolute !important;
+//     bottom: 20px !important;
+//     left: 20px !important;
+//     z-index: 1000 !important;
+//     opacity: 1 !important;
+//   }
+// }
+// .reveal.print-pdf .slides section .footer {
+//   display: block !important;
+//   visibility: visible !important;
+//   opacity: 1 !important;
+
+//   position: absolute !important;
+//   bottom: 20px;
+//   left: 20px;
+// }
+
+// Footer is hidden by default, but should be visible in print. This is an awkward workaround, you may need to play with the bottom amount.
+@media print {
+  .reveal .slides section .footer {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+
+    position: absolute !important;
+    bottom: 80px;
+    left: 20px;
+  }
+}

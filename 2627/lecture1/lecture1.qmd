@@ -8,62 +8,14 @@ format:
         theme: [tilburg-university.scss]
         logo: logo_tu_small.svg
         slide-number: c/t
-        chalkboard: true
+        # chalkboard: true
         toc: true
         toc-depth: 1
         toc-title: "Today"
+        embed-resources: true
 ---
 
 # Introduction {.section-slide}
-
-
-<!-- ## Today -->
-
-<!--   * Lecture 1: Introduction -->
-<!--     * Welcome -->
-<!--     * Research Methodology and Data Analysis -->
-<!--     * Samples versus Populations -->
-<!--     * Measurement and Measurement Levels -->
-<!--     * Descriptive Statistics and Graphs -->
-<!--   * Literature covered -->
-<!--     * Chapter 2: sections 2\.1\-2\.4\, 2\.6\-2\.8\, 2\.11\.1\, 2\.12 and Appendix 2A -->
-<!--     * Chapter 4: sections 4\.1\-4\.5\, 4\.9\, 4\.12\-4\.13 -->
-<!--     * Chapter 7: section 7\.1 -->
-
-<!-- ## Welcome everyone -->
-
-<!-- ## COURSE OVERVIEW -->
-
-<!-- * What can you expect for this course? -->
-<!--   * 14 lectures -->
-<!--     * 10 common lectures\, 4 major specific lectures -->
-<!--   * 11 lab sessions -->
-<!-- * What will the examination look like? -->
-<!--   * Multiple choice exam \(1\-10\) -->
-<!--   * SPSS test \(Pass/ Fail\) -->
-<!-- * What more do we offer you? -->
-<!--   * Short lecture quizzes -->
-<!--   * Midterm quiz -->
-<!--   * Practice exams online -->
-<!--   * Practice workbook online -->
-
-<!-- ![](images/Lecture 10.wmf) -->
-
-<!-- Major\-specific part -->
-
-<!-- ![](images/Lecture 11.wmf) -->
-
-<!-- ![](images/Lecture 12.wmf) -->
-
-<!-- * What do I expect from you? -->
-<!--   * Active participation during lectures and lab sessions -->
-<!--   * Read the syllabus before contacting me with questions -->
-<!--   * Be on time -->
-<!-- * Preparation -->
-<!--   * Lecture: Read the literature -->
-<!--   * Lab session: https://bps\.uvt\.nl \(if you want\) -->
-
-<!-- ![](images/Lecture 13.png) -->
 
 ```{r}
 #| include = FALSE,
@@ -159,14 +111,6 @@ Altogether, Data analysis is one of the most marketable concrete skills taught a
   * Practice exams online
   * Practice workbook online
 
-## GitBook
-
-TODO:
-- quick explanation of how this works
-- quizzes
-- formative tests
-- assignment in formation
-
 ## Learning Goals
 
 * Compute and interpret commonly used descriptive statistics
@@ -177,9 +121,6 @@ TODO:
 * Use SPSS
 * Draw valid conclusions from the results of empirical data analyses given specific research questions envisaged
 
-::: {.notes}
-
-:::
 
 <!--
 
@@ -215,15 +156,31 @@ TODO:
 
 * Monday: Lecture (either 10:45 - 12:30 or 16:45 - 18:30)
 * Thursday/ Friday: Tutorial (12:45 - 14:30 or 14:45 - 16:30)
-  + You can work on the weekly quizes and also on the assignments
+  + You can work on the weekly quizzes and the assignments
 
 ::: {.callout-note}
 Always check TimeEdit for the most up to date information!
 :::
 
+
+## GitBook
+
+See <https://cjvanlissa.github.io/stats12/>
+
+- [Self study questions](https://cjvanlissa.github.io/stats12/introduction.html#formative-test)
+- [Weekly quizzes](https://cjvanlissa.github.io/stats12/introduction.html#tutorial)
+- [Assignments](https://cjvanlissa.github.io/stats12/statistics1.html#assignments)
+
+## GitBook -- outdated!
+
+All information under [course-schedule](https://cjvanlissa.github.io/stats12/statistics1.html#course-schedule) is outdated.
+
+- Classical lectures
+- Dates are all from past year
+
 # Dictionary of Basic Concepts {.section-slide}
 
-## Is life worth living?
+## Is Life Worth Living?
 
 9 out of 10 adults in the Netherlands think life is worth living
 
@@ -265,7 +222,7 @@ Most data in the social sciences is tabular, where each row represents an indivi
 ![](images/assumptions19.png){fig-align="center"}
 
 
-## Items
+## Example: Items
 
 - I find my life worthwhile.
 - I feel that I contribute something to society.
@@ -275,7 +232,7 @@ Most data in the social sciences is tabular, where each row represents an indivi
 - How important is personal development to you?
 - How hopeful are you about the future? (1 - 10)
 
-## Tabular Data: Example
+## Example: Tabular Data
 
 
 ```{r}
@@ -285,7 +242,13 @@ library(DT)
 
 # 1. Build a beautiful 'gt' table
 dataset <- read.csv("lecture1_scripts/cbs_zingeving_synthetic_2025.csv")
-mydata <- head(dataset, 50)
+ii <- c(1:6, 8, 10, 12, 14, 16, 18)
+cnms <- colnames(dataset[, ii])
+cnms2 <- gsub("_response", "", cnms)
+d <- dataset[, ii]
+colnames(d) <- cnms2
+mydata <- head(d, 30)
+# mydata <- head(dataset, 50)
 DT::datatable(
   mydata,
   options = list(
@@ -350,7 +313,7 @@ Adults in the Netherlands / Above 15 year olds.
 
 What is a sample?
 
-. . .
+<!-- . . . -->
 
 
 ::: {.r-stack style="height: 50vh;"}
@@ -477,10 +440,9 @@ Variable A predicts variable B
 * E.g., being deployed (yes/no) predicts scores on the SCL-90 depression questionnaire
 
 
-## Relationship between theory and empiricism
+## Relationship between Theory and Empiricism
 
-- CBS reports that 87.4% of Dutch adults are "happy".
-- What does "happy" mean?
+CBS reports that 87.4% of Dutch adults are "happy". What does "happy" mean?
 
 . . .
 
@@ -501,8 +463,7 @@ Theory: Having meaningful social relationships makes people happier.
 
 Empirical hypothesis: Respondents who have frequent contact with family/friends report higher happiness scores.
 
-
-## Sampling theory
+## Sampling Theory
 
 <!-- ```{r}
 #| out.width = "90%"
@@ -517,7 +478,7 @@ Cooking example
 :::
 
 
-## Samples: why?
+## Samples: Why?
 
 * We want to make a claim about the population
 * It is not possible to access the entire population
@@ -526,7 +487,7 @@ Cooking example
     + Of course, sample statistics are not *equal to* population parameters
     + You will learn ways to express uncertainty about your best guess
 
-## Samples: why?
+## Samples: Why?
 
 * If the sample is *representative* of the population, your best guess will generalize better to the entire population and to new samples
 * The best way to get a representative sample is *random sampling*
@@ -542,10 +503,10 @@ Cooking example
 
 ## A lot of sampling theory is just _cooking_
 
-* Suppose you want to know if your soup tastes good or needs more salt.
+* Suppose you want to know if your soup needs more salt.
     + You don't eat the whole soup, you _sample_ it.
     + You stir the soup so to take a _random_ sample.
-    + If you keep tasting from the spoon while adding salt to the soup, you're using a _convenience_ sample.
+    + If you keep tasting from the spoon while adding salt to the soup, the sample is _non-random_.
 
 # Measurement Level {.section-slide}
 
@@ -557,6 +518,8 @@ Mnemonic: `n o i r` = black in French
 
 Subsequent levels carry incremental information
 
+The measurement level determines what statistics are appropriate.
+    - Example: We cannot compute a mean for gender
 
 ## NOIR measurement levels
 
@@ -570,6 +533,26 @@ Subsequent levels carry incremental information
 * `R`atio
     + Numeric; additionally has a meaningful zero-point
     + Because of this, ratios between two values are also meaningful
+
+## Example
+
+* Operational definition of happiness
+  + “On a scale from 1 to 10, to what extent do you consider yourself a happy person?”
+
+What measurement level is this?
+
+. . .
+
+Ordinal because distances are meaningless.
+In practice often analyzed as interval (which is suboptimal).
+
+::: {.notes}
+
+Happiness: 2 - 4 vs. 6 - 8 _is not_ the same, so not interval.
+IQ score: 100 vs. 115 _does not_ means not twice as happy, so not ratio.
+Hours worked: 40 vs 20 _does_  means twice as much, so ratio.
+
+:::
 
 ## Interval v Ratio
 
@@ -602,17 +585,24 @@ Edge cases:
 * Number of children (discrete ratio)
 * Political orientation from liberal to conservative (ordinal, but which is higher/lower?)
 
-::: {.notes}
 
-TODO: use age as another edge case.
+## Example
 
-Is it a count variable? So no. years? Is that ordinal or Ratio?
-If we do age groups < 15 years, < 25, etc. what then?
-If we examine no. milliseconds since birth, what then?
+What measurement level is age?
 
-:::
+. . .
 
-# Descriptive statistics {.section-slide}
+- Milliseconds since the big bang? <!-- Ratio -->
+- Unix time (the number of non-leap seconds that have elapsed since 00:00:00 UTC on 1 January 1970) <!-- Ratio or intervals -->
+- Intervals: 0 - 5, 6 - 10, 11 - 15 <!-- Intervals -->
+- Months <!-- Ordinal -->
+- Generation: Generation X, Millennials, Gen Z, Gen Alpha
+
+. . .
+
+It depends on the way it's measured!
+
+# Descriptive Statistics {.section-slide}
 
 ## Descriptive Statistics
 
@@ -626,15 +616,6 @@ If we examine no. milliseconds since birth, what then?
     + E.g.: When evaluating exam questions: Is the proportion of correct answers on this MC question greater than chance?
 
 
-::: {.notes}
-
-TODO: use age as another edge case.
-
-Is it a count variable? So no. years? Is that ordinal or Ratio?
-If we do age groups < 15 years, < 25, etc. what then?
-If we examine no. milliseconds since birth, what then?
-
-:::
 
 ## Distributions
 
@@ -644,7 +625,7 @@ If we examine no. milliseconds since birth, what then?
 | Ordinal | (Cumulative) frequency distribution | Bar chart |
 | Interval/ratio | (Normal) probability distribution | Histogram, density plot |
 
-## A nominal variable
+## A Nominal Variable
 
 ```{r}
 #| results = "asis"
@@ -655,7 +636,8 @@ out <- data.frame(Major = names(table(tab)),
 knitr::kable(out, row.names = FALSE, digits = 2)
 ```
 
-## Bar chart
+## Bar Chart
+
 
 ```{r}
 #| results = "asis"
@@ -663,7 +645,9 @@ library(ggplot2)
 ggplot(out, aes(x = Major, y = Frequency)) + geom_bar(stat = "identity") + theme_bw(base_size = 20)
 ```
 
-## An ordinal variable
+
+
+## An Ordinal Variable
 
 ```{r}
 #| results = "asis"
@@ -675,7 +659,7 @@ out <- data.frame(SES = ordered(levels(tab), levels = levels(tab)),
 knitr::kable(out, row.names = FALSE, digits = 2)
 ```
 
-## Bar chart
+## Bar Chart
 
 ```{r}
 #| results = "asis"
@@ -683,14 +667,14 @@ library(ggplot2)
 ggplot(out, aes(x = SES, y = Frequency)) + geom_bar(stat = "identity") + theme_bw(base_size = 20)
 ```
 
-## A continuous variable
+## A Continuous Variable
 
 ```{r}
 dat <- data.frame(Height = rnorm(75, mean = sample(c(175, 165), 75, replace = T), sd = 5))
 ggplot(dat, aes(x = Height)) + geom_histogram(bins = 20, colour = "white") + theme_bw(base_size = 20)
 ```
 
-## Measures of central tendency
+## Measures of Central Tendency
 
 What is the average or most common response?
 
@@ -700,7 +684,7 @@ What is the average or most common response?
 | Median | Ordinal/Continuous | Middle value/50th percentile |
 | Mean | Continuous | Average value |
 
-## Measures of dispersion
+## Measures of Dispersion
 
 How much variability is there in responses?
 
@@ -710,7 +694,7 @@ How much variability is there in responses?
 | Range | Ordinal/continuous | Minimum to maximum value |
 | Variance | Continuous | Mean squared distance of observations to the mean |
 
-## Calculating the variance
+## Calculating the Variance
 
 Variance:
 
@@ -718,11 +702,17 @@ $$
 S_X^2 = \frac{\sum_{i=1}^n(X_i-\bar{X})^2}{n-1}
 $$
 
-Units of $S^2$ are squared; if you measured height in $CM$, $S^2_{height}$ is expressed in $CM^2$
+Units of $S^2$ are squared; if you measured height in meter $m$, $S^2_{height}$ is expressed in $m^2$
 
-Standard deviation (SD): $S_X = \sqrt{S_X^2}$
+Standard deviation (SD): $S_X = \sqrt{S_X^2}$, so the unit is $m$.
 
-## Median and Mode for ordinal variable
+For what variables is this meaningful?
+
+. . .
+
+Interval and ratio variables.
+
+## Median and Mode for Ordinal Variable
 
 __Median:__  middle value
 
@@ -733,15 +723,21 @@ Example 2: \( _n_  = equal\):  4\, 5\, 6\, 8\, 9\, 9 -> median 7 \(mean of the t
 __Mode:__  Most frequent score; 9 in both examples
 
 
-## Mean, median, mode for continuous variable
-
-![](images/Lecture 111.png)
+## Mean, Median, Mode for Continuous Variable
 
 The average Australian is a millionaire
 
+![](images/Lecture 111.png){fig-align="center"}
+
 But... most Australians are not!
 
-[https://www.volkskrant.nl/columns-opinie/australiers-zijn-gemiddeld-miljonair-maar-daar-hebben-de-meeste-australiers-helemaal-niks-aan~b8aa3fd3/](https://www.volkskrant.nl/columns-opinie/australiers-zijn-gemiddeld-miljonair-maar-daar-hebben-de-meeste-australiers-helemaal-niks-aan~b8aa3fd3/)
+::: footer
+
+Source: <https://www.volkskrant.nl/columns-opinie/australiers-zijn-gemiddeld-miljonair-maar-daar-hebben-de-meeste-australiers-helemaal-niks-aan~b8aa3fd3>
+
+[without paywall](https://archive.ph/wuIQA)
+
+:::
 
 ## Skewed Distributions
 
@@ -770,7 +766,7 @@ ggplot(data.frame(x = c(-4, 4)), aes(x)) +
 ) + theme_bw(base_size = 20) + labs(x = "Value", y = "Probability")
 ```
 
-# Bivariate descriptives {.smaller}
+# Bivariate Descriptives {.smaller}
 
 Describing associations
 
@@ -797,12 +793,12 @@ Is there an association between gender and education?
 
 > **Correlation:** A standardized measure of the strength of linear association between two continuous variables.
 
-* Standardized: ranges from [-1, 1]
+* Standardized: ranges from $[-1,\, 1]$
 * Sample correlation: $r$
 * Population correlation: $\rho$
-* r = -1: Perfect negative association
-* r =  0: No association
-* r =  1: Perfect positive association
+* $r = -1$: Perfect negative association
+* $r =  0$: No association
+* $r =  1$: Perfect positive association
 
 ## Correlations
 
@@ -812,8 +808,36 @@ Is there an association between gender and education?
 
 ![](lecture1_images/cor_with_strip.jpg){fig-align="center"}
 
-<!-- https://www.tylervigen.com/spurious/correlation/4994_popularity-of-the-like-a-boss-meme_correlates-with_google-searches-for-how-to-cut-own-hair -->
 
-<!-- https://www.tylervigen.com/spurious/correlation/5950_popularity-of-the-first-name-lamont_correlates-with_burglary-rates-in-the-us -->
+## Correlations
 
-## Wooclap
+::: {layout-ncol=2}
+![](lecture1_images/spurious_cor_lamont.svg)
+
+![](lecture1_images/spurious_cor_boss.svg)
+:::
+
+. . .
+
+Correlation is not causation!
+
+::: footer
+
+Source: [left](https://www.tylervigen.com/spurious/correlation/5950_popularity-of-the-first-name-lamont_correlates-with_burglary-rates-in-the-us) [right](https://www.tylervigen.com/spurious/correlation/4994_popularity-of-the-like-a-boss-meme_correlates-with_google-searches-for-how-to-cut-own-hair)
+
+:::
+
+## Recap
+
+You now know:
+
+- The difference between methods and statistics
+- The difference between the population and a sample
+- The different measurement levels
+- A few univariate and bivariate descriptives statistics
+
+
+
+# See you next week! {.section-slide .unlisted}
+
+
