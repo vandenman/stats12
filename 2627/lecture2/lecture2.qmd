@@ -137,6 +137,20 @@ Definitions:
 
 ## Central Tendency: Mean
 
+Let's call "PASS" 1 and "FAIL" 0.
+
+What does the mean of these numbers compute?
+
+. . .
+
+The proportion of movies that passed the Bechdel test.
+
+. . .
+
+`{r} round(mean(d$binary=="PASS", na.rm = TRUE), 3)`
+
+## Central Tendency: Mean
+
 - Example with four distributions
     - Normal
     - Triangle
