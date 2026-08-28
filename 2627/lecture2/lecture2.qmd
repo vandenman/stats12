@@ -21,6 +21,21 @@ options(knitr.kable.NA = '')
 set.seed(1)
 library(ggplot2)
 library(kableExtra)
+
+library(ggplot2)
+library(tibble)
+
+dtriangle <- function(x, a = -1, b = 1, c = 0) {
+  ifelse(x < a, 0,
+  ifelse(b < x, 0,
+  ifelse(a <= x & x < c, 2 * (x - a) / ((b - a) * (c - a)),
+  ifelse(c < x & x <= b, 2 * (b - x) / ((b - a) * (b - c)),
+    # x == c
+    2 / (b - a)
+  ))))
+}
+
+
 ```
 
 ## Today {.unlisted}
@@ -151,11 +166,7 @@ The proportion of movies that passed the Bechdel test.
 
 ## Central Tendency: Mean
 
-- Example with four distributions
-    - Normal
-    - Triangle
-    - Bimodal
-    - Skewed
+![](scripts/fig_means.jpg){fig-align="center"}
 
 ## Central Tendency: Median
 
