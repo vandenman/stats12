@@ -36,3 +36,15 @@ ggsave(filename = "lecture2/scripts/fig_freq_year.jpg", plot = plot4)
 
 plot(tapply(d$binary == "PASS", d$year, mean))
 plot(tapply(d$binary == "PASS", d$year, length))
+
+df_norm <- data.frame(x = seq(1960, 2020, 1))
+df_norm$y = dnorm(df_norm$x, mean(d$year), sd(d$year))
+
+
+plot_pd <- ggplot(d, aes(year, y = after_stat(density))) + 
+  geom_histogram(binwidth = h$breaks[2] - h$breaks[1], color = "#E40303", fill = scales::alpha("grey80", .5), linewidth = 1.5) + 
+  geom_line(data = df_norm, aes(x = x, y = y), inherit.aes = FALSE) +
+  # geom_density(linewidth = 2) +
+  theme_bw(base_size = 20)
+plot_pd
+ggsave(filename = "lecture2/scripts/fig_year_normal.jpg", plot = plot_pd)

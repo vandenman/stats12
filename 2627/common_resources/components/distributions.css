@@ -91,3 +91,182 @@
   font-size: 18px;
   fill: currentColor;
 }
+
+/* .bvn-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.15em 0.8em;
+  align-content: center;
+}
+
+.bvn-control {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 3em minmax(0, 1fr) 2.5em;
+  align-items: center;
+  gap: 0.3em;
+}
+
+.bvn-control > * {
+  min-width: 0;
+}
+
+.bvn-control input[type="range"] {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.bvn-demo {
+  grid-template-rows: 135px auto;
+  row-gap: 0.4em;
+}
+
+.bvn-demo .normal-top {
+  height: 135px;
+}
+
+.bvn-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.2em 0.8em;
+  align-content: center;
+}
+
+.bvn-rho {
+  grid-column: 1 / -1;
+  width: 50%;
+  justify-self: center;
+}
+
+.bvn-demo svg {
+  display: block;
+  width: min(100%, 520px);
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  justify-self: center;
+  pointer-events: none;
+} */
+
+/* .bvn-rho {
+  grid-column: 1 / -1;
+  width: 50%;
+  justify-self: center;
+} */
+
+/* .bvn-demo {
+  row-gap: 0.35em;
+}
+
+.bvn-demo svg {
+  width: min(100%, 520px);
+  aspect-ratio: 1 / 1;
+  justify-self: center;
+} */
+/* .bvn-demo {
+  row-gap: 0.35em;
+}
+
+.bvn-demo svg {
+  display: block;
+  width: min(100%, 520px);
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  justify-self: center;
+  pointer-events: none;
+} */
+
+/* .bvn-demo svg {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  pointer-events: none;
+} */
+
+/* Bivariate normal: controls left, square plot right */
+.bvn-layout {
+  width: 100%;
+  min-width: 0;
+
+  display: grid;
+  grid-template-columns: 28% 72%;
+  gap: 1em;
+  align-items: center;
+}
+
+.bvn-panel {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.55em;
+}
+
+.bvn-control {
+  min-width: 0;
+
+  display: grid;
+  grid-template-columns: 2.2em minmax(0, 1fr) 2.5em;
+  align-items: center;
+  gap: 0.35em;
+}
+
+.bvn-control > * {
+  min-width: 0;
+}
+
+.bvn-control input[type="range"] {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.bvn-plot {
+  min-width: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bvn-plot svg {
+  display: block;
+
+  /* Keep the actual plot square */
+  width: min(100%, 540px);
+  aspect-ratio: 1 / 1;
+  height: auto;
+
+  pointer-events: none;
+}
+
+.bvn-point {
+  fill: currentColor;
+  opacity: 0.35;
+}
+
+.bvn-contour {
+  fill: none;
+  stroke: #4c78a8;
+  stroke-width: 2.5;
+}
+
+.bvn-axis {
+  stroke: currentColor;
+  stroke-width: 1;
+  opacity: 0.55;
+}
+
+.bvn-tick {
+  stroke: currentColor;
+  stroke-width: 1;
+  opacity: 0.35;
+}
+
+.bvn-label {
+  font-size: 18px;
+  fill: currentColor;
+}

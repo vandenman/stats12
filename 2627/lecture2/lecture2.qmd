@@ -2,7 +2,8 @@
 title: "Descriptives Statistics\n&\nProbability Distributions"
 subtitle: "Lecture 2 - LAS"
 author:   "Don van den Bergh"
-date: 31-08-2026
+date: 2026-08-31
+date-format: "DD-MM-YYYY"
 format:
     dtslides-revealjs:
         theme: [../common_resources/css/tilburg-university.scss]
@@ -287,7 +288,7 @@ $$
 ## Mean absolute deviation (MAD)
 
 $$
-\matrm{MAD}_{x} = \frac{\sum_{i=1}^{n}|x_i - \bar{x}|}{n} = \frac{|x_1 -\bar{x}| + |x_2 -\bar{x}| +\, ... + |x_n -\bar{x}|}{n}\\
+\mathrm{MAD}_{x} = \frac{\sum_{i=1}^{n}|x_i - \bar{x}|}{n} = \frac{|x_1 -\bar{x}| + |x_2 -\bar{x}| +\, ... + |x_n -\bar{x}|}{n}\\
 $$
 
 - $\mathrm{MAD}_{\mathrm{year}} =$ `{r} mean(abs(d$year - mean(d$year)))`
@@ -357,6 +358,10 @@ Not probability:
     -   P(X = tails) = 0.5
     -   Together: 1.0, so all possible outcomes are covered
 
+# Break {.section-slide .unlisted}
+
+See you in ~10 minutes!
+
 # Discrete probability distributions
 
 ![](scripts/fig_freq_year.jpg){fig-align="center"}
@@ -382,31 +387,29 @@ A probability distribution is similar, but
 -   Discrete => Finite number of outcomes
     - Dutch student / foreign student
     - Student has tattoos / no tattoos
+    - Movie passes/ fails the Bechdel test
     - Describe using contingency table or bar chart
 
-<!-- -   Each has a probability -->
-<!--     -   $p_{tattoo} = .36$, $p_{\text{no tattoo}} = .64$ -->
-<!--     -   $p_{Dutch} = .70$, $p_{\text{foreign}} = .30$ -->
-<!-- -   Describe using table or bar chart -->
-
-<!-- ```{r} -->
-<!-- tab = data.frame(Value = c("Tattoo", "No tattoo"), Probability = c(.36, .64)) -->
-<!-- knitr::kable(tab, digits = 2) -->
-<!-- ``` -->
-
-<!-- ## Cross table -->
 
 ```{r}
 library(gtsummary)
-set.seed(1)
-n = 74
-dutch <- sample.int(2, size = n, replace = TRUE, prob = c(.3, .7))
-tattoo <- sapply(c(.2, .5)[dutch], rbinom, n = 1, size = 1)
-df_tattoo <- data.frame(Dutch = ordered(dutch, levels = c(1,2), labels = c("No", "Yes")),
-                 Tattoo = ordered(tattoo, levels = c(0,1), labels = c("No", "Yes")))
-tmp <- table(df_tattoo); cell11 = tmp[1,1]; cell12 = tmp[1,2]; cell21 = tmp[2,1]; cell22 = tmp[2,2]
 library(gt)
-tbl_cross(df_tattoo, row=Dutch, col=Tattoo, percent="none")
+# set.seed(1)
+# n = 74
+# dutch <- sample.int(2, size = n, replace = TRUE, prob = c(.3, .7))
+# tattoo <- sapply(c(.2, .5)[dutch], rbinom, n = 1, size = 1)
+# df_tattoo <- data.frame(Dutch = ordered(dutch, levels = c(1,2), labels = c("No", "Yes")),
+#                  Tattoo = ordered(tattoo, levels = c(0,1), labels = c("No", "Yes")))
+# tmp <- table(df_tattoo); cell11 = tmp[1,1]; cell12 = tmp[1,2]; cell21 = tmp[2,1]; cell22 = tmp[2,2]
+# tbl_cross(df_tattoo, row=Dutch, col=Tattoo, percent="none")
+
+df2 <- read.csv(file = "scripts/movies2.csv")
+df2$director_gender[is.na(df2$director_gender)] <- "Mixed/other"
+df2$Test <- df2$binary
+df2$Gender <- df2$director_gender
+# df2$Gender <- ifelse(df2$Gender == "Mixed/other", "Other", df2$Gender)
+tbl_cross(df2, row=Test, col=Gender, percent="none")
+
 ```
 
 ## Indexing contingency tables
@@ -421,15 +424,22 @@ $f_{i,j}$: frequency in the cell in row $i$, column $j$
 
 
 ```{r}
-df <- data.frame("$i$" = c("$i = 1$", "$i = 2$", "<b>Margin columns</b>"),
-                 "$j = 1$" = c("$f_{1,1}$", "$f_{2,1}$", "$f_{+,1}$"),
-                 "$j = 2$" = c("$f_{1,2}$", "$f_{2,2}$",  "$f_{+,2}$"),
-                 "<b>Margin rows</b>" = c("$f_{1,+}$", "$f_{2,+}$", "$f_{+,+}$"),
-                 check.names = FALSE)
+# df <- data.frame("$i$" = c("$i = 1$", "$i = 2$", "<b>Margin columns</b>"),
+#                  "$j = 1$" = c("$f_{1,1}$", "$f_{2,1}$", "$f_{+,1}$"),
+#                  "$j = 2$" = c("$f_{1,2}$", "$f_{2,2}$",  "$f_{+,2}$"),
+#                  "<b>Margin rows</b>" = c("$f_{1,+}$", "$f_{2,+}$", "$f_{+,+}$"),
+#                  check.names = FALSE)
 
-kbl(df, escape = FALSE, align = rep('l', length(df[,1])), format = "markdown") %>%
+df <- data.frame(
+  "\\(i\\)" = c("\\(i = 1\\)", "\\(i = 2\\)", "<b>Margin columns</b>"),
+  "\\(j = 1\\)" = c("\\(f_{1,1}\\)", "\\(f_{2,1}\\)", "\\(f_{+,1}\\)"),
+  "\\(j = 2\\)" = c("\\(f_{1,2}\\)", "\\(f_{2,2}\\)", "\\(f_{+,2}\\)"),
+  "<b>Margin rows</b>" = c("\\(f_{1,+}\\)", "\\(f_{2,+}\\)", "\\(f_{+,+}\\)"),
+  check.names = FALSE
+)
+kbl(df, escape = FALSE, align = rep('l', length(df[,1])), format = "html") %>%
   kable_styling("striped") %>%
-  add_header_above(c(" " = 1, "$j$" = 2, " " = 1))
+  add_header_above(c(" " = 1, "$j$" = 2, " " = 1), escape = FALSE)
 ```
 
 ## Marginal frequency distribution
@@ -437,68 +447,170 @@ kbl(df, escape = FALSE, align = rep('l', length(df[,1])), format = "markdown") %
 Separate frequency distribution of each variable in contingency table
 
 ```{r}
-kable(df, escape = FALSE, align = rep('l', length(df[,1])), format = "markdown") |>
+kable(df, escape = FALSE, align = rep('l', length(df[,1])), format = "html") |>
   kable_styling("striped") |>
-  add_header_above(c(" " = 1, "$j$" = 2, " " = 1))
+  add_header_above(c(" " = 1, "\\(j\\)" = 2, " " = 1), escape = FALSE)
 ```
 
 
 ## Marginal frequency distribution
 
-<font color = "orange">For the variable "Tattoo":</font> How many people do / don't have one?
+<font color = "orange">For the variable "Gender":</font> How female directors?
 
-<font color = "purple">For the variable "Dutch":</font> How many students are Dutch / International?
+<font color = "purple">For the variable "Test":</font> How many movies passed?
 
 ```{r}
-df <- data.frame("Dutch" = c("No", "Yes", "<b>Total column</b>"),
-                 "No" = c(cell11, cell21, cell11+cell21),
-                 "Yes" = c(cell12, cell22, cell12+cell22),
-                 "Total row" = c(
-                   cell11+cell12, cell21+cell22, cell11+cell12+cell21+cell22),
-                 check.names = FALSE)
-df$`Total row`[1:2] <- cell_spec(df$`Total row`[1:2], color = "purple", bold = TRUE)
-df$No[3] <- cell_spec(df$No[3], color = "orange", bold = TRUE)
-df$Yes[3] <- cell_spec(df$Yes[3], color = "orange", bold = TRUE)
-kable(df, escape = FALSE, align = rep('l', length(df[,1]))) %>%
+tmp <- table(df2$Test, df2$Gender)
+cell11 <- tmp["FAIL", "Female"]
+cell12 <- tmp["FAIL", "Male"]
+cell13 <- tmp["FAIL", "Mixed/other"]
+
+cell21 <- tmp["PASS", "Female"]
+cell22 <- tmp["PASS", "Male"]
+cell23 <- tmp["PASS", "Mixed/other"]
+
+df <- data.frame(
+  "Test" = c("FAIL", "PASS", "<b>Total column</b>"),
+  "Female" = c(cell11, cell21, cell11 + cell21),
+  "Male" = c(cell12, cell22, cell12 + cell22),
+  "Mixed/other" = c(cell13, cell23, cell13 + cell23),
+  "Total row" = c(
+    cell11 + cell12 + cell13,
+    cell21 + cell22 + cell23,
+    cell11 + cell12 + cell13 + cell21 + cell22 + cell23
+  ),
+  check.names = FALSE
+)
+
+# Highlight row margins
+df$`Total row`[1:2] <- cell_spec(
+  df$`Total row`[1:2],
+  color = "purple",
+  bold = TRUE
+)
+
+# Highlight column margins
+df$Female[3] <- cell_spec(
+  df$Female[3],
+  color = "orange",
+  bold = TRUE
+)
+
+df$Male[3] <- cell_spec(
+  df$Male[3],
+  color = "orange",
+  bold = TRUE
+)
+
+df$`Mixed/other`[3] <- cell_spec(
+  df$`Mixed/other`[3],
+  color = "orange",
+  bold = TRUE
+)
+
+kable(
+  df,
+  escape = FALSE,
+  align = rep("l", ncol(df)),
+  format = "html"
+) %>%
   kable_styling("striped") %>%
-  add_header_above(c(" " = 1, "Tattoo" = 2, " " = 1))
+  add_header_above(
+    c(" " = 1, "Director gender" = 3, " " = 1),
+    escape = FALSE
+  )
 ```
 
 ## Conditional frequency distribution
 
 Frequency distribution of one variable, for specific value of the other variable
 
-E.g.: What is the conditional frequency distribution of Tattoos <font color = "purple">**for Dutch students?**</font>
+E.g.: What is the conditional frequency distribution of Gender <font color = "purple">**for movies that passed?**</font>
 
 ```{r}
-df <- data.frame("Dutch" = c("No", "Yes", "<b>Total column</b>"),
-                 "No" = c(cell11, cell21, cell11+cell21),
-                 "Yes" = c(cell12, cell22, cell12+cell22),
-                 "Total row" = c(cell11+cell12,cell21+cell22,cell11+cell12+cell21+cell22),
-                 check.names = FALSE)
-df$No[2] <- cell_spec(df$No[2], color = "purple", bold = TRUE)
-df$Yes[2] <- cell_spec(df$Yes[2], color = "purple", bold = TRUE)
-kable(df, escape = FALSE, align = rep('l', length(df[,1]))) %>%
+
+df <- data.frame(
+  "Test" = c("FAIL", "PASS", "<b>Total column</b>"),
+  "Female" = c(cell11, cell21, cell11 + cell21),
+  "Male" = c(cell12, cell22, cell12 + cell22),
+  "Mixed/other" = c(cell13, cell23, cell13 + cell23),
+  "Total row" = c(
+    cell11 + cell12 + cell13,
+    cell21 + cell22 + cell23,
+    cell11 + cell12 + cell13 + cell21 + cell22 + cell23
+  ),
+  check.names = FALSE
+)
+
+df$Female[2] <- cell_spec(
+  df$Female[2],
+  color = "purple",
+  bold = TRUE
+)
+
+df$Male[2] <- cell_spec(
+  df$Male[2],
+  color = "purple",
+  bold = TRUE
+)
+
+df$`Mixed/other`[2] <- cell_spec(
+  df$`Mixed/other`[2],
+  color = "purple",
+  bold = TRUE
+)
+
+kable(
+  df,
+  escape = FALSE,
+  align = rep("l", ncol(df)),
+  format = "html"
+) %>%
   kable_styling("striped") %>%
-  add_header_above(c(" " = 1, "Tattoo" = 2, " " = 1))
+  add_header_above(
+    c(" " = 1, "Director gender" = 3, " " = 1),
+    escape = FALSE
+  )
+
 ```
 
 ## Joint frequency distribution
 
 Frequency of a combination of two (or more) variables
 
-E.g.: What is the frequency of <font color = "purple">**Dutch students with a tattoo**</font>?
+E.g.: What is the frequency of <font color = "purple">**movies that passed with a male director**</font>?
 
 ```{r}
-df <- data.frame("Dutch" = c("No", "Yes", "<b>Total column</b>"),
-                 "No" = c(cell11, cell21, cell11+cell21),
-                 "Yes" = c(cell12, cell22, cell12+cell22),
-                 "Total row" = c(cell11+cell12,cell21+cell22,cell11+cell12+cell21+cell22),
-                 check.names = FALSE)
-df$Yes[2] <- cell_spec(df$Yes[2], color = "purple", bold = TRUE)
-kbl(df, escape = FALSE, align = rep('l', length(df[,1]))) %>%
+df <- data.frame(
+  "Test" = c("FAIL", "PASS", "<b>Total column</b>"),
+  "Female" = c(cell11, cell21, cell11 + cell21),
+  "Male" = c(cell12, cell22, cell12 + cell22),
+  "Mixed/other" = c(cell13, cell23, cell13 + cell23),
+  "Total row" = c(
+    cell11 + cell12 + cell13,
+    cell21 + cell22 + cell23,
+    cell11 + cell12 + cell13 + cell21 + cell22 + cell23
+  ),
+  check.names = FALSE
+)
+
+df$Male[2] <- cell_spec(
+  df$Male[2],
+  color = "purple",
+  bold = TRUE
+)
+
+kbl(
+  df,
+  escape = FALSE,
+  align = rep("l", ncol(df)),
+  format = "html"
+) %>%
   kable_styling("striped") |>
-  add_header_above(c(" " = 1, "Tattoo" = 2, " " = 1))
+  add_header_above(
+    c(" " = 1, "Director gender" = 3, " " = 1),
+    escape = FALSE
+  )
 ```
 
 
@@ -513,43 +625,156 @@ Which frequencies and which total you use depends on what probability distributi
 
 Divide marginal totals by the <font color = "orange">global total</font>
 
-E.g.: What is the <font color = "purple">marginal probability distribution of being Dutch</font>? $P(Dutch)$
+E.g.: What is the <font color = "purple">marginal probability distribution of a movie passing</font>? $P(Pass)$
 
 ```{r}
-df <- data.frame("Dutch" = c("No", "Yes", "<b>Total column</b>"),
-                 "No" = c(cell11, cell21, cell11+cell21),
-                 "Yes" = c(cell12, cell22, cell12+cell22),
-                 "Total row" = c(
-                   paste0(cell11+cell12, " / ", cell11+cell12+cell21+cell22, " = ", round((cell11+cell12)/(cell11+cell12+cell21+cell22), digits = 2)),
-                   paste0(cell21+cell22, " / ", cell11+cell12+cell21+cell22, " = ", round((cell21+cell22)/(cell11+cell12+cell21+cell22), digits = 2)), paste0(cell11+cell12+cell21+cell22)),
-                 check.names = FALSE)
-df$`Total row`[1:2] <- cell_spec(df$`Total row`[1:2], color = "purple", bold = TRUE)
-df$`Total row`[3] <- cell_spec(df$`Total row`[3], color = "orange", bold = TRUE)
-kable(df, escape = FALSE, align = rep('l', length(df[,1]))) %>%
+total_n <- cell11 + cell12 + cell13 +
+           cell21 + cell22 + cell23
+
+df <- data.frame(
+  "Test" = c("FAIL", "PASS", "<b>Total column</b>"),
+  "Female" = c(
+    cell11,
+    cell21,
+    cell11 + cell21
+  ),
+  "Male" = c(
+    cell12,
+    cell22,
+    cell12 + cell22
+  ),
+  "Mixed/other" = c(
+    cell13,
+    cell23,
+    cell13 + cell23
+  ),
+  "Total row" = c(
+    paste0(
+      cell11 + cell12 + cell13,
+      " / ",
+      total_n,
+      " = ",
+      round((cell11 + cell12 + cell13) / total_n, digits = 2)
+    ),
+    paste0(
+      cell21 + cell22 + cell23,
+      " / ",
+      total_n,
+      " = ",
+      round((cell21 + cell22 + cell23) / total_n, digits = 2)
+    ),
+    paste0(total_n)
+  ),
+  check.names = FALSE
+)
+
+df$`Total row`[1:2] <- cell_spec(
+  df$`Total row`[1:2],
+  color = "purple",
+  bold = TRUE
+)
+
+df$`Total row`[3] <- cell_spec(
+  df$`Total row`[3],
+  color = "orange",
+  bold = TRUE
+)
+
+kable(
+  df,
+  escape = FALSE,
+  align = rep("l", ncol(df)),
+  format = "html"
+) %>%
   kable_styling("striped") %>%
-  add_header_above(c(" " = 1, "Tattoo" = 2, " " = 1))
+  add_header_above(
+    c(" " = 1, "Director gender" = 3, " " = 1),
+    escape = FALSE
+  )
 ```
 
 ## Conditional probability distribution
 
 Divide the row- or column frequencies by the <font color = "orange">marginal total</font>
 
-E.g.: What is the conditional probability of <font color = "purple">having a tattoo for international students</font>?  $P(Tattoo | Dutch)$
+E.g.: What is the conditional probability of <font color = "purple">passing the test for a movie with a male director</font>?  $P(Pass | Male)$
 
 
 ```{r}
-df <- data.frame("Dutch" = c("No", "Yes", "<b>Total column</b>"),
-                 "No" = c(cell11, paste0(cell21, " / ", cell21+cell22, " = ", round((cell21)/(cell21+cell22), digits = 2)), cell11+cell21),
-                 "Yes" = c(cell12, paste0(cell22, " / ", cell21+cell22, " = ", round((cell22)/(cell21+cell22), digits = 2)), cell12+cell22),
-                "Total row" = c(cell11+cell12,
-                                 cell21+cell22,cell11+cell12+cell21+cell22),
-                 check.names = FALSE)
-df$Yes[2] <- cell_spec(df$Yes[2], color = "purple", bold = TRUE)
-df$No[2] <- cell_spec(df$No[2], color = "purple", bold = TRUE)
-df$`Total row`[2] <- cell_spec(df$`Total row`[2], color = "orange", bold = TRUE)
-kable(df, escape = FALSE, align = rep('l', length(df[,1]))) %>%
+
+pass_total <- cell21 + cell22 + cell23
+total_n <- cell11 + cell12 + cell13 +
+           cell21 + cell22 + cell23
+
+df <- data.frame(
+  "Test" = c("FAIL", "PASS", "<b>Total column</b>"),
+  "Female" = c(
+    cell11,
+    paste0(
+      cell21, " / ", pass_total, " = ",
+      round(cell21 / pass_total, digits = 2)
+    ),
+    cell11 + cell21
+  ),
+  "Male" = c(
+    cell12,
+    paste0(
+      cell22, " / ", pass_total, " = ",
+      round(cell22 / pass_total, digits = 2)
+    ),
+    cell12 + cell22
+  ),
+  "Mixed/other" = c(
+    cell13,
+    paste0(
+      cell23, " / ", pass_total, " = ",
+      round(cell23 / pass_total, digits = 2)
+    ),
+    cell13 + cell23
+  ),
+  "Total row" = c(
+    cell11 + cell12 + cell13,
+    pass_total,
+    total_n
+  ),
+  check.names = FALSE
+)
+
+df$Female[2] <- cell_spec(
+  df$Female[2],
+  color = "purple",
+  bold = TRUE
+)
+
+df$Male[2] <- cell_spec(
+  df$Male[2],
+  color = "purple",
+  bold = TRUE
+)
+
+df$`Mixed/other`[2] <- cell_spec(
+  df$`Mixed/other`[2],
+  color = "purple",
+  bold = TRUE
+)
+
+df$`Total row`[2] <- cell_spec(
+  df$`Total row`[2],
+  color = "orange",
+  bold = TRUE
+)
+
+kable(
+  df,
+  escape = FALSE,
+  align = rep("l", ncol(df)),
+  format = "html"
+) %>%
   kable_styling("striped") %>%
-  add_header_above(c(" " = 1, "Tattoo" = 2, " " = 1))
+  add_header_above(
+    c(" " = 1, "Director gender" = 3, " " = 1),
+    escape = FALSE
+  )
 
 ```
 
@@ -558,26 +783,68 @@ kable(df, escape = FALSE, align = rep('l', length(df[,1]))) %>%
 
 Divide the cell frequency by the <font color = "orange">global total</font>
 
-E.g.: What is the joint probability of someone being <font color = "purple">Dutch and having a tattoo</font>? $P(Dutch \cap Tattoo)$
+E.g.: What is the joint probability of a movie <font color = "purple">Passing and having a female director</font>? $P(Pass \cap Female)$
 
 
 ```{r}
-df <- data.frame("Dutch" = c("No", "Yes", "<b>Total column</b>"),
-                 "No" = c(cell11, paste0(cell21, " / ", cell21+cell22+cell11+cell12, " = ", round((cell21)/(cell11+cell12+cell21+cell22), digits = 2)), cell11+cell21),
-                 "Yes" = c(cell12, cell22, cell12+cell22),
-                "Total row" = c(cell11+cell12,
-                                 cell21+cell22, cell11+cell12+cell21+cell22),
-                 check.names = FALSE)
-df$No[2] <- cell_spec(df$No[2], color = "purple", bold = TRUE)
-df$`Total row`[3] <- cell_spec(df$`Total row`[3], color = "orange", bold = TRUE)
-kable(df, escape = FALSE, align = rep('l', length(df[,1]))) %>%
+
+total_n <- cell11 + cell12 + cell13 +
+           cell21 + cell22 + cell23
+
+df <- data.frame(
+  "Test" = c("FAIL", "PASS", "<b>Total column</b>"),
+  "Female" = c(
+    cell11,
+    paste0(
+      cell21, " / ", total_n, " = ",
+      round(cell21 / total_n, digits = 2)
+    ),
+    cell11 + cell21
+  ),
+  "Male" = c(
+    cell12,
+    cell22,
+    cell12 + cell22
+  ),
+  "Mixed/other" = c(
+    cell13,
+    cell23,
+    cell13 + cell23
+  ),
+  "Total row" = c(
+    cell11 + cell12 + cell13,
+    cell21 + cell22 + cell23,
+    total_n
+  ),
+  check.names = FALSE
+)
+
+df$Female[2] <- cell_spec(
+  df$Female[2],
+  color = "purple",
+  bold = TRUE
+)
+
+df$`Total row`[3] <- cell_spec(
+  df$`Total row`[3],
+  color = "orange",
+  bold = TRUE
+)
+
+kable(
+  df,
+  escape = FALSE,
+  align = rep("l", ncol(df)),
+  format = "html"
+) %>%
   kable_styling("striped") %>%
-  add_header_above(c(" " = 1, "Tattoo" = 2, " " = 1))
+  add_header_above(
+    c(" " = 1, "Director gender" = 3, " " = 1),
+    escape = FALSE
+  )
+
 ```
 
-# Break {.section-slide .unlisted}
-
-See you in ~10 minutes!
 
 # Continuous probability distributions
 
@@ -626,47 +893,20 @@ Two parameters:
 |   3   |  0.5  | 1.5 |
 |   4   |  2.0  | 1.0 |
 
-## App
+## Normal Demo
 
-<https://statdist.com/distributions/normal>
+{{< include ../common_resources/components/normal.qmd >}}
 
-<!-- ## Normal distribution: Location and scale -->
-
-<!-- ```{r eval = FALSE} -->
-<!-- library(shiny) -->
-<!-- numericInput( -->
-<!--   inputId = "mean", -->
-<!--   label = "Mean:", -->
-<!--   value = 0, -->
-<!--   min = -4, -->
-<!--   max = 4, -->
-<!--   step = .2 -->
-<!-- ); numericInput( -->
-<!--   inputId = "sd", -->
-<!--   label = "Standard deviation:", -->
-<!--   value = 1, -->
-<!--   min = 0, -->
-<!--   max = 2, -->
-<!--   step = .2 -->
-<!-- ) -->
-
-<!-- plotOutput("normdist") -->
-<!-- ``` -->
-
-<!-- ```{r eval = FALSE} -->
-<!-- #| context: server -->
-<!-- library(2) -->
-
-<!-- output$normdist <- renderPlot({ p1 <- (data = data.frame(x = c(-5, 5)), aes(x)) + -->
-<!--   stat_function(fun = dnorm, n = 101, args = list(mean = input$mean, sd = input$sd)) + ylab("Probability density") + -->
-<!--   scale_y_continuous(breaks = NULL) -->
-<!-- p1 + theme_bw() -->
-<!-- }) -->
-<!-- ``` -->
 
 ## Standard Normal Distribution (Z-distribution)
 
-$Z \sim N(\mu = 0, \sigma^2 = 1)$ (so also $\sigma = 1$)
+$Z \sim N(\mu = 0, \sigma^2 = 1)$
+Note $\sigma^2 = \sigma = 1$
+
+* The normal distribution is _closed_ under linear transformations.
+    + i.e., if $Y~N(a, b)$ then $X = c \times Y + d \sim N(c\times a + d, c \times b)$.
+
+Because of this:
 
 * We can standardize any normal distribution to the *Z*-distribution
 * This removes the units of measurement of our original variable
@@ -678,29 +918,33 @@ $Z \sim N(\mu = 0, \sigma^2 = 1)$ (so also $\sigma = 1$)
 
 $Z \sim N(\mu = 0, \sigma = 1)$
 
-![](images/Lecture_213.png)
+![](images/Lecture_213.png){fig-align="center"}
 
 ## X to Z and vice versa
 
 You can standardize values of any normally distributed variable
 
-$Z = \frac{X-\mu_x}{\sigma_x}$
+$$
+Z = \frac{X-\mu_x}{\sigma_x}
+$$
 
 **Standardizing:** Removing the original units of measurement
 
 And reverse it to get the units back; for any Z-value:
 
-$X = \mu_x + (Z*\sigma_x)$
+$$
+X = \mu_x + (Z\times\sigma_x)
+$$
 
-## Properties of normal distribution
+## Properties of the Normal Distribution (1 / 4)
 
 * The distribution is symmetric
 
-![](images/Lecture_222.png)
+![](images/Lecture_222.png){fig-align="center"}
 
 $P(Z < -1.64) = P(Z > 1.64) = 0.05$
 
-## Properties 2
+## Properties of the Normal Distribution (2 / 4)
 
 * Total surface area is 1
 * We can find areas by taking the complement (1-something)
@@ -711,7 +955,7 @@ $P(Z < 1.64) = .95$
 
 So $P(Z > 1.64) = 1-.95 = .05$
 
-## Properties 3
+## Properties of the Normal Distribution (3 / 4)
 
 * Areas can be added
 
@@ -727,13 +971,14 @@ $P(-.5< Z < 0) = .19$
 
 So $P(Z > -.5) = .5+.19 = .69$
 
-## Properties 4
+## Properties of the Normal Distribution (4 / 4)
 
 Standard percentages for mean, +/- 1, 2, 3 SD
 
 * 50% of distribution is below $\mu$, 50% above
 
 ```{r}
+#| fig-align: "center"
 library(ggplot2)
 ggplot(data = data.frame(x = c(-4, 4)), aes(x)) +
   stat_function(fun = dnorm, n = 101, args = list(mean = 0, sd = 1)) +
@@ -751,7 +996,7 @@ ggplot(data = data.frame(x = c(-4, 4)), aes(x)) +
   geom_label(x = 0, y = dnorm(2), label = "+/-2SD: 95%") +
   geom_errorbar(aes(xmin = -3, xmax = 3, y = dnorm(3)), width = .03)+
   geom_label(x = 0, y = dnorm(3), label = "+/-3SD: 99.7%") +
-  theme_bw()
+  theme_bw(base_size = 20)
 ```
 
 ## Percentiles
@@ -773,6 +1018,7 @@ Let's apply this to $IQ \sim N(\mu = 100, \sigma = 15)$
 * $P(Z<1.33) \approx .90$,  so 90th percentile
 
 ```{r out.width="70%"}
+#| fig-align: "center"
 library(ggplot2)
 boxloc <- -.003
 x <- rnorm(10000, 100, 15)
@@ -813,124 +1059,21 @@ This allows us to:
 
 Of course, the assumption can be wrong
 
-![](images/Lecture_110.png){fig-align="center"}
+## Models can be wrong
 
+![](scripts/fig_year_normal.jpg){fig-align="center" height=800px width=800px}
+
+## Models can be wrong
 
 * "All models are wrong, but some are useful" (Box)
-* In this example, mean, SD, and probabilities are going to misrepresent our data somewhat (i.e.: not very useful)
+* In this example, mean, SD, and probabilities are going to misrepresent our data
+  + Normal model it not very useful
 
 ## What if the model is wrong?
 
 Solution:
 
 * Choose a different probability distribution (not part of this course)
+* "Transform" the data to become "more normal"
 * Comment that the assumption of normality may be violated (e.g., in Discussion section)
-
-
-
-<!-- ## Personality of 501 psychology students -->
-
-<!-- ![](images/Lecture 216.png) -->
-
-<!-- ![](images/Lecture 217.png) -->
-
-<!-- ![](images/Lecture 218.png) -->
-
-<!-- ![](images/Lecture 219.png) -->
-
-# Exercises
-
-## Exercises
-
-Neuroticism is distributed $N(\mu = 50, \sigma = 10)$
-
-What is the probability that a randomly chosen person has a neuroticism score of 60 or higher?
-
-Complete the sentence: "95% of the population scores between ... and ... on neuroticism.
-
-## Solutions
-
-What is the probability that a randomly chosen person has a neuroticism score of 60 or higher?
-
-```{r}
-library(ggplot2)
-ggplot(data = data.frame(x = c(10, 90)), aes(x)) +
-    stat_function(fun = dnorm, n = 101, args = list(mean = 50, sd = 10)) +
-  ylab("Probability density") +
-  xlab("Neuroticism") +
-    scale_y_continuous(breaks = NULL, expand = c(0,0), limits = c(0, .045)) +
-    scale_x_continuous(breaks = c(25, 50, 60, 75)) +
-    geom_vline(xintercept = 50, color = "black") +
-    geom_vline(xintercept = 60, color = "red") +
-    geom_area(stat = "function", fun = dnorm, fill = "red", alpha = .2, xlim = c(60, 90), args = list(mean = 50, sd = 10)) +
-    geom_label(x = 50, y = .04, label = "Mean, 0.5") +
-    geom_label(x = 60, y = .03, label = "+1SD, +0.34", hjust = 0, color = "red") +
-  geom_label(x = 70, y = .005, label = "1 - (.5 + .34)", hjust = 0, color = "red") +
-    theme_bw()
-```
-
-## Solutions
-
-Complete the sentence: "95% of the population scores between ... and ... on neuroticism.
-
-```{r}
-library(ggplot2)
-ggplot(data = data.frame(x = c(10, 90)), aes(x)) +
-    stat_function(fun = dnorm, n = 101, args = list(mean = 50, sd = 10)) +
-  ylab("Probability density") +
-  xlab("Neuroticism") +
-    scale_y_continuous(breaks = NULL, expand = c(0,0), limits = c(0, .045)) +
-    scale_x_continuous(breaks = c(20, 30, 40, 50, 60, 70, 80)) +
-    geom_vline(xintercept = 30, color = "red") +
-    geom_vline(xintercept = 70, color = "red") +
-    geom_area(stat = "function", fun = dnorm, fill = "red", alpha = .2, xlim = c(10, 30), args = list(mean = 50, sd = 10)) +
-  geom_area(stat = "function", fun = dnorm, fill = "red", alpha = .2, xlim = c(70, 90), args = list(mean = 50, sd = 10)) +
-    geom_label(x = 30, y = .005, label = "-2SD, .025", hjust = 1, color = "red") +
-    geom_label(x = 70, y = .005, label = "+2SD, .025", hjust = 0, color = "red") +
-     theme_bw()
-```
-
-## Calculate Z-values and p-values
-
-1. **Draw the problem**
-2. Check if the solution is (close to) a standard value like +/-SD
-3. If not, calculate Z-score
-4. Find p-value
-    * In Z-table
-    * Using an online calculator, e.g. https://onecompiler.com/r: `pnorm(zscore, mean, sd, lower.tail = TRUE)`
-    * Using Excel formula: `=NORM.DIST(zscore, mean, sd, TRUE)`
-
-## More difficult example
-
-**Example:** Assume height is distributed
-
-$\text{Height}\sim N(\mu = 180, \sigma = 20)$
-
-* What percentage of the population is taller than 212cm?
-
-Step 1: Draw the problem
-
-Step 2: Standard solution? Not really
-
-![](images/Lecture_220.png){fig-align="center"}
-
-
-## Calculate p-value
-
-Step 3: Calculate Z-score
-
-* $Z = \frac{212 - 180}{20} = 1.6$
-
-Step 4: Find p-value
-
-* To the **right** of 1.6
-* Excel: `=1-NORM.DIST(1.6, 0, 1, TRUE)`
-* R: `pnorm(1.6, 0, 1, lower.tail = FALSE)`
-* Table (next slide)
-
-## Z-table
-
-![](images/Lecture_221.png){fig-align="center"}
-
-**Conclusion:** 5.48% of the population is taller than 212cm.
 
