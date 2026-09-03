@@ -1,0 +1,157 @@
+---
+title: "Bivariate Descriptives Statistics\n&\nProbability Distributions"
+subtitle: "Lecture 3 - LAS"
+author:   "Don van den Bergh"
+date: 2026-09-07
+date-format: "DD-MM-YYYY"
+format:
+    dtslides-revealjs:
+        theme: [../common_resources/css/tilburg-university.scss]
+        logo: ../common_resources/logos/logo_tu_small.svg
+        slide-number: c/t
+        # chalkboard: true
+        toc: true
+        toc-depth: 1
+        toc-title: "Today"
+        embed-resources: false # true
+        include-in-header:
+        - text: |
+            <script src="https://cdn.jsdelivr.net/npm/jstat@1.9.6/dist/jstat.min.js"></script>
+            <link rel="stylesheet" href="../common_resources/components/distributions.css">
+            <script src="../common_resources/components/distributions.js"></script>
+---
+
+```{r}
+knitr::opts_chunk$set(echo = FALSE)
+options(knitr.kable.NA = '')
+set.seed(1)
+library(ggplot2)
+library(kableExtra)
+
+library(ggplot2)
+library(tibble)
+
+dtriangle <- function(x, a = -1, b = 1, c = 0) {
+  ifelse(x < a, 0,
+  ifelse(b < x, 0,
+  ifelse(a <= x & x < c, 2 * (x - a) / ((b - a) * (c - a)),
+  ifelse(c < x & x <= b, 2 * (b - x) / ((b - a) * (b - c)),
+    # x == c
+    2 / (b - a)
+  ))))
+}
+
+
+```
+
+## Today {.unlisted}
+
+[Chapter 5](https://cjvanlissa.github.io/stats12/Chapter3_Correlation.html) and [Chapter 6](https://cjvanlissa.github.io/stats12/probability.html) from the gitbook.
+
+
+# Bivariate Descriptives Statistics
+
+
+## What is "Bivariate"?
+
+. . .
+
+Looking at two variables at the same time.
+
+Yes, there is also "trivariate" and more generally, "multivariate".
+
+## Bivariate Descriptives Statistics
+
+- Contingency tables (we talked about these last week)
+- Covariance
+- Correlation
+
+## Covariance
+
+$$
+SP_{xy} = \sum_{i=1}^n \bigl(x_i - \bar{x}\bigr)\bigl(y - \bar{y}\bigr)
+$$
+
+Definitions:
+
+- $x$ and $y$: the two variable we're interested in.
+- $\bar{x}$: the sample mean of the variable $x$.
+- $x_i$: the $i$th observation of the variable.
+- $n$ the sample size.
+- $\sum_{i=1}^{n}$: the sum from $i$ is 1 to $i$ is $n$.
+- $SP_{xy}$ the sum of products between $x$ and $y$.
+
+
+## Limitations
+
+- Throughout, we're often looking a plots of the data
+- The only thing that truly conveys all information in the data... are the data themselves
+- Looking at raw numbers is typically not informative, hence we use plots
+
+## Anscombe's Quartet
+
+![](images/fig_anscombe.jpg){fig-align="center"}
+
+::: footer
+Source: [Wikipedia](https://en.wikipedia.org/wiki/Anscombe%27s_quartet)
+:::
+
+## Anscombe's Quartet
+
+```{r}
+sum_anscombe <- read.csv("scripts/sum_anscombe.csv")
+kbl(sum_anscombe, digits = 3)
+```
+
+## Datasaurus Dozen
+
+![](images/fig_datasaurus.jpg){fig-align="center"}
+
+::: footer
+source: <https://jumpingrivers.github.io/datasauRus/>
+:::
+
+## Datasaurus Dozen
+
+
+```{r}
+sum_datasaurus <- read.csv("scripts/sum_datasaurus.csv")
+kbl(sum_datasaurus, digits = 3)
+```
+
+## Drawbacks of statistics
+
+At its core, statistics tries to _reduce_ the information in the full dataset into something smaller
+
+- (+) This makes it possible to understand large datasets
+- (-) This looses information along the way
+
+. . .
+
+Example: **IF** the data are normally distributed then the mean and variance describe the entire distribution.
+
+# Bivariate Distributions
+
+## Bivariate Distributions
+
+If we have bivariate descriptives are the sample estimates of population statistics of bivariate distributions.
+
+## Bivariate Normal distribution
+
+
+{{< include ../common_resources/components/bivariatenormal.qmd >}}
+
+## Multivariate Normal distribution
+
+No more picture
+
+## Aside: The Central Limit Theorem
+
+## What if the world is not normal?
+
+- Kendall's tau
+- Spearman rank correlation
+
+. . .
+
+Both are less "powerful" than the Pearson correlation _if the data are sufficiently normal_.
