@@ -33,8 +33,28 @@ plot2 <- ggplot(datasaurus_dozen |> filter(dataset %in% keep), aes(x = x, y = y,
   theme_bw(base_size = 20) +
   theme(strip.text = element_text(size = 12))
 
+datasaurus_dozen2 <- datasaurus_dozen |> filter(dataset %in% "high_lines")
+datasaurus_dozen2 <- rbind(
+  datasaurus_dozen2 |> mutate(dataset = "original"),
+  datasaurus_dozen2 |> filter(y > 50) |> mutate(dataset = "restricted 1"),
+  datasaurus_dozen2 |> filter(x > 50) |> mutate(dataset = "restricted 2"),
+  datasaurus_dozen2 |> filter(y > 50 & x > 50 | y < 50 & x < 50) |> mutate(dataset = "restricted 3")
+) |> group_by(dataset) |> mutate(
+  dataset = sprintf("%s, Cor: %.3f", dataset, cor(x, y, use = "complete"))
+)
+plot3 <- ggplot(datasaurus_dozen2, aes(x = x, y = y, fill = dataset)) +
+  geom_point(size = 3, colour = "black", alpha = .6, shape = 21) +
+  theme(legend.position = "none") +
+  facet_wrap(~dataset, ncol = 2) +
+  scale_x_continuous(breaks = c(0, 50, 100), limits = c(0, 100)) +
+  scale_y_continuous(breaks = c(0, 50, 100), limits = c(0, 100)) +
+  theme_bw(base_size = 20)# +
+  # theme(strip.text = element_text(size = 12))
+
+
 ggsave(filename = "lecture3/images/fig_anscombe.jpg",   plot = plot1)
 ggsave(filename = "lecture3/images/fig_datasaurus.jpg", plot = plot2)
+ggsave(filename = "lecture3/images/fig_datasaurus_restricted.jpg", plot = plot3)
 
 anscombe_tib
 sum_ans <- anscombe_tib |> 

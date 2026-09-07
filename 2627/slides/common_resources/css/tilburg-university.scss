@@ -1,0 +1,99 @@
+/*-- scss:defaults --*/
+
+// Tilburg University colors
+$tu-marine: #003366;
+$tu-bronze: #cc9933;
+$tu-moss:   #619623;
+$tu-ocean:  #008ec6;
+
+// Light variants
+$tu-bronze-light: #f7f0e5;
+$tu-moss-light:   #f0f4e9;
+$tu-ocean-light:  #e6f4f9;
+
+// Main dtslides / Bootstrap colors
+$primary: $tu-marine;
+$secondary: #5f6b76;
+$success: $tu-moss;
+$info: $tu-ocean;
+
+// dtslides-specific accents
+$accent: $tu-ocean;
+$highlight-color: $tu-bronze;
+
+// General document colors
+$body-bg: #ffffff;
+$body-color: #222222;
+$link-color: $tu-ocean;
+
+// TU specifies Arial for digital use
+$font-family-sans-serif: Arial, Helvetica, sans-serif;
+
+
+/*-- scss:rules --*/
+
+// Keep rules deliberately layout-neutral.
+
+.reveal a:hover {
+  color: $tu-marine;
+}
+
+.reveal ::selection {
+  background-color: #b3ddee;
+  color: $tu-marine;
+}
+
+.tu-marine {
+  color: $tu-marine !important;
+}
+
+.tu-bronze {
+  color: $tu-bronze !important;
+}
+
+.tu-ocean {
+  color: $tu-ocean !important;
+}
+
+.tu-moss {
+  color: $tu-moss !important;
+}
+
+/* Tilburg gold underline for slide headings */
+.reveal .slides section.section-slide > h1 {
+  border-bottom-color: $tu-bronze;
+}
+
+// Footer is hidden by default, but should be visible in print.
+// @media print {
+//   .reveal .footer {
+//     display: block !important;
+//     position: absolute !important;
+//     bottom: 20px !important;
+//     left: 20px !important;
+//     z-index: 1000 !important;
+//     opacity: 1 !important;
+//   }
+// }
+// .reveal.print-pdf .slides section .footer {
+//   display: block !important;
+//   visibility: visible !important;
+//   opacity: 1 !important;
+
+//   position: absolute !important;
+//   bottom: 20px;
+//   left: 20px;
+// }
+
+// Footer is hidden by default, but should be visible in print. This is an awkward workaround, you may need to play with the bottom amount.
+@media print {
+  .reveal .slides section .footer {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+
+    position: absolute !important;
+    bottom: 80px;
+    left: 20px;
+  }
+}

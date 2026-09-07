@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="lecture3_files/libs/quarto-html/tabby.min.js"></script>
+<script src="lecture3_files/libs/quarto-html/popper.min.js"></script>
+<script src="lecture3_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="lecture3_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="lecture3_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="lecture3_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.10.18">
+
+  <meta name="author" content="Don van den Bergh">
+  <title>Bivariate Descriptive Statistics &amp; Probability Distributions</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="lecture3_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="lecture3_files/libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="lecture3_files/libs/revealjs/dist/theme/quarto-c3b293b5096052902064beb0470c0247.css">
+  <link href="lecture3_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="lecture3_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="lecture3_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="lecture3_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <link href="lecture3_files/libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+  <script src="lecture3_files/libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+  <link href="lecture3_files/libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+  <script src="lecture3_files/libs/datatables-binding-0.34.0/datatables.js"></script>
+  <script src="lecture3_files/libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+  <link href="lecture3_files/libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+  <link href="lecture3_files/libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
+  <script src="lecture3_files/libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+  <link href="lecture3_files/libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
+  <script src="lecture3_files/libs/crosstalk-1.2.2/js/crosstalk.min.js"></script>
+  <script src="lecture3_files/libs/kePrint-0.0.1/kePrint.js"></script>
+  <link href="lecture3_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/jstat@1.9.6/dist/jstat.min.js"></script>
+  <link rel="stylesheet" href="../common_resources/components/distributions.css">
+  <script src="../common_resources/components/distributions.js"></script>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Bivariate Descriptive Statistics &amp; Probability Distributions</h1>
+  <p class="subtitle">Lecture 3 - LAS</p>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Don van den Bergh
+</div>
+</div>
+</div>
+
+  <p class="date">07-09-2026</p>
+</section><section id="TOC">
+<nav role="doc-toc"> 
+<h2 id="toc-title">Today</h2>
+<ul>
+<li><a href="#/bivariate-descriptive-statistics" id="/toc-bivariate-descriptive-statistics">Bivariate Descriptive Statistics</a></li>
+<li><a href="#/transformations" id="/toc-transformations">Transformations</a></li>
+<li><a href="#/bivariate-distributions" id="/toc-bivariate-distributions">Bivariate Distributions</a></li>
+</ul>
+</nav>
+</section>
+<section id="today" class="slide level2 unlisted">
+<h2>Today</h2>
+<p><a href="https://cjvanlissa.github.io/stats12/Chapter3_Correlation.html">Chapter 5</a> and <a href="https://cjvanlissa.github.io/stats12/probability.html">Chapter 6</a> from the gitbook.</p>
+</section>
+<section>
+<section id="bivariate-descriptive-statistics" class="title-slide slide level1 center">
+<h1>Bivariate Descriptive Statistics</h1>
+
+</section>
+<section id="what-is-bivariate" class="slide level2">
+<h2>What is “Bivariate”?</h2>
+<div class="fragment">
+<p>Looking at two variables at the same time.</p>
+<p>Yes, there is also “trivariate” and more generally, “multivariate”.</p>
+</div>
+</section>
+<section id="bivariate-descriptive-statistics-1" class="slide level2">
+<h2>Bivariate Descriptive Statistics</h2>
+<ul>
+<li>Contingency tables (we talked about these last week)</li>
+<li>Covariance</li>
+<li>Correlation</li>
+</ul>
+</section>
+<section id="dataset-world-data" class="slide level2">
+<h2>Dataset: World Data</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-466358a46d1399716e82" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-466358a46d1399716e82">{"x":{"filter":"none","vertical":false,"data":[["Afghanistan","Angola","Albania","Austria","Belgium","Brazil","Canada","Switzerland","Chile","China","Czech Republic","Germany","Denmark","Spain","France","Gabon","UK","Ghana","Iran","Italy","Japan","Cambodia","Netherlands","Papua New Guinea","Poland","Romania","Sweden","Tajikistan","USA","Holy See"],[52.52,69.33,9.06,2.91,3.47,13.78,4.64,3.79,5.46,7.1,2.83,3.49,3.67,2.77,3.89,40.98,3.74,42.56,12.13,2.7,2.31,24.45,3.4,42.69,3.98,6.55,2.39,27.29,5.9,null],[4.93,5.21,1.36,1.41,1.55,1.63,1.37,1.4,1.26,1.03,1.62,1.46,1.56,1.21,1.76,3.71,1.56,3.43,1.7,1.24,1.26,2.62,1.51,3.17,1.26,1.72,1.54,3.13,1.67,1],[0.284,1.225,2.103,9.199999999999999,16.928,2.109,13.173,11.644,4.544,7.379,9.835000000000001,9.300000000000001,7.685,5.657,6.073,2.764,6.926,0.773,7.673,6.925,9.991,2.551,8.769,0.986,8.012,4.363,5.956,1.47,16.447,null],[1981.71017,7397.48643,17111.95393,65661.45219,62744.203,18554.04618,58321.06118,82777.29358,29569.47755,21499.38228,48390.66168,62931.96841,70233.64023,46649.56354,53691.61749,18662.0498,52982.17492,6728.45414,15331.33294,52333.32743,44972.34384,6458.36815,71324.03603,4125.49303,43405.02158,39377.97174,63215.4363,4213.75618,72679.25754000001,null],[68,64,78.7,81.5,81.59999999999999,76.09999999999999,81.2,83.7,79.59999999999999,79.90000000000001,79.09999999999999,80.5,81.2,82.40000000000001,82.40000000000001,66.59999999999999,81,65,78.09999999999999,82.2,84.2,73.3,81.5,66.2,77.5,75.3,83.09999999999999,71.3,77.59999999999999,null],[3.6068,5.3361,17.3271,82.4267,68.3912,24.361,83.87260000000001,91.4699,32.7678,17.6715,44.7562,83.0519,71.8642,54.0465,66.0813,13.7624,66.8146,6.0192,12.0989,58.2579,50.3237,7.7368,78.524,4.7161,43.4729,30.3416,64.9539,9.6325,89.9494,null]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>name<\/th>\n      <th>child_mortality<\/th>\n      <th>fertility<\/th>\n      <th>co2_pcap<\/th>\n      <th>gdp_pcap<\/th>\n      <th>life_expectancy<\/th>\n      <th>daily_income<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"searching":false,"info":false,"paging":false,"scrollX":true,"scrollY":"350px","scrollCollapse":true,"autoWidth":true,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":5,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":6,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3,4,5,6]},{"name":"name","targets":0},{"name":"child_mortality","targets":1},{"name":"fertility","targets":2},{"name":"co2_pcap","targets":3},{"name":"gdp_pcap","targets":4},{"name":"life_expectancy","targets":5},{"name":"daily_income","targets":6}],"order":[],"orderClasses":false}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render","options.columnDefs.4.render","options.columnDefs.5.render"],"jsHooks":[]}</script>
+</div>
+</div>
+<div class="footer">
+<p>Source: Data from world bank via <a href="https://www.gapminder.org/data" class="uri">https://www.gapminder.org/data</a>, CC-BY license</p>
+</div>
+</section>
+<section id="dataset-world-data-1" class="slide level2 small-slide">
+<h2>Dataset: World Data</h2>
+<ul>
+<li class="fragment">Child mortality: Probability of dying between age 0 - 5 per 1000 babies (percentage).</li>
+<li class="fragment">Fertility: This is the number of children that would be born to a woman if she were to live to the end of her childbearing years and bear children in accordance with age-specific fertility rates of the specified year.</li>
+<li class="fragment">CO2_PCAP: CO2 emissions per capita.</li>
+<li class="fragment">GDP_PCAP: GDP per capita.</li>
+<li class="fragment">Life Expectancy: No.&nbsp;years a newborn would live at current mortality rates.</li>
+<li class="fragment">Daily income: The mean daily household per capita income in 2021 PPP (constant international dollars).</li>
+</ul>
+</section>
+<section id="fertility-vs.-life-expectancy" class="slide level2">
+<h2>Fertility vs.&nbsp;Life expectancy</h2>
+
+<img data-src="lecture3_files/figure-revealjs/unnamed-chunk-2-1.png" width="960" class="r-stretch"></section>
+<section id="last-week-sum-of-squared-distances-ss_x" class="slide level2">
+<h2>Last Week: Sum of Squared Distances <span class="math inline">\(SS_x\)</span></h2>
+<p><span class="math display">\[
+SS_x = \sum_{i=1}^{n}(x_i - \bar{x})^2 = \sum_{i=1}^{n}(x_i - \bar{x})(x_i - \bar{x})
+\]</span></p>
+<div class="fragment">
+<p>One variable: <span class="math inline">\(\mathrm{deviation} \times \mathrm{deviation} = \mathrm{Variance}\)</span></p>
+</div>
+<div class="fragment">
+<p>Two variables: <span class="math inline">\(x-\mathrm{deviation} \times y-\mathrm{deviation} = \mathrm{Covariance}\)</span></p>
+</div>
+</section>
+<section id="covariance-sum-of-products" class="slide level2">
+<h2>Covariance: Sum of Products</h2>
+<p><span class="math display">\[
+SP_{xy} = \sum_{i=1}^n \bigl(x_i - \bar{x}\bigr)\bigl(y_i - \bar{y}\bigr)
+\]</span></p>
+<div style="font-size: 70%;">
+<p>Definitions:</p>
+<ul>
+<li><span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>: the two variables we’re interested in.</li>
+<li><span class="math inline">\(\bar{x}\)</span>: the sample mean of the variable <span class="math inline">\(x\)</span>.</li>
+<li><span class="math inline">\(x_i\)</span>: the <span class="math inline">\(i\)</span>th observation of the variable.</li>
+<li><span class="math inline">\(n\)</span> the sample size.</li>
+<li><span class="math inline">\(\sum_{i=1}^{n}\)</span>: the sum from <span class="math inline">\(i\)</span> is 1 to <span class="math inline">\(i\)</span> is <span class="math inline">\(n\)</span>.</li>
+<li><span class="math inline">\(SP_{xy}\)</span> the sum of products between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>.</li>
+</ul>
+</div>
+</section>
+<section id="covariance-sum-of-products-1" class="slide level2">
+<h2>Covariance: Sum of Products</h2>
+<div style="font-size: 70%;">
+<p><span class="math inline">\(\overline{\text{Life Expectancy}}\)</span> = 72.8, <span class="math inline">\(\overline{\text{Fertility}}\)</span> = 2.5,</p>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-28581aa3e4de6c04d3a1" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-28581aa3e4de6c04d3a1">{"x":{"filter":"none","vertical":false,"data":[["Afghanistan","Angola","Albania","Austria","Belgium","Brazil","Canada","Switzerland","Chile","China","Czech Republic","Germany","Denmark","Spain","France","Gabon","UK","Ghana","Iran","Italy","Japan","Cambodia","Netherlands","Papua New Guinea","Poland","Romania","Sweden","Tajikistan","USA","Holy See"],[68,64,78.7,81.5,81.59999999999999,76.09999999999999,81.2,83.7,79.59999999999999,79.90000000000001,79.09999999999999,80.5,81.2,82.40000000000001,82.40000000000001,66.59999999999999,81,65,78.09999999999999,82.2,84.2,73.3,81.5,66.2,77.5,75.3,83.09999999999999,71.3,77.59999999999999,null],[4.93,5.21,1.36,1.41,1.55,1.63,1.37,1.4,1.26,1.03,1.62,1.46,1.56,1.21,1.76,3.71,1.56,3.43,1.7,1.24,1.26,2.62,1.51,3.17,1.26,1.72,1.54,3.13,1.67,1],[-4.752061855670107,-8.752061855670107,5.947938144329896,8.747938144329893,8.847938144329888,3.347938144329888,8.447938144329896,10.9479381443299,6.847938144329888,7.147938144329899,6.347938144329888,7.747938144329893,8.447938144329896,9.647938144329899,9.647938144329899,-6.152061855670112,8.247938144329893,-7.752061855670107,5.347938144329888,9.447938144329896,11.4479381443299,0.5479381443298905,8.747938144329893,-6.552061855670104,4.747938144329893,2.547938144329891,10.34793814432989,-1.452061855670109,4.847938144329888,null],[2.43276923076923,2.712769230769231,-1.137230769230769,-1.087230769230769,-0.9472307692307693,-0.8672307692307695,-1.127230769230769,-1.097230769230769,-1.237230769230769,-1.467230769230769,-0.8772307692307693,-1.037230769230769,-0.9372307692307693,-1.287230769230769,-0.7372307692307694,1.212769230769231,-0.9372307692307693,0.9327692307692308,-0.7972307692307694,-1.257230769230769,-1.237230769230769,0.1227692307692307,-0.9872307692307694,0.6727692307692306,-1.237230769230769,-0.7772307692307694,-0.9572307692307693,0.6327692307692305,-0.8272307692307694,-1.497230769230769],[-11.56066986518637,-23.74232410785092,-6.764178271213322,-9.51102751784298,-8.381039254559866,-2.903434972244243,-9.522775812846946,-12.01241459159398,-8.472479777953994,-10.48767478191912,-5.568606661379849,-8.036399841395715,-7.917667565424266,-12.41912283901666,-7.112756859635213,-7.461031324345767,-7.73022141157811,-7.230884773988901,-4.26354084060269,-11.8782385408406,-14.16374131641554,0.06726994448850039,-8.636233703409991,-4.408025614591593,-5.874295162569386,-1.98033592386994,-9.905364789849319,-0.9188200634417166,-4.010363600317202,null]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>name<\/th>\n      <th>life_expectancy<\/th>\n      <th>fertility<\/th>\n      <th>life_expectancy_m0<\/th>\n      <th>fertility_m0<\/th>\n      <th>SP<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"searching":false,"info":false,"paging":false,"scrollX":true,"scrollY":"350px","scrollCollapse":true,"autoWidth":true,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":5,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3,4,5]},{"name":"name","targets":0},{"name":"life_expectancy","targets":1},{"name":"fertility","targets":2},{"name":"life_expectancy_m0","targets":3},{"name":"fertility_m0","targets":4},{"name":"SP","targets":5}],"order":[],"orderClasses":false}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render","options.columnDefs.4.render"],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+<section id="covariance-sum-of-products-2" class="slide level2">
+<h2>Covariance: Sum of Products</h2>
+<p><span class="math inline">\(SP_{xy}\)</span> = -1326. What does this mean?</p>
+<div class="fragment">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="lecture3_files/figure-revealjs/unnamed-chunk-4-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="covariance" class="slide level2">
+<h2>Covariance</h2>
+<p><span class="math display">\[
+S_{xy} = \frac{\sum_{i=1}^n \bigl(x_i - \bar{x}\bigr)\bigl(y_i - \bar{y}\bigr)}{n} = \frac{SP_{xy}}{n}
+\]</span></p>
+<div class="columns">
+<div class="column" style="width:70%;">
+<div style="font-size: 70%;">
+<p>Definitions:</p>
+<ul>
+<li><span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>: the two variables we’re interested in.</li>
+<li><span class="math inline">\(\bar{x}\)</span>: the sample mean of the variable <span class="math inline">\(x\)</span>.</li>
+<li><span class="math inline">\(x_i\)</span>: the <span class="math inline">\(i\)</span>th observation of the variable.</li>
+<li><span class="math inline">\(n\)</span> the sample size.</li>
+<li><span class="math inline">\(\sum_{i=1}^{n}\)</span>: the sum from <span class="math inline">\(i\)</span> is 1 to <span class="math inline">\(i\)</span> is <span class="math inline">\(n\)</span>.</li>
+<li><span class="math inline">\(SP_{xy}\)</span> the sum of products between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>.</li>
+</ul>
+</div>
+</div><div class="column" style="width:30%;">
+<div class="fragment">
+<p><span class="math inline">\(S_{xy}\)</span> = -6.84.</p>
+</div>
+</div></div>
+</section>
+<section id="correlation-standardized-covariance" class="slide level2">
+<h2>Correlation: Standardized Covariance</h2>
+<p><span class="math display">\[
+r_{xy} = \frac{\sum_{i=1}^n \bigl(x_i - \bar{x}\bigr)\bigl(y_i - \bar{y}\bigr)}{ns_xs_y} = \frac{SP_{xy}}{ns_xs_y} = \frac{S_{xy}}{s_xs_y}
+\]</span></p>
+<div class="columns">
+<div class="column" style="width:70%;">
+<div style="font-size: 70%;">
+<p>Definitions:</p>
+<ul>
+<li><span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>: the two variables we’re interested in.</li>
+<li><span class="math inline">\(\bar{x}\)</span>: the sample mean of the variable <span class="math inline">\(x\)</span>.</li>
+<li><span class="math inline">\(x_i\)</span>: the <span class="math inline">\(i\)</span>th observation of the variable.</li>
+<li><span class="math inline">\(n\)</span> the sample size.</li>
+<li><span class="math inline">\(\sum_{i=1}^{n}\)</span>: the sum from <span class="math inline">\(i\)</span> is 1 to <span class="math inline">\(i\)</span> is <span class="math inline">\(n\)</span>.</li>
+<li><span class="math inline">\(SP_{xy}\)</span>: the sum of products between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>.</li>
+<li><span class="math inline">\(s_x\)</span>: the sample standard deviation of <span class="math inline">\(x\)</span></li>
+</ul>
+</div>
+</div><div class="column" style="width:30%;">
+<div class="fragment">
+<p><span class="math inline">\(r_{xy}\)</span> = -0.791.</p>
+</div>
+</div></div>
+</section>
+<section id="correlation-standardized-covariance-1" class="slide level2">
+<h2>Correlation: Standardized Covariance</h2>
+<p>Recall <span class="math inline">\(Z\)</span>-scores, <span class="math inline">\(Z_{x_i} = \frac{x_i-\bar{x}}{s_x}\)</span> and <span class="math inline">\(Z_{y_i} = \frac{y_i-\bar{y}}{s_y}\)</span></p>
+<div class="fragment">
+<p><span class="math display">\[
+\begin{align}
+r_{xy} &amp;= \frac{\sum_{i=1}^n \bigl(x_i - \bar{x}\bigr)\bigl(y_i - \bar{y}\bigr)}{ns_xs_y} \\
+r_{xy} &amp;= \frac{1}{n}\sum_{i=1}^n \frac{\bigl(x_i - \bar{x}\bigr)}{s_x}\frac{\bigl(y_i - \bar{y}\bigr)}{s_y} \\
+r_{xy} &amp;= \frac{1}{n}\sum_{i=1}^n
+\underbrace{\frac{\bigl(x_i - \bar{x}\bigr)}{s_x}}_{Z_{x_i}}
+\underbrace{\frac{\bigl(y_i - \bar{y}\bigr)}{s_y}}_{Z_{y_i}} \\
+r_{xy} &amp;= \frac{1}{n}\sum_{i=1}^n Z_{x_i} Z_{y_i}
+\end{align}
+\]</span></p>
+</div>
+</section>
+<section id="covariance-matrix" class="slide level2">
+<h2>Covariance Matrix</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-5b670239e029179d2a8e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-5b670239e029179d2a8e">{"x":{"filter":"none","vertical":false,"data":[["child_mortality","fertility","co2_pcap","gdp_pcap","life_expectancy","daily_income"],[663.6690184525399,27.3287115325036,-68.93166476085297,-423932.214664673,-149.4795726991079,-445.9619942120034],[27.3287115325036,1.555441776367962,-3.350865240237784,-19479.86362332083,-6.872979167779499,-20.17812271354166],[-68.93166476085297,-3.350865240237784,28.41039627222404,107317.2834200264,20.76327595167975,105.6530069758033],[-423932.214664673,-19479.86362332083,107317.2834200264,1553199101.535382,141599.0546053233,2029933.867221133],[-149.4795726991079,-6.872979167779499,20.76327595167975,141599.0546053233,48.6951511671385,150.968126351468],[-445.9619942120034,-20.17812271354166,105.6530069758033,2029933.867221133,150.968126351468,2877.239890976012]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>child_mortality<\/th>\n      <th>fertility<\/th>\n      <th>co2_pcap<\/th>\n      <th>gdp_pcap<\/th>\n      <th>life_expectancy<\/th>\n      <th>daily_income<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"searching":false,"info":false,"paging":false,"scrollX":true,"scrollY":"350px","scrollCollapse":true,"autoWidth":true,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":5,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":6,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3,4,5,6]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"child_mortality","targets":1},{"name":"fertility","targets":2},{"name":"co2_pcap","targets":3},{"name":"gdp_pcap","targets":4},{"name":"life_expectancy","targets":5},{"name":"daily_income","targets":6}],"order":[],"orderClasses":false}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render","options.columnDefs.4.render","options.columnDefs.5.render"],"jsHooks":[]}</script>
+</div>
+</div>
+<aside class="notes">
+<p>point out relations between child mortality and gdp_pcap, life expectancy, daily income their covariances are all negative but which relation is strongest? cannot tell due to units.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="correlation-matrix" class="slide level2">
+<h2>Correlation Matrix</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-9539872343d5916c5bc4" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-9539872343d5916c5bc4">{"x":{"filter":"none","vertical":false,"data":[["child_mortality","fertility","co2_pcap","gdp_pcap","life_expectancy","daily_income"],[1,0.8515729339264638,-0.5014655288592348,-0.4170779265941698,-0.8315018434250524,-0.3223622391023648],[0.8515729339264638,1,-0.5037504202675653,-0.3963844467536335,-0.7906433701420672,-0.3016733743270418],[-0.5014655288592348,-0.5037504202675653,1,0.787769018756433,0.5606644352801363,0.777917922273377],[-0.4170779265941698,-0.3963844467536335,0.787769018756433,1,0.5166842255861461,0.9602410933713987],[-0.8315018434250524,-0.7906433701420672,0.5606644352801363,0.5166842255861461,1,0.4047395485413042],[-0.3223622391023648,-0.3016733743270418,0.777917922273377,0.9602410933713987,0.4047395485413042,1]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>child_mortality<\/th>\n      <th>fertility<\/th>\n      <th>co2_pcap<\/th>\n      <th>gdp_pcap<\/th>\n      <th>life_expectancy<\/th>\n      <th>daily_income<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"searching":false,"info":false,"paging":false,"scrollX":true,"scrollY":"350px","scrollCollapse":true,"autoWidth":true,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":4,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":5,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":6,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3,4,5,6]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"child_mortality","targets":1},{"name":"fertility","targets":2},{"name":"co2_pcap","targets":3},{"name":"gdp_pcap","targets":4},{"name":"life_expectancy","targets":5},{"name":"daily_income","targets":6}],"order":[],"orderClasses":false}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render","options.columnDefs.4.render","options.columnDefs.5.render"],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+<section id="covariance-vs.-correlation" class="slide level2">
+<h2>Covariance vs.&nbsp;Correlation</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<h3 id="covariance-1">Covariance</h3>
+<ul>
+<li><span class="math inline">\(-\infty &lt; S_{xy} &lt; \infty\)</span></li>
+<li>unit, <span class="math inline">\(\mathrm{unit}(x) \times \mathrm{unit}(y)\)</span></li>
+<li>covariance of <span class="math inline">\(x\)</span> with <span class="math inline">\(x\)</span> equals variance</li>
+<li>scales with linear transformation of the data (e.g., mm to cm)</li>
+<li>cannot be interpreted without knowing the variances</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<h3 id="correlation">Correlation</h3>
+<ul>
+<li><span class="math inline">\(-1 \leq r_{xy} \leq 1\)</span></li>
+<li>no unit</li>
+<li>correlation of <span class="math inline">\(x\)</span> with <span class="math inline">\(x\)</span> equals <span class="math inline">\(1\)</span></li>
+<li>unaffected by changes of units (e.g., cm to mm)</li>
+<li>can be interpreted without knowing the variances</li>
+</ul>
+</div></div>
+</section>
+<section id="limitations" class="slide level2">
+<h2>Limitations</h2>
+<ul>
+<li>Throughout, we’re often looking at plots of the data</li>
+<li>The only thing that truly conveys all information in the data… are the data themselves</li>
+<li>Looking at raw numbers is typically not informative, hence we use plots</li>
+</ul>
+</section>
+<section id="anscombes-quartet" class="slide level2">
+<h2>Anscombe’s Quartet</h2>
+
+<img data-src="images/fig_anscombe.jpg" class="quarto-figure quarto-figure-center r-stretch"><div class="footer">
+<p>Source: <a href="https://en.wikipedia.org/wiki/Anscombe%27s_quartet">Wikipedia</a></p>
+</div>
+</section>
+<section id="anscombes-quartet-1" class="slide level2">
+<h2>Anscombe’s Quartet</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">dataset</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">mean_x</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">mean_y</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">sd_x</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">sd_y</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">cor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">linear</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">7.501</td>
+<td style="text-align: right;">3.317</td>
+<td style="text-align: right;">2.032</td>
+<td style="text-align: right;">0.816</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">nonlinear</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">7.501</td>
+<td style="text-align: right;">3.317</td>
+<td style="text-align: right;">2.032</td>
+<td style="text-align: right;">0.816</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">outlier</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">7.501</td>
+<td style="text-align: right;">3.317</td>
+<td style="text-align: right;">2.031</td>
+<td style="text-align: right;">0.817</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">robust</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">7.500</td>
+<td style="text-align: right;">3.317</td>
+<td style="text-align: right;">2.030</td>
+<td style="text-align: right;">0.816</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="datasaurus-dozen" class="slide level2">
+<h2>Datasaurus Dozen</h2>
+
+<img data-src="images/fig_datasaurus.jpg" class="quarto-figure quarto-figure-center r-stretch"><div class="footer">
+<p>source: <a href="https://jumpingrivers.github.io/datasauRus/" class="uri">https://jumpingrivers.github.io/datasauRus/</a></p>
+</div>
+</section>
+<section id="datasaurus-dozen-1" class="slide level2">
+<h2>Datasaurus Dozen</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">dataset</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">mean_x</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">mean_y</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">sd_x</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">sd_y</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">cor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">away</td>
+<td style="text-align: right;">54.266</td>
+<td style="text-align: right;">47.835</td>
+<td style="text-align: right;">16.770</td>
+<td style="text-align: right;">26.940</td>
+<td style="text-align: right;">-0.064</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">bullseye</td>
+<td style="text-align: right;">54.269</td>
+<td style="text-align: right;">47.831</td>
+<td style="text-align: right;">16.769</td>
+<td style="text-align: right;">26.936</td>
+<td style="text-align: right;">-0.069</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">circle</td>
+<td style="text-align: right;">54.267</td>
+<td style="text-align: right;">47.838</td>
+<td style="text-align: right;">16.760</td>
+<td style="text-align: right;">26.930</td>
+<td style="text-align: right;">-0.068</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">dino</td>
+<td style="text-align: right;">54.263</td>
+<td style="text-align: right;">47.832</td>
+<td style="text-align: right;">16.765</td>
+<td style="text-align: right;">26.935</td>
+<td style="text-align: right;">-0.064</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">dots</td>
+<td style="text-align: right;">54.260</td>
+<td style="text-align: right;">47.840</td>
+<td style="text-align: right;">16.768</td>
+<td style="text-align: right;">26.930</td>
+<td style="text-align: right;">-0.060</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">high_lines</td>
+<td style="text-align: right;">54.269</td>
+<td style="text-align: right;">47.835</td>
+<td style="text-align: right;">16.767</td>
+<td style="text-align: right;">26.940</td>
+<td style="text-align: right;">-0.069</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">slant_up</td>
+<td style="text-align: right;">54.266</td>
+<td style="text-align: right;">47.831</td>
+<td style="text-align: right;">16.769</td>
+<td style="text-align: right;">26.939</td>
+<td style="text-align: right;">-0.069</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">star</td>
+<td style="text-align: right;">54.267</td>
+<td style="text-align: right;">47.840</td>
+<td style="text-align: right;">16.769</td>
+<td style="text-align: right;">26.930</td>
+<td style="text-align: right;">-0.063</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">x_shape</td>
+<td style="text-align: right;">54.260</td>
+<td style="text-align: right;">47.840</td>
+<td style="text-align: right;">16.770</td>
+<td style="text-align: right;">26.930</td>
+<td style="text-align: right;">-0.066</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="limitations-2" class="slide level2">
+<h2>Limitations (2)</h2>
+<p>Some limitations cannot be spotted by looking at a plot!</p>
+<ol type="1">
+<li>Restricted range</li>
+<li>Causality</li>
+</ol>
+</section>
+<section id="restricted-range" class="slide level2">
+<h2>Restricted range</h2>
+
+<img data-src="images/fig_datasaurus2.jpg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="restricted-range-1" class="slide level2">
+<h2>Restricted range</h2>
+
+<img data-src="images/fig_datasaurus_restricted.jpg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="causality" class="slide level2">
+<h2>Causality</h2>
+<p>What do these correlations tell us about causality, i.e., which variable <em>causes</em> a change in another?</p>
+<div class="fragment">
+<p>Nothing! <em>Correlation does not imply causation</em>!</p>
+<!-- Wooclap! -->
+<!--
+Q1: which statements are true?
+[c] diagonal element of covariance equals variance
+    diagonal element of covariance equals standard deviation
+    correlation has the same unit as the variables
+[c] correlation can be negative
+
+Q2: which picture shows a positive correlation?
+
+Q3: which statements are true?
+[c] correlation measures a nonlinear relation
+    diagonal element of covariance equals standard deviation
+    correlation has the same unit as the variables
+[c] correlation can be negative
+
+-->
+</div>
+</section></section>
+<section id="break" class="title-slide slide level1 section-slide unlisted center">
+<h1>Break</h1>
+<p>See you in ~10 minutes!</p>
+</section>
+
+<section>
+<section id="transformations" class="title-slide slide level1 center">
+<h1>Transformations</h1>
+
+</section>
+<section id="example-wealth" class="slide level2">
+<h2>Example: Wealth</h2>
+
+<img data-src="lecture3_files/figure-revealjs/unnamed-chunk-9-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<section id="what-if-the-relation-is-not-linear" class="slide level2">
+<h2>What if the relation is not linear?</h2>
+<ul>
+<li>Transformations</li>
+<li>Spearman rank correlation</li>
+<li>Kendall’s tau</li>
+</ul>
+</section>
+<section id="transformations-1" class="slide level2">
+<h2>Transformations</h2>
+<p>Transformations can make</p>
+<ul>
+<li>the data more normal</li>
+<li>relations more linear</li>
+</ul>
+<p>which in turn makes statistics easier.</p>
+<p>But, transformations also</p>
+<ul>
+<li>alter the meaning of the data</li>
+<li>are not guaranteed to make things better</li>
+</ul>
+</section>
+<section id="common-transformations" class="slide level2">
+<h2>Common transformations</h2>
+<p>Some we have already seen!</p>
+<p>Converting raw to Z scores, is technically a transformation.</p>
+<div class="fragment">
+<ul>
+<li>Log, log10, reciprocal, exp, power, square root</li>
+</ul>
+</div>
+</section>
+<section id="common-transformations-1" class="slide level2">
+<h2>Common transformations</h2>
+
+<img data-src="lecture3_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"></section>
+<section id="example-wealth-1" class="slide level2">
+<h2>Example: Wealth</h2>
+
+<img data-src="lecture3_files/figure-revealjs/unnamed-chunk-11-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<section id="example-wealth-2" class="slide level2">
+<h2>Example: Wealth</h2>
+
+<img data-src="lecture3_files/figure-revealjs/unnamed-chunk-12-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<section id="example-wealth-3" class="slide level2">
+<h2>Example: Wealth</h2>
+
+<img data-src="lecture3_files/figure-revealjs/unnamed-chunk-13-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<section id="spearman-rank-correlation" class="slide level2">
+<h2>Spearman rank correlation</h2>
+<p>Pearson correlation between the rank values of those two variables</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-03e1f7b162d7d6b0f499" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-03e1f7b162d7d6b0f499">{"x":{"filter":"none","vertical":false,"data":[[1981.71017,7397.48643,17111.95393,63913.38351,68867.82593000001,27627.96348,17886.17839,27941.78515,59883.64704,65661.45219,21051.24424,829.38716,62744.203,3588.3252,2466.05331,7888.16389,32433.14955,57572.99798,34342.79041,19297.07149],[13,65,106,177,181,131,109,132,173,179,119,1,174,35,15,66,139,170,143,116],[68,64,78.7,83.2,80.09999999999999,76.3,77.59999999999999,77.3,83.09999999999999,81.5,73.09999999999999,61.6,81.59999999999999,65.90000000000001,67.8,70.90000000000001,74.5,77,71.5,76.59999999999999],[50,27.5,154.5,189,162,130.5,147.5,141,187,174.5,89,18,176,40,48.5,69,101.5,140,74.5,135]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>gdp_pcap<\/th>\n      <th>rank_gd<\/th>\n      <th>life_expectancy<\/th>\n      <th>rank_life_expectancy<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"searching":false,"info":false,"paging":false,"scrollX":true,"scrollY":"350px","scrollCollapse":true,"autoWidth":true,"columnDefs":[{"targets":0,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[0,1,2,3]},{"name":"gdp_pcap","targets":0},{"name":"rank_gd","targets":1},{"name":"life_expectancy","targets":2},{"name":"rank_life_expectancy","targets":3}],"order":[],"orderClasses":false}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render","options.columnDefs.3.render"],"jsHooks":[]}</script>
+</div>
+</div>
+<!--
+## Kendall's tau
+
+![](images/Concordant_Points_Kendall_Correlation.svg){fig-align="center" width="50%"}
+
+Take two observations  $x_i, y_i$ and $x_j, y_j$.
+These are called _concordant_ if either
+
+- $x_i > x_j$ AND $y_i > y_j$, or
+- $x_i < x_j$ AND $y_i < y_j$
+
+and called _disconcordant_ otherwise.
+
+$$
+\tau = \frac{\text{(\# concordant pairs)} - \text{(\# disconcordant pairs)}}{n}
+$$
+
+
+
+::: footer
+
+$\tau$ is the Greek letter "tau".
+
+Source: <https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient>
+:::
+-->
+</section>
+<section id="example-wealth-4" class="slide level2">
+<h2>Example: Wealth</h2>
+<ul>
+<li>Pearson Correlation: 0.517</li>
+<li>Spearman rank Correlation: 0.83</li>
+<li>Kendall’s Tau: 0.638</li>
+</ul>
+
+<img data-src="lecture3_files/figure-revealjs/unnamed-chunk-15-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<section id="example-wealth-5" class="slide level2">
+<h2>Example: Wealth</h2>
+<ul>
+<li>Pearson Correlation: 0.817</li>
+<li>Spearman rank Correlation: 0.83</li>
+<li>Kendall’s Tau: 0.638</li>
+</ul>
+
+<img data-src="lecture3_files/figure-revealjs/unnamed-chunk-16-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<section id="sample-statistics-and-population-estimators" class="slide level2">
+<h2>Sample statistics and Population Estimators</h2>
+<ul>
+<li>Sample statistics describe the sample.</li>
+<li>What we want to describe is the <em>population</em>.</li>
+<li>For this reason, sample statistics are often “adjusted”:</li>
+</ul>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<h3 id="sample">Sample</h3>
+<ul>
+<li>Variance divides by <span class="math inline">\(n\)</span></li>
+<li>Covariance divides by <span class="math inline">\(n\)</span></li>
+</ul>
+</div><div class="column" style="width:50%;">
+<h3 id="estimator">Estimator</h3>
+<ul>
+<li>Variance divides by <span class="math inline">\(n - 1\)</span></li>
+<li>Covariance divides by <span class="math inline">\(n - 1\)</span></li>
+</ul>
+</div></div>
+<p>Intuition: We “used” one observation to compute the sample mean and thus divide by <span class="math inline">\(n - 1\)</span>.</p>
+<p>Note:</p>
+<ul>
+<li>Variance and covariance change when we use <span class="math inline">\(n-1\)</span> to estimate population quantities</li>
+<li>Correlation does not change, because the denominator cancels.</li>
+</ul>
+</div>
+</section>
+<section id="drawbacks-of-descriptive-statistics" class="slide level2">
+<h2>Drawbacks of Descriptive Statistics</h2>
+<p>At its core, statistics tries to <em>reduce</em> the information in the full dataset into something smaller</p>
+<ul>
+<li>(+) This makes it possible to understand large datasets</li>
+<li>(-) This loses information along the way</li>
+</ul>
+<div class="fragment">
+<p>Example: <strong>IF</strong> the data are normally distributed then the mean and variance describe the entire distribution.</p>
+</div>
+</section></section>
+<section>
+<section id="bivariate-distributions" class="title-slide slide level1 center">
+<h1>Bivariate Distributions</h1>
+
+</section>
+<section id="normal-distribution" class="slide level2">
+<h2>Normal distribution</h2>
+<div style="font-size: 90%;">
+<p>Last Week: Sample mean and SD correspond to the population model <span class="math inline">\(N(\mu_x, \sigma_x)\)</span></p>
+</div>
+<div class="fragment">
+<p>Now: two sample means, <span class="math inline">\(\bar{x},\bar{y}\)</span>, two SDs, <span class="math inline">\(s_x,s_y\)</span>, a correlation <span class="math inline">\(r_{xy}\)</span> correspond to a bivariate normal model:</p>
+<p><span class="math display">\[
+X, Y \sim N(\underbrace{\mu_x, \mu_y}_{\text{mean}}, \underbrace{\sigma_x, \sigma_y, \rho}_{\text{covariance}})
+\]</span></p>
+<p>The bivariate normal distribution has five parameters:</p>
+<p><span class="math display">\[
+\begin{align}
+\mu_x &amp;:\text{mean of X}\quad &amp;&amp;\sigma_x :\text{sd of X}\\
+\mu_y &amp;:\text{mean of Y}\quad &amp;&amp;\sigma_y :\text{sd of Y}\\
+&amp; \quad&amp;&amp;\rho :\text{correlation}
+\end{align}
+\]</span></p>
+</div>
+</section>
+<section id="section" class="slide level2" data-background-video="scripts/bvn-3d-to-contour.mp4" data-background-video-muted="true" data-background-size="contain" data-background-video-loop="true">
+<h2></h2>
+</section>
+<section id="these-are-the-same-picture" class="slide level2" style="overflow-x: hidden;">
+<h2>These are the same picture</h2>
+<p><img data-src="scripts/bvn-3d.png" class="absolute" style="top: 200px; left: 0px; width: 600px; "> <img data-src="scripts/bvn-contour-view.png" class="absolute" style="top: 200px; left: 500px; width: 600px; "></p>
+</section>
+<section id="bivariate-normal-distribution" class="slide level2">
+<h2>Bivariate Normal distribution</h2>
+<div id="bvn-demo" class="bvn-layout">
+<div class="bvn-panel">
+<p><label class="bvn-control"> <span>μ<sub>x</sub></span> <input data-param="mu1" type="range" min="-2" max="2" step="0.1" value="0"> <span data-value="mu1"></span> </label></p>
+<p><label class="bvn-control"> <span>μ<sub>y</sub></span> <input data-param="mu2" type="range" min="-2" max="2" step="0.1" value="0"> <span data-value="mu2"></span> </label></p>
+<p><label class="bvn-control"> <span>σ<sub>x</sub></span> <input data-param="sigma1" type="range" min="0.4" max="2" step="0.1" value="1"> <span data-value="sigma1"></span> </label></p>
+<p><label class="bvn-control"> <span>σ<sub>y</sub></span> <input data-param="sigma2" type="range" min="0.4" max="2" step="0.1" value="1"> <span data-value="sigma2"></span> </label></p>
+<p><label class="bvn-control"> <span>ρ</span> <input data-param="rho" type="range" min="-0.95" max="0.95" step="0.05" value="0"> <span data-value="rho"></span> </label></p>
+</div>
+<div class="bvn-plot">
+<svg>
+</svg>
+</div>
+</div>
+<script>
+bivariateNormalDemo("#bvn-demo", {
+  xmin: -5,
+  xmax: 5,
+  ymin: -5,
+  ymax: 5,
+  nPoints: 250
+});
+</script>
+</section>
+<section id="continuous-distributions" class="slide level2">
+<h2>Continuous Distributions</h2>
+<p>Last week we examined discrete probability distributions:</p>
+<ul>
+<li>joint, marginal, and conditional.</li>
+</ul>
+<p>For continuous probability distributions the exact counterparts exist.</p>
+</section>
+<section id="marginal-distribution" class="slide level2">
+<h2>Marginal Distribution</h2>
+<p>If we ignore <span class="math inline">\(Y\)</span>, or have not observed it, what is the distribution of <span class="math inline">\(X\)</span>?</p>
+<div class="fragment">
+<p>Conveniently, if</p>
+<p><span class="math display">\[
+X, Y \sim N(\underbrace{\mu_x, \mu_y}_{\text{mean}}, \underbrace{\sigma_x, \sigma_y, \rho}_{\text{(Co)Variance}})
+\]</span></p>
+<p>then the marginal distributions are <span class="math display">\[
+X \sim N(\mu_x, \sigma_x), \quad Y \sim N(\mu_y, \sigma_y)
+\]</span></p>
+</div>
+</section>
+<section id="conditional-distribution" class="slide level2">
+<h2>Conditional Distribution</h2>
+<p>What if we do know <span class="math inline">\(Y\)</span>?</p>
+</section>
+<section id="conditional-distribution-1" class="slide level2">
+<h2>Conditional Distribution</h2>
+<div id="bvn-conditional-demo" class="bvn-conditional-layout">
+<div class="bvn-panel">
+<p><label class="bvn-control"> <span>μ<sub>x</sub></span> <input data-param="mu1" type="range" min="-2" max="2" step="0.1" value="0"> <span data-value="mu1"></span> </label></p>
+<p><label class="bvn-control"> <span>μ<sub>y</sub></span> <input data-param="mu2" type="range" min="-2" max="2" step="0.1" value="0"> <span data-value="mu2"></span> </label></p>
+<p><label class="bvn-control"> <span>σ<sub>x</sub></span> <input data-param="sigma1" type="range" min="0.4" max="2" step="0.1" value="1"> <span data-value="sigma1"></span> </label></p>
+<p><label class="bvn-control"> <span>σ<sub>y</sub></span> <input data-param="sigma2" type="range" min="0.4" max="2" step="0.1" value="1"> <span data-value="sigma2"></span> </label></p>
+<p><label class="bvn-control"> <span>ρ</span> <input data-param="rho" type="range" min="-0.95" max="0.95" step="0.05" value="0.6"> <span data-value="rho"></span> </label></p>
+<p><label class="bvn-control"> <span>Y</span> <input data-param="y0" type="range" min="-4" max="4" step="0.1" value="1"> <span data-value="y0"></span> </label></p>
+</div>
+<div class="bvn-conditional-right">
+<svg class="bvn-conditional-joint">
+</svg>
+<svg class="bvn-conditional-density">
+</svg>
+</div>
+</div>
+<script>
+conditionalNormalDemo("#bvn-conditional-demo", {
+  xmin: -5,
+  xmax: 5,
+  ymin: -5,
+  ymax: 5,
+  nPoints: 220
+});
+</script>
+</section>
+<section id="conditional-distribution-2" class="slide level2">
+<h2>Conditional Distribution</h2>
+<p>If <span class="math inline">\(\rho = 0\)</span> then knowing Y does not tell us anything about X.</p>
+<p>They are <em>independent</em>.</p>
+<p>Independence: knowing the outcome or value of one variable or event provides no information about the probability or outcome of another.</p>
+<p>This is a special property of the bivariate normal distribution, it does <em>not</em> hold in general that <span class="math inline">\(\rho = 0\)</span> (or <span class="math inline">\(r = 0\)</span>) implies independence.</p>
+</section>
+<section id="multivariate-normal-distribution" class="slide level2">
+<h2>Multivariate Normal distribution</h2>
+<p>For <span class="math inline">\(p\)</span> variables we have: <span class="math display">\[
+\mathbf{\mu} = \begin{bmatrix}
+\mu_1 \\
+\mu_2 \\
+\mu_3 \\
+\vdots \\
+\mu_p
+\end{bmatrix}\quad
+\mathbf{\Sigma} = \begin{bmatrix}
+\sigma_1^2                &amp; \sigma_1\sigma_2\rho_{12} &amp;\sigma_1\sigma_3\rho_{13}  &amp;\cdots &amp;\sigma_1\sigma_p\rho_{1p}\\
+\sigma_2\sigma_1\rho_{21} &amp; \sigma_2^2                &amp;\sigma_2\sigma_3\rho_{23}  &amp;\cdots &amp;\sigma_2\sigma_p\rho_{2p}\\
+\sigma_3\sigma_1\rho_{31} &amp; \sigma_3\sigma_2\rho_{32} &amp; \sigma_3^2                &amp;\cdots &amp;\sigma_3\sigma_p\rho_{3p}\\
+\vdots                    &amp; \vdots                    &amp; \vdots                    &amp;\ddots &amp;\vdots \\
+\sigma_p\sigma_1\rho_{p1} &amp; \sigma_p\sigma_2\rho_{p2} &amp; \sigma_p\sigma_3\rho_{p3} &amp;\cdots &amp;\sigma_p^2
+\end{bmatrix}
+\]</span></p>
+<ul>
+<li>No more picture</li>
+<li>If <span class="math inline">\(\rho_{ij} = 0\)</span> then variables <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> are independent</li>
+</ul>
+</section>
+<section id="summary" class="slide level2">
+<h2>Summary</h2>
+<ul>
+<li>Covariance and correlation summarize the association between two variables.</li>
+<li>Transformations and rank correlations may help when the relation is nonlinear.</li>
+<li>The bivariate normal distribution describes the joint, marginal, conditional distributions and independence.</li>
+</ul>
+
+</section></section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<p><img src="../common_resources/logos/logo_tu_small.svg" class="slide-logo"></p>
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="lecture3_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="lecture3_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="lecture3_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="lecture3_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="lecture3_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="lecture3_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="lecture3_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="lecture3_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="lecture3_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="lecture3_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    <script>
+    (function() {
+      function toggleFooter() {
+        var f = document.querySelector(".reveal > .footer");
+        if (!f || typeof Reveal === "undefined") return;
+        var i = Reveal.getIndices();
+        f.style.display = (i.h === 0 && i.v === 0) ? "none" : "block";
+      }
+      if (typeof Reveal !== "undefined") {
+        Reveal.on("slidechanged", toggleFooter);
+        Reveal.on("ready", toggleFooter);
+        if (Reveal.isReady()) toggleFooter();
+      }
+    })();
+    </script>
+    
+
+</body></html>

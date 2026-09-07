@@ -1,5 +1,5 @@
-
-<div id="bvn-demo" class="bvn-layout">
+<div id="bvn-conditional-demo"
+     class="bvn-conditional-layout">
 
 <div class="bvn-panel">
 
@@ -59,24 +59,40 @@
   min="-0.95"
   max="0.95"
   step="0.05"
-  value="0">
+  value="0.6">
 <span data-value="rho"></span>
+</label>
+
+<label class="bvn-control">
+<span>Y</span>
+<input
+  data-param="y0"
+  type="range"
+  min="-4"
+  max="4"
+  step="0.1"
+  value="1">
+<span data-value="y0"></span>
 </label>
 
 </div>
 
-<div class="bvn-plot">
-<svg></svg>
+<div class="bvn-conditional-right">
+
+<svg class="bvn-conditional-joint"></svg>
+
+<svg class="bvn-conditional-density"></svg>
+
 </div>
 
 </div>
 
 <script>
-bivariateNormalDemo("#bvn-demo", {
+conditionalNormalDemo("#bvn-conditional-demo", {
   xmin: -5,
   xmax: 5,
   ymin: -5,
   ymax: 5,
-  nPoints: 250
+  nPoints: 220
 });
 </script>
