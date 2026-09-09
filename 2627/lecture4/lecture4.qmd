@@ -21,31 +21,6 @@ format:
             <script src="../common_resources/components/distributions.js"></script>
 ---
 
-```{r}
-knitr::opts_chunk$set(echo = FALSE)
-options(knitr.kable.NA = '')
-set.seed(1)
-library(ggplot2)
-library(kableExtra)
-library(dplyr)
-library(tibble)
-library(patchwork)
-toDT <- function(dat, scroll = TRUE, rownames = FALSE) {
-
-  numeric_cols <- if (is.data.frame(dat))
-    names(dat)[sapply(dat, is.numeric)]
-  else if (is.matrix(dat)) {
-    which(apply(dat, 2, is.numeric))
-  }
-
-  DT::datatable(
-    dat, options = list(searching = FALSE, info = FALSE, paging = FALSE, scrollX = scroll, scrollY = "350px", scrollCollapse = TRUE,autoWidth = TRUE
-    ), rownames = rownames) |>
-    DT::formatRound(numeric_cols, digits = 2)
-}
-
-```
-
 ## Today {.unlisted}
 
 [Chapter 7](https://cjvanlissa.github.io/stats12/samplingdistribution.html) and [Chapter 9](https://cjvanlissa.github.io/stats12/testing.html) from the gitbook.
@@ -53,10 +28,9 @@ toDT <- function(dat, scroll = TRUE, rownames = FALSE) {
 ## Learning Goals:
 
 - What are hypotheses?
-  + What is the underlying philosophy?
+- What is the logic behind Null Hypothesis Significance Testing (NHST)?
 - What is a sampling distribution?
 - How do we test hypotheses?
-
 
 # Hypothesis Testing
 
@@ -64,21 +38,22 @@ toDT <- function(dat, scroll = TRUE, rownames = FALSE) {
 
 What are hypotheses?
 
+. . .
+
 Example:
 
-All swans are white
+- All swans are white
+- A film director's gender has no impact on whether a movie passes the Bechdel test
+- This medicine helps patients recover faster than no medicine
 
-(picture)
+
 
 ## Falsification
 
-We typically cannot confirm or validate hypotheses.
-
-We can only reject them.
-
-If we observe 100 white swans, this does not tell us that all swans are white.
-
-As soon as we observe one black swan,
+- We typically cannot "confirm" or "validate" hypotheses.
+- We can only reject them.
+- If we observe 100 white swans, this does not tell us that all swans are white.
+- If we observe one black swan, we can reject the hypothesis that all swans are white.
 
 ## Falsification - Logic
 
@@ -134,14 +109,16 @@ $\alpha$ is our _error rate_. With $\alpha = .05$ we expect and accept that in 1
 
 The logic doesn't necessarily hold!
 
-- $\mathcal{H}_0$:: Piet is Dutch.
-- Observation: Piet is a member of the Tweede Kamer.
+- $\mathcal{H}_0$: Piet is Dutch.
+- Observation: Piet is a member of the Tweede Kamer (parlement).
 - $P(\text{Tweede Kamerlid}\mid\text{Dutch})$ is extremely small.
-So an NHST-like argument says: “That observation would be extremely unlikely if Piet were Dutch, so reject $H_0$.
+- An NHST-like argument says: “That observation would be extremely unlikely if Piet were Dutch, so reject $H_0$.
 
 Yet the observation is obviously evidence for Piet being Dutch rather than against it.
 
-There is a famous article by Cohen (1995): [The Earth Is Round (p < .05)](https://psycnet.apa.org/record/1995-12080-001) which discusses other drawbacks.
+## Limitations: Logic Errors
+
+There is a famous article by Cohen (1995): [The Earth Is Round (p < .05)](https://psycnet.apa.org/record/1995-12080-001) which discusses other drawbacks of NHST that are often encountered in empirical practice.
 
 This is key because to apply NHST correctly, you must know its limitations
 
@@ -175,24 +152,68 @@ But there is a solution, the Central Limit Theorem
 
 ## Central Limit Theorem
 
-Suppose $x_1, x_2, \dots, x_n \sim \mathcal{D}(\Epsilon, \Xi, \dots)$.
+Suppose $x_1, x_2, \dots, x_n \overset{\mathrm{iid}}{\sim} \mathcal{D}(\mu, \sigma^2, \dots)$.
 
-Then, $\sum_{i=1}^N x_i = x_1 + x_2 + \dots + x_n \sim \mathcal{N}(TODO, TODO)$.
+Then, as $n$ becomes large,
 
-This holds for almost all distributions $\mathcal{D}$.
+$$
+\bar{x} = \frac{1}{n}\sum_{i=1}^n x_i
+\approx \mathcal{N}\left(\mu, \frac{\sigma^2}{n}\right).
+$$
 
-Specifically, $\mathcal{D}$ must have a defined population mean and variance.
+This holds for a very broad class of population distributions $\mathcal{D}$.
+
+Specifically, the population must have a finite mean $\mu$ and finite variance $\sigma^2$.
+
+::: {style="font-size: 70%;"}
+Definitions:
+$\overset{\mathrm{iid}}{\sim}$ means _independent_ and _identically distributed_.
+_independent_: "knowing the outcome or value of one variable or event provides no information about the probability or outcome of another.", i.e., observing $x_2$ has no influence on what $x_7$.
+_identically distributed_: All the $x_i$ come from the same population distribution
+:::
+
+## The sampling distribution of the mean
+
+{{< include ../common_resources/components/samplingdistribution.qmd >}}
 
 ## Central Limit Theorem
 
-$\sum_{i=1}^N x_i \sim \mathcal{N}(TODO, TODO)$ is huge!
+The impact of
+$$
+\bar{x} \sim \mathcal{N}\left(\mu, \frac{\sigma^2}{n}\right).
+$$
+is huge, because sums and average are all around us.
 
 Example:
 
-- School data looks at the average performance of pupils.
-  + Even though grades are between 1 - 10, their average is a sum, so CLT applies
+- In educational science, we study at the performance of pupils.
+  + Even though grades are scored 1 - 10, we examine the sum, so CLT applies
 - fMRI machine collects data raw voxels.
   + Preprocessing steps involve averaging and smoothing the data across multiple voxels. CLT applies.
+- We often study proportions, such as the proportion of movies that pass the Bechdel test.
+  + Each response can be coded as $x_i = 0$ or $x_i = 1$.
+  + The proportion is the average: $\hat{p} = \frac{1}{n}\sum_i x_i$.
+  + Therefore, for sufficiently large $n$, $\hat{p}$ is approximately normally distributed.
 
 If we want to compare the means, then we
 
+::: {.notes}
+- For the grades example, mention that already at the binary item level this applies.
+- For the fMRI example, we're looking at the BOLD response
+
+:::
+
+## Central Limit Theorem -- Addendum
+
+Sometimes, we can derive the sampling distribution more accurately.
+
+Assume $x_1, x_2, \dots, x_n \overset{\mathrm{iid}}{\sim} \mathcal{N}(\mu, \sigma^2)$.
+
+Then:
+- $(n - 1)s_x^2 / \sigma^2 ~ \chi^2_{n-1}$
+
+
+
+::: footer
+$\chi$ is the Greek letter "chi"
+:::

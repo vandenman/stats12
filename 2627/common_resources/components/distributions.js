@@ -23,6 +23,25 @@
     );
   };
 
+  const rshash = (
+    n,
+    location = 0,
+    scale = 1,
+    skew = 0,
+    tail = 1
+  ) => {
+    return Array.from({ length: n }, () => {
+      const u = jStat.normal.sample(0, 1);
+
+      const z =
+        Math.sinh(
+          (Math.asinh(u) - skew) / tail
+        );
+
+      return location + scale * z;
+    });
+  };
+
   function linspace(a, b, n) {
     return Array.from(
       { length: n },
@@ -1116,6 +1135,765 @@
 
     draw();
   }
+
+  /* ============================================================
+   SHASH central-limit-theorem demo
+   ============================================================ */
+
+function cltShashDemo(selector, options = {}) {
+  const root = document.querySelector(selector);
+  if (!root) return;
+
+  const populationSvg =
+    root.querySelector(".clt-population");
+
+  const replicateSvgs = [
+    root.querySelector(".clt-replicate-1"),
+    root.querySelector(".clt-replicate-2"),
+    root.querySelector(".clt-replicate-3")
+  ];
+
+  const samplingSvg =
+    root.querySelector(".clt-sampling");
+
+  const controls = {};
+
+  root.querySelectorAll("[data-param]").forEach(input => {
+    controls[input.dataset.param] = input;
+
+    const output = root.querySelector(
+      `[data-value="${input.dataset.param}"]`
+    );
+
+    const updateLabel = () => {
+      if (!output) return;
+
+      const value = Number(input.value);
+
+      if (
+        input.dataset.param === "n" ||
+        input.dataset.param === "reps"
+      ) {
+        output.textContent =
+          Math.round(value).toString();
+      } else {
+        output.textContent =
+          value.toFixed(1);
+      }
+    };
+
+    updateLabel();
+
+    input.addEventListener("input", () => {
+      updateLabel();
+      scheduleDraw();
+    });
+  });
+
+  function value(name, fallback) {
+    return controls[name]
+      ? Number(controls[name].value)
+      : fallback;
+  }
+
+
+  /* ----------------------------------------------------------
+     Raw SHASH machinery
+
+     Positive skew produces positive/right skew.
+
+     U ~ N(0,1)
+
+     Y = sinh((asinh(U) + skew) / tail)
+     ---------------------------------------------------------- */
+
+  function rawShashDraw(skew, tail) {
+    const u =
+      jStat.normal.sample(0, 1);
+
+    return Math.sinh(
+      (Math.asinh(u) + skew) / tail
+    );
+  }
+
+
+  function rawShashDensity(y, skew, tail) {
+    const u =
+      Math.sinh(
+        tail * Math.asinh(y) - skew
+      );
+
+    const jacobian =
+      tail *
+      Math.sqrt(1 + u * u) /
+      Math.sqrt(1 + y * y);
+
+    return (
+      Math.exp(-0.5 * u * u) /
+      Math.sqrt(2 * Math.PI)
+    ) * jacobian;
+  }
+
+
+  /*
+    The ordinary SHASH location and scale are not generally its
+    mean and SD.
+
+    We numerically calculate E(Y) and SD(Y), cache the result,
+    then standardize Y so that the user-facing controls really
+    correspond to population mean and SD.
+  */
+
+  const momentCache = new Map();
+
+  function rawShashMoments(skew, tail) {
+    const key =
+      `${skew.toFixed(6)}|${tail.toFixed(6)}`;
+
+    if (momentCache.has(key)) {
+      return momentCache.get(key);
+    }
+
+    const lo = -8;
+    const hi = 8;
+    const m = 3001;
+    const h = (hi - lo) / (m - 1);
+
+    let total = 0;
+    let first = 0;
+    let second = 0;
+
+    for (let i = 0; i < m; i++) {
+      const u = lo + i * h;
+
+      const weight =
+        Math.exp(-0.5 * u * u) /
+        Math.sqrt(2 * Math.PI);
+
+      const y =
+        Math.sinh(
+          (Math.asinh(u) + skew) / tail
+        );
+
+      const trapezoidWeight =
+        (i === 0 || i === m - 1)
+          ? 0.5
+          : 1;
+
+      total +=
+        trapezoidWeight * weight;
+
+      first +=
+        trapezoidWeight * weight * y;
+
+      second +=
+        trapezoidWeight * weight * y * y;
+    }
+
+    total *= h;
+    first *= h;
+    second *= h;
+
+    const rawMean =
+      first / total;
+
+    const rawVariance =
+      second / total -
+      rawMean * rawMean;
+
+    const result = {
+      mean: rawMean,
+      sd: Math.sqrt(rawVariance)
+    };
+
+    momentCache.set(key, result);
+
+    return result;
+  }
+
+
+  function rshash(
+    n,
+    mean = 0,
+    sd = 1,
+    skew = 0,
+    tail = 1
+  ) {
+    const moments =
+      rawShashMoments(skew, tail);
+
+    return Array.from(
+      { length: n },
+      () => {
+        const y =
+          rawShashDraw(skew, tail);
+
+        return (
+          mean +
+          sd *
+          (y - moments.mean) /
+          moments.sd
+        );
+      }
+    );
+  }
+
+
+  function dshashStandardized(
+    x,
+    mean,
+    sd,
+    skew,
+    tail
+  ) {
+    const moments =
+      rawShashMoments(skew, tail);
+
+    const y =
+      moments.mean +
+      moments.sd *
+      (x - mean) / sd;
+
+    return (
+      rawShashDensity(y, skew, tail) *
+      moments.sd / sd
+    );
+  }
+
+
+  /* ----------------------------------------------------------
+     Helpers
+     ---------------------------------------------------------- */
+
+  function meanOf(x) {
+    return (
+      x.reduce((a, b) => a + b, 0) /
+      x.length
+    );
+  }
+
+
+  function histogram(values, bins, xmin, xmax) {
+    const width =
+      (xmax - xmin) / bins;
+
+    const counts =
+      Array(bins).fill(0);
+
+    for (const x of values) {
+      const index =
+        Math.floor(
+          (x - xmin) / (xmax - xmin) * bins
+        );
+
+      if (index >= 0 && index < bins) {
+        counts[index]++;
+      } else if (x === xmax) {
+        counts[bins - 1]++;
+      }
+    }
+
+    return counts.map((count, i) => ({
+      x0: xmin + i * width,
+      x1: xmin + (i + 1) * width,
+      count
+    }));
+  }
+
+
+  function normalDensity(x, mean, sd) {
+    return jStat.normal.pdf(x, mean, sd);
+  }
+
+
+  /* ----------------------------------------------------------
+     Small plot: density
+     ---------------------------------------------------------- */
+
+  function drawDensity(
+    svg,
+    title,
+    density,
+    xmin,
+    xmax
+  ) {
+    const width = 300;
+    const height = 190;
+
+    const margin = {
+      left: 15,
+      right: 8,
+      top: 28,
+      bottom: 20
+    };
+
+    svg.setAttribute(
+      "viewBox",
+      `0 0 ${width} ${height}`
+    );
+
+    const xs =
+      linspace(xmin, xmax, 250);
+
+    const ys =
+      xs.map(density);
+
+    const ymax =
+      Math.max(...ys) * 1.08;
+
+    const plotWidth =
+      width - margin.left - margin.right;
+
+    const plotHeight =
+      height - margin.top - margin.bottom;
+
+    const sx = x =>
+      margin.left +
+      (x - xmin) /
+      (xmax - xmin) *
+      plotWidth;
+
+    const sy = y =>
+      margin.top +
+      plotHeight -
+      y / ymax * plotHeight;
+
+    const points =
+      xs.map((x, i) => [
+        sx(x),
+        sy(ys[i])
+      ]);
+
+    svg.innerHTML = `
+      <text
+        class="clt-title"
+        x="${width / 2}"
+        y="18">
+        ${title}
+      </text>
+
+      <line
+        class="clt-axis"
+        x1="${sx(xmin)}"
+        x2="${sx(xmax)}"
+        y1="${sy(0)}"
+        y2="${sy(0)}">
+      </line>
+
+      <path
+        class="clt-density"
+        d="${pathFromPoints(points)}">
+      </path>
+    `;
+  }
+
+
+  /* ----------------------------------------------------------
+     Small plot: one sample histogram
+     ---------------------------------------------------------- */
+
+  function drawSmallHistogram(
+    svg,
+    title,
+    values,
+    xmin,
+    xmax
+  ) {
+    const width = 300;
+    const height = 190;
+
+    const margin = {
+      left: 15,
+      right: 8,
+      top: 28,
+      bottom: 20
+    };
+
+    svg.setAttribute(
+      "viewBox",
+      `0 0 ${width} ${height}`
+    );
+
+    const bins =
+      Math.max(
+        4,
+        Math.min(
+          15,
+          Math.round(Math.sqrt(values.length))
+        )
+      );
+
+    const hist =
+      histogram(
+        values,
+        bins,
+        xmin,
+        xmax
+      );
+
+    const ymax =
+      Math.max(
+        1,
+        ...hist.map(d => d.count)
+      );
+
+    const plotWidth =
+      width - margin.left - margin.right;
+
+    const plotHeight =
+      height - margin.top - margin.bottom;
+
+    const sx = x =>
+      margin.left +
+      (x - xmin) /
+      (xmax - xmin) *
+      plotWidth;
+
+    const sy = y =>
+      margin.top +
+      plotHeight -
+      y / ymax * plotHeight;
+
+    const bars =
+      hist.map(d => `
+        <rect
+          class="clt-histogram"
+          x="${sx(d.x0)}"
+          y="${sy(d.count)}"
+          width="${Math.max(
+            0,
+            sx(d.x1) - sx(d.x0) - 1
+          )}"
+          height="${
+            sy(0) - sy(d.count)
+          }">
+        </rect>
+      `).join("");
+
+    svg.innerHTML = `
+      <text
+        class="clt-title"
+        x="${width / 2}"
+        y="18">
+        ${title}
+      </text>
+
+      <line
+        class="clt-axis"
+        x1="${sx(xmin)}"
+        x2="${sx(xmax)}"
+        y1="${sy(0)}"
+        y2="${sy(0)}">
+      </line>
+
+      ${bars}
+    `;
+  }
+
+
+  /* ----------------------------------------------------------
+     Large bottom plot: sampling distribution
+     ---------------------------------------------------------- */
+
+  function drawSamplingDistribution(
+    values,
+    populationMean,
+    populationSd,
+    n
+  ) {
+    const width = 900;
+    const height = 400;
+
+    const margin = {
+      left: 45,
+      right: 15,
+      top: 35,
+      bottom: 40
+    };
+
+    samplingSvg.setAttribute(
+      "viewBox",
+      `0 0 ${width} ${height}`
+    );
+
+    const theoreticalSE =
+      populationSd / Math.sqrt(n);
+
+    /*
+      Use an adaptive x-axis so the shape of the sampling
+      distribution remains visible as n increases.
+    */
+    const halfRange =
+      Math.max(
+        4.5 * theoreticalSE,
+        0.35 * populationSd
+      );
+
+    const xmin =
+      populationMean - halfRange;
+
+    const xmax =
+      populationMean + halfRange;
+
+    const bins =
+      Math.max(
+        15,
+        Math.min(
+          45,
+          Math.round(Math.sqrt(values.length))
+        )
+      );
+
+    const hist =
+      histogram(
+        values,
+        bins,
+        xmin,
+        xmax
+      );
+
+    const binWidth =
+      (xmax - xmin) / bins;
+
+    /*
+      Histogram density rather than raw count, so the normal
+      reference curve can be drawn on the same scale.
+    */
+    const histDensity =
+      hist.map(d => ({
+        ...d,
+        density:
+          d.count /
+          (values.length * binWidth)
+      }));
+
+    const xs =
+      linspace(xmin, xmax, 300);
+
+    const normalYs =
+      xs.map(x =>
+        normalDensity(
+          x,
+          populationMean,
+          theoreticalSE
+        )
+      );
+
+    const ymax =
+      Math.max(
+        ...histDensity.map(d => d.density),
+        ...normalYs
+      ) * 1.1;
+
+    const plotWidth =
+      width - margin.left - margin.right;
+
+    const plotHeight =
+      height - margin.top - margin.bottom;
+
+    const sx = x =>
+      margin.left +
+      (x - xmin) /
+      (xmax - xmin) *
+      plotWidth;
+
+    const sy = y =>
+      margin.top +
+      plotHeight -
+      y / ymax * plotHeight;
+
+    const bars =
+      histDensity.map(d => `
+        <rect
+          class="clt-histogram"
+          x="${sx(d.x0)}"
+          y="${sy(d.density)}"
+          width="${Math.max(
+            0,
+            sx(d.x1) - sx(d.x0) - 1
+          )}"
+          height="${
+            sy(0) - sy(d.density)
+          }">
+        </rect>
+      `).join("");
+
+    const normalPoints =
+      xs.map((x, i) => [
+        sx(x),
+        sy(normalYs[i])
+      ]);
+
+    samplingSvg.innerHTML = `
+      <text
+        class="clt-title"
+        x="${width / 2}"
+        y="20">
+        Sampling distribution of the sample mean
+      </text>
+
+      <line
+        class="clt-axis"
+        x1="${sx(xmin)}"
+        x2="${sx(xmax)}"
+        y1="${sy(0)}"
+        y2="${sy(0)}">
+      </line>
+
+      ${bars}
+
+      <path
+        class="clt-normal-reference"
+        d="${pathFromPoints(normalPoints)}">
+      </path>
+
+      <text
+        class="clt-summary"
+        x="${width / 2}"
+        y="${height - 8}">
+        Normal reference:
+        μ = ${populationMean.toFixed(2)},
+        SE = ${theoreticalSE.toFixed(2)}
+      </text>
+    `;
+  }
+
+
+  /* ----------------------------------------------------------
+     Simulation
+     ---------------------------------------------------------- */
+
+  function simulate() {
+    const populationMean =
+      value("mean", 0);
+
+    const populationSd =
+      value("sd", 1);
+
+    const skew =
+      value("skew", 0);
+
+    const tail =
+      value("tail", 1);
+
+    const n =
+      Math.max(
+        1,
+        Math.round(value("n", 30))
+      );
+
+    const reps =
+      Math.max(
+        3,
+        Math.round(value("reps", 2000))
+      );
+
+    const populationXMin =
+      populationMean -
+      5 * populationSd;
+
+    const populationXMax =
+      populationMean +
+      5 * populationSd;
+
+
+    /*
+      Draw population density.
+    */
+
+    drawDensity(
+      populationSvg,
+      "Population",
+      x =>
+        dshashStandardized(
+          x,
+          populationMean,
+          populationSd,
+          skew,
+          tail
+        ),
+      populationXMin,
+      populationXMax
+    );
+
+
+    /*
+      Simulate repetitions.
+
+      We only retain the first three full samples.
+      For all later repetitions we only retain the mean.
+      This keeps memory use tiny.
+    */
+
+    const firstSamples = [];
+    const sampleMeans = [];
+
+    for (let r = 0; r < reps; r++) {
+      const sample =
+        rshash(
+          n,
+          populationMean,
+          populationSd,
+          skew,
+          tail
+        );
+
+      if (r < 3) {
+        firstSamples.push(sample);
+      }
+
+      sampleMeans.push(
+        meanOf(sample)
+      );
+    }
+
+
+    /*
+      First three observed samples.
+    */
+
+    for (let i = 0; i < 3; i++) {
+      drawSmallHistogram(
+        replicateSvgs[i],
+        `Sample ${i + 1}`,
+        firstSamples[i],
+        populationXMin,
+        populationXMax
+      );
+    }
+
+
+    /*
+      Sampling distribution.
+    */
+
+    drawSamplingDistribution(
+      sampleMeans,
+      populationMean,
+      populationSd,
+      n
+    );
+  }
+
+
+  /*
+    A little debouncing makes dragging n/repetitions smooth
+    rather than running a full simulation for every pixel.
+  */
+
+  let timer = null;
+
+  function scheduleDraw() {
+    clearTimeout(timer);
+
+    timer =
+      setTimeout(simulate, 60);
+  }
+
+  simulate();
+}
+
+window.cltShashDemo = cltShashDemo;
 
   window.conditionalNormalDemo = conditionalNormalDemo;
 
