@@ -13,7 +13,7 @@ format:
         toc: true
         toc-depth: 1
         toc-title: "Today"
-        embed-resources: false # true
+        embed-resources: true # true
         include-in-header:
         - text: |
             <script src="https://cdn.jsdelivr.net/npm/jstat@1.9.6/dist/jstat.min.js"></script>
@@ -146,7 +146,7 @@ One variable: $\mathrm{deviation} \times \mathrm{deviation} = \mathrm{Variance}$
 
 . . .
 
-Two variables: $x-\mathrm{deviation} \times y-\mathrm{deviation} = \mathrm{Covariance}$
+Two variables: $x\mathrm{-deviation} \times y\mathrm{-deviation} = \mathrm{Covariance}$
 
 
 
@@ -268,6 +268,7 @@ Recall $Z$-scores, $Z_{x_i} = \frac{x_i-\bar{x}}{s_x}$ and $Z_{y_i} = \frac{y_i-
 
 . . .
 
+::: {style="font-size: 70%;"}
 $$
 \begin{align}
 r_{xy} &= \frac{\sum_{i=1}^n \bigl(x_i - \bar{x}\bigr)\bigl(y_i - \bar{y}\bigr)}{ns_xs_y} \\
@@ -279,6 +280,7 @@ r_{xy} &= \frac{1}{n}\sum_{i=1}^n Z_{x_i} Z_{y_i}
 \end{align}
 $$
 
+:::
 
 ## Covariance Matrix
 
@@ -312,6 +314,7 @@ d |> select(-geo, -name) |> cor(use = "pairwise.complete.obs") |> as.data.frame(
 - covariance of $x$ with $x$ equals variance
 - scales with linear transformation of the data (e.g., mm to cm)
 - cannot be interpreted without knowing the variances
+    + but the sign tells us if the relation is positive or negative
 :::
 
 ::: {.column width="50%"}
@@ -600,7 +603,7 @@ ggplot(d, aes(x = log(gdp_pcap), y = life_expectancy)) +
 
 
 
-## Sample statistics and Population Estimators
+## Sample statistics and Population Estimators {.small-slide}
 
 
 - Sample statistics describe the sample.

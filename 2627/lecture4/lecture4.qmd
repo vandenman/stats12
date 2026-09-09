@@ -1,0 +1,198 @@
+---
+title: "Sampling Distributions\n&\nHypothesis Testing"
+subtitle: "Lecture 4 - LAS"
+author:   "Don van den Bergh"
+date: 2026-09-07
+date-format: "DD-MM-YYYY"
+format:
+    dtslides-revealjs:
+        theme: [../common_resources/css/tilburg-university.scss]
+        logo: ../common_resources/logos/logo_tu_small.svg
+        slide-number: c/t
+        # chalkboard: true
+        toc: true
+        toc-depth: 1
+        toc-title: "Today"
+        embed-resources: true # true
+        include-in-header:
+        - text: |
+            <script src="https://cdn.jsdelivr.net/npm/jstat@1.9.6/dist/jstat.min.js"></script>
+            <link rel="stylesheet" href="../common_resources/components/distributions.css">
+            <script src="../common_resources/components/distributions.js"></script>
+---
+
+```{r}
+knitr::opts_chunk$set(echo = FALSE)
+options(knitr.kable.NA = '')
+set.seed(1)
+library(ggplot2)
+library(kableExtra)
+library(dplyr)
+library(tibble)
+library(patchwork)
+toDT <- function(dat, scroll = TRUE, rownames = FALSE) {
+
+  numeric_cols <- if (is.data.frame(dat))
+    names(dat)[sapply(dat, is.numeric)]
+  else if (is.matrix(dat)) {
+    which(apply(dat, 2, is.numeric))
+  }
+
+  DT::datatable(
+    dat, options = list(searching = FALSE, info = FALSE, paging = FALSE, scrollX = scroll, scrollY = "350px", scrollCollapse = TRUE,autoWidth = TRUE
+    ), rownames = rownames) |>
+    DT::formatRound(numeric_cols, digits = 2)
+}
+
+```
+
+## Today {.unlisted}
+
+[Chapter 7](https://cjvanlissa.github.io/stats12/samplingdistribution.html) and [Chapter 9](https://cjvanlissa.github.io/stats12/testing.html) from the gitbook.
+
+## Learning Goals:
+
+- What are hypotheses?
+  + What is the underlying philosophy?
+- What is a sampling distribution?
+- How do we test hypotheses?
+
+
+# Hypothesis Testing
+
+## Hypotheses
+
+What are hypotheses?
+
+Example:
+
+All swans are white
+
+(picture)
+
+## Falsification
+
+We typically cannot confirm or validate hypotheses.
+
+We can only reject them.
+
+If we observe 100 white swans, this does not tell us that all swans are white.
+
+As soon as we observe one black swan,
+
+## Falsification - Logic
+
+<!-- TODO, somewhat formal logic -->
+
+Hypothesis/ Statement: All swans are white
+
+Data: A black swan
+
+Ergo, not all swans are white
+
+We reject the hypothesis
+
+## Falsification under Uncertainty
+
+In our _sample_ we observe that male directors fail the Bechdel test more often than female directors
+
+But what does this tell us about the population?
+
+. . .
+
+We can ask:
+
+-If the _null hypothesis_ is true, then male and female directors fail/ pass equally often.
+-We observe the following test statistics: TODO
+- If the _null hypothesis_ is true then the probability of observing this test statistic, or a more extreme one, is XXX.
+- This is smaller than $\alpha = .05$, therefore we reject the null hypothesis.
+
+
+
+
+## Falsification in Practice
+
+Typically, we do the opposite of our hypothesis.
+
+- We _expect_ a _difference_ between male and female directors on the Bechdel test
+- Instead, we _test_ the hypothesis that male and female directors perform _equally_ well.
+- If we can reject this hypothesis of equality, we have obtained evidence that male and female directors perform differently on the Bechdel test.
+  + Only at this point should we actually call an effect _significant_ and place additional value on the point estimates.
+
+## NHST: Limitations
+
+The deductive argument without uncertainty is 100% correct.
+
+However, the sample to population argument is not.
+
+## Limitations: Error Rates
+
+$\alpha$ is our _error rate_. With $\alpha = .05$ we expect and accept that in 1 / 20 tests we make a mistake.
+  - Other fields use different values for $\alpha$, e.g., physics uses 6 sigma which translates to $\alpha = TODO$.
+
+## Limitations: Logic Errors
+
+The logic doesn't necessarily hold!
+
+- $\mathcal{H}_0$:: Piet is Dutch.
+- Observation: Piet is a member of the Tweede Kamer.
+- $P(\text{Tweede Kamerlid}\mid\text{Dutch})$ is extremely small.
+So an NHST-like argument says: “That observation would be extremely unlikely if Piet were Dutch, so reject $H_0$.
+
+Yet the observation is obviously evidence for Piet being Dutch rather than against it.
+
+There is a famous article by Cohen (1995): [The Earth Is Round (p < .05)](https://psycnet.apa.org/record/1995-12080-001) which discusses other drawbacks.
+
+This is key because to apply NHST correctly, you must know its limitations
+
+
+# Sampling Distributions
+
+## Sampling Distributions
+
+- So we talked about probability distributions
+  + So far, these were the theoretical distributions that, if we sample the entire population, we recover.
+- But probability distributions also come about in finite samples.
+
+For example, what is the _distribution of the sample mean_ if the population is distributed as $\mathcal{N}(\mu, \sigma)$? And what if it's $\mathcal{N}(0, \sigma)$?
+
+So, specifically, if $x_1, x_2, \dots, x_n \sim \mathcal{N}(0, \sigma)$.
+What is $p(\bar{x})$?
+More often we specifically want to know:
+$$
+p(\bar{x} >= \bar{x}_\text{observed} \mid x_1, x_2, \dots, x_n \sim \mathcal{N}(0, \sigma))
+$$
+
+In words:
+
+"What is the probability to observe a sample mean equal to or more extreme to the one we actually observed, if the data are normally distributed with mean zero and some unknown variance?"
+
+## Sampling Distributions
+
+Unfortunately, the exact solution for $p(\bar{x} >= \bar{x}_\text{observed} \mid x_1, x_2, \dots, x_n \sim \mathcal{N}(0, \sigma))$ is hard.
+
+But there is a solution, the Central Limit Theorem
+
+## Central Limit Theorem
+
+Suppose $x_1, x_2, \dots, x_n \sim \mathcal{D}(\Epsilon, \Xi, \dots)$.
+
+Then, $\sum_{i=1}^N x_i = x_1 + x_2 + \dots + x_n \sim \mathcal{N}(TODO, TODO)$.
+
+This holds for almost all distributions $\mathcal{D}$.
+
+Specifically, $\mathcal{D}$ must have a defined population mean and variance.
+
+## Central Limit Theorem
+
+$\sum_{i=1}^N x_i \sim \mathcal{N}(TODO, TODO)$ is huge!
+
+Example:
+
+- School data looks at the average performance of pupils.
+  + Even though grades are between 1 - 10, their average is a sum, so CLT applies
+- fMRI machine collects data raw voxels.
+  + Preprocessing steps involve averaging and smoothing the data across multiple voxels. CLT applies.
+
+If we want to compare the means, then we
+
