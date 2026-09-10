@@ -1,0 +1,113 @@
+<div id="clt-shash-demo" class="clt-layout">
+
+<div class="clt-panel">
+
+<label class="clt-control">
+<span>μ</span>
+<input
+  data-param="mean"
+  type="range"
+  min="-2"
+  max="2"
+  step="0.1"
+  value="0">
+<span data-value="mean"></span>
+</label>
+
+<label class="clt-control">
+<span>σ</span>
+<input
+  data-param="sd"
+  type="range"
+  min="0.5"
+  max="2"
+  step="0.1"
+  value="1">
+<span data-value="sd"></span>
+</label>
+
+<label class="clt-control">
+<span>Skew</span>
+<input
+  data-param="skew"
+  type="range"
+  min="-2"
+  max="2"
+  step="0.1"
+  value="1.2">
+<span data-value="skew"></span>
+</label>
+
+<label class="clt-control">
+<span>Kurt.</span>
+<input
+  data-param="tail"
+  type="range"
+  min="0.6"
+  max="2"
+  step="0.1"
+  value="0.8">
+<span data-value="tail"></span>
+</label>
+
+<label class="clt-control">
+<span>n</span>
+<input
+  data-param="n"
+  type="range"
+  min="1"
+  max="100"
+  step="1"
+  value="10">
+<span data-value="n"></span>
+</label>
+
+<label class="clt-control">
+<span>Reps</span>
+<input
+  data-param="reps"
+  type="range"
+  min="100"
+  max="5000"
+  step="100"
+  value="2000">
+<span data-value="reps"></span>
+</label>
+
+</div>
+
+
+<div class="clt-plots">
+
+<div class="clt-top">
+
+<div class="clt-plot">
+<svg class="clt-population"></svg>
+</div>
+
+<div class="clt-plot">
+<svg class="clt-replicate-1"></svg>
+</div>
+
+<div class="clt-plot">
+<svg class="clt-replicate-2"></svg>
+</div>
+
+<div class="clt-plot">
+<svg class="clt-replicate-3"></svg>
+</div>
+
+</div>
+
+
+<div class="clt-bottom clt-plot">
+<svg class="clt-sampling"></svg>
+</div>
+
+</div>
+
+</div>
+
+<script>
+cltShashDemo("#clt-shash-demo");
+</script>
