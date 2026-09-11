@@ -1,0 +1,56 @@
+<div id="power-demo" class="power-layout">
+
+<div class="power-panel">
+
+<label class="power-control">
+<span>d</span>
+<input
+  data-param="effect"
+  type="range"
+  min="0.00"
+  max="1.50"
+  step="0.05"
+  value="0.50">
+<span data-value="effect"></span>
+</label>
+
+<label class="power-control">
+<span>n</span>
+<input
+  data-param="n"
+  type="range"
+  min="5"
+  max="200"
+  step="1"
+  value="30">
+<span data-value="n"></span>
+</label>
+
+<label class="power-control">
+<span>α</span>
+<input
+  data-param="alpha"
+  type="range"
+  min="0.001"
+  max="0.500"
+  step="0.001"
+  value="0.050">
+<span data-value="alpha"></span>
+</label>
+
+</div>
+
+
+<div class="power-plot">
+<svg></svg>
+</div>
+
+</div>
+
+<script>
+powerDemo("#power-demo", {
+  xmin: -1.5,
+  xmax: 3.0,
+  height: 480
+});
+</script>

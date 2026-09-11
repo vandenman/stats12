@@ -1893,7 +1893,472 @@ function cltShashDemo(selector, options = {}) {
   simulate();
 }
 
-window.cltShashDemo = cltShashDemo;
+/* ============================================================
+   Statistical power demo
+   ============================================================ */
+
+function powerDemo(selector, options = {}) {
+  const root = document.querySelector(selector);
+  if (!root) return;
+
+  const svg = root.querySelector("svg");
+  const controls = {};
+
+  root.querySelectorAll("[data-param]").forEach(input => {
+    controls[input.dataset.param] = input;
+
+    const output = root.querySelector(
+      `[data-value="${input.dataset.param}"]`
+    );
+
+    const updateLabel = () => {
+      if (!output) return;
+
+      const x = Number(input.value);
+
+      if (input.dataset.param === "n") {
+        output.textContent = Math.round(x);
+      } else if (input.dataset.param === "alpha") {
+        output.textContent = x.toFixed(3);
+      } else {
+        output.textContent = x.toFixed(1);
+      }
+    };
+
+    input.addEventListener("input", () => {
+      updateLabel();
+      draw();
+    });
+
+    updateLabel();
+  });
+
+  function value(name, fallback) {
+    return controls[name]
+      ? Number(controls[name].value)
+      : fallback;
+  }
+
+  function areaPath(xs, density, sx, sy) {
+    if (xs.length === 0) return "";
+
+    const points = xs.map(x => [
+      sx(x),
+      sy(density(x))
+    ]);
+
+    return (
+      `M${sx(xs[0])},${sy(0)} ` +
+      pathFromPoints(points).replace(/^M/, "L") +
+      ` L${sx(xs.at(-1))},${sy(0)} Z`
+    );
+  }
+
+  function draw() {
+    const effect = value("effect", 0.5);
+    const n = Math.max(
+      2,
+      Math.round(value("n", 30))
+    );
+
+    const alpha = value("alpha", 0.05);
+
+    /*
+      Assume population SD = 1.
+
+      Therefore:
+
+      H0: Xbar ~ N(0, 1/sqrt(n))
+      H1: Xbar ~ N(d, 1/sqrt(n))
+    */
+
+    const se = 1 / Math.sqrt(n);
+
+    const h0Mean = 0;
+    const h1Mean = effect;
+
+    const zCritical =
+      jStat.normal.inv(
+        1 - alpha / 2,
+        0,
+        1
+      );
+
+    const critical =
+      zCritical * se;
+
+    /*
+      Type-II error:
+      probability under H1 of remaining inside
+      the non-rejection region.
+    */
+
+    const beta =
+      jStat.normal.cdf(
+        critical,
+        h1Mean,
+        se
+      ) -
+      jStat.normal.cdf(
+        -critical,
+        h1Mean,
+        se
+      );
+
+    const power = 1 - beta;
+
+    /*
+      Fixed x-axis deliberately:
+      changing n should visibly make the
+      sampling distributions narrower.
+    */
+
+    const xmin = options.xmin ?? -1.5;
+    const xmax = options.xmax ?? 3.0;
+
+    const width = 900;
+    const height = options.height ?? 480;
+
+    const margin = {
+      left: 50,
+      right: 20,
+      top: 65,
+      bottom: 45
+    };
+
+    svg.setAttribute(
+      "viewBox",
+      `0 0 ${width} ${height}`
+    );
+
+    const plotWidth =
+      width - margin.left - margin.right;
+
+    const plotHeight =
+      height - margin.top - margin.bottom;
+
+    const h0Density = x =>
+      jStat.normal.pdf(
+        x,
+        h0Mean,
+        se
+      );
+
+    const h1Density = x =>
+      jStat.normal.pdf(
+        x,
+        h1Mean,
+        se
+      );
+
+    /*
+      Determine y-axis from both curves.
+    */
+
+    const xs =
+      linspace(xmin, xmax, 600);
+
+    const ymax =
+      Math.max(
+        ...xs.map(h0Density),
+        ...xs.map(h1Density)
+      ) * 1.08;
+
+    const sx = x =>
+      margin.left +
+      (x - xmin) /
+      (xmax - xmin) *
+      plotWidth;
+
+    const sy = y =>
+      margin.top +
+      plotHeight -
+      y / ymax * plotHeight;
+
+    /*
+      Curves
+    */
+
+    const h0Points =
+      xs.map(x => [
+        sx(x),
+        sy(h0Density(x))
+      ]);
+
+    const h1Points =
+      xs.map(x => [
+        sx(x),
+        sy(h1Density(x))
+      ]);
+
+    /*
+      Rejection and non-rejection regions
+    */
+
+    const leftTail =
+      xs.filter(x =>
+        x <= -critical
+      );
+
+    const middle =
+      xs.filter(x =>
+        x >= -critical &&
+        x <= critical
+      );
+
+    const rightTail =
+      xs.filter(x =>
+        x >= critical
+      );
+
+    /*
+      alpha: rejection region under H0
+    */
+
+    const alphaLeft =
+      areaPath(
+        leftTail,
+        h0Density,
+        sx,
+        sy
+      );
+
+    const alphaRight =
+      areaPath(
+        rightTail,
+        h0Density,
+        sx,
+        sy
+      );
+
+    /*
+      beta: non-rejection region under H1
+    */
+
+    const betaArea =
+      areaPath(
+        middle,
+        h1Density,
+        sx,
+        sy
+      );
+
+    /*
+      power: rejection region under H1
+    */
+
+    const powerLeft =
+      areaPath(
+        leftTail,
+        h1Density,
+        sx,
+        sy
+      );
+
+    const powerRight =
+      areaPath(
+        rightTail,
+        h1Density,
+        sx,
+        sy
+      );
+
+    /*
+      Axis ticks
+    */
+
+    const ticks =
+      options.ticks ??
+      [-1, 0, 1, 2, 3];
+
+    const tickSvg =
+      ticks.map(x => `
+        <line
+          class="power-tick"
+          x1="${sx(x)}"
+          x2="${sx(x)}"
+          y1="${sy(0)}"
+          y2="${sy(0) + 7}">
+        </line>
+
+        <text
+          class="power-label"
+          x="${sx(x)}"
+          y="${sy(0) + 29}"
+          text-anchor="middle">
+          ${x}
+        </text>
+      `).join("");
+
+    svg.innerHTML = `
+
+      <!-- Summary -->
+
+      <text
+        class="power-summary"
+        x="${width / 2}"
+        y="25">
+        α = ${alpha.toFixed(3)}
+        &nbsp;&nbsp;&nbsp;
+        β = ${beta.toFixed(3)}
+        &nbsp;&nbsp;&nbsp;
+        Power = ${(power * 100).toFixed(1)}%
+      </text>
+
+
+      <!-- Shading under H0: alpha -->
+
+      <path
+        class="power-alpha"
+        d="${alphaLeft}">
+      </path>
+
+      <path
+        class="power-alpha"
+        d="${alphaRight}">
+      </path>
+
+
+      <!-- Shading under H1: power -->
+
+      <path
+        class="power-power"
+        d="${powerLeft}">
+      </path>
+
+      <path
+        class="power-power"
+        d="${powerRight}">
+      </path>
+
+
+      <!-- Shading under H1: beta -->
+
+      <path
+        class="power-beta"
+        d="${betaArea}">
+      </path>
+
+
+      <!-- Curves -->
+
+      <path
+        class="power-h0"
+        d="${pathFromPoints(h0Points)}">
+      </path>
+
+      <path
+        class="power-h1"
+        d="${pathFromPoints(h1Points)}">
+      </path>
+
+
+      <!-- Critical values -->
+
+      <line
+        class="power-critical"
+        x1="${sx(-critical)}"
+        x2="${sx(-critical)}"
+        y1="${sy(0)}"
+        y2="${sy(h0Density(-critical))}">
+      </line>
+
+      <line
+        class="power-critical"
+        x1="${sx(critical)}"
+        x2="${sx(critical)}"
+        y1="${sy(0)}"
+        y2="${sy(h0Density(critical))}">
+      </line>
+
+
+      <!-- Axis -->
+
+      <line
+        class="power-axis"
+        x1="${sx(xmin)}"
+        x2="${sx(xmax)}"
+        y1="${sy(0)}"
+        y2="${sy(0)}">
+      </line>
+
+      ${tickSvg}
+
+
+      <!-- Distribution labels -->
+
+      <text
+        class="power-label"
+        x="${sx(h0Mean)}"
+        y="${sy(h0Density(h0Mean)) - 12}"
+        text-anchor="middle">
+        H₀
+      </text>
+
+      <text
+        class="power-label"
+        x="${sx(h1Mean)}"
+        y="${sy(h1Density(h1Mean)) - 12}"
+        text-anchor="middle">
+        H₁
+      </text>
+
+
+      <!-- Legend -->
+
+      <rect
+        class="power-alpha"
+        x="${width - 195}"
+        y="15"
+        width="16"
+        height="16">
+      </rect>
+
+      <text
+        class="power-legend"
+        x="${width - 172}"
+        y="29">
+        α
+      </text>
+
+      <rect
+        class="power-beta"
+        x="${width - 135}"
+        y="15"
+        width="16"
+        height="16">
+      </rect>
+
+      <text
+        class="power-legend"
+        x="${width - 112}"
+        y="29">
+        β
+      </text>
+
+      <rect
+        class="power-power"
+        x="${width - 75}"
+        y="15"
+        width="16"
+        height="16">
+      </rect>
+
+      <text
+        class="power-legend"
+        x="${width - 52}"
+        y="29">
+        1−β
+      </text>
+    `;
+  }
+
+  draw();
+}
+
+  window.powerDemo = powerDemo;
+
+  window.cltShashDemo = cltShashDemo;
 
   window.conditionalNormalDemo = conditionalNormalDemo;
 

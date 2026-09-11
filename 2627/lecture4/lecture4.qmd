@@ -88,7 +88,7 @@ Is "God exists" a valid hypothesis?
 
 No, because we cannot (scientifically) test the existence of god.
 
-This has nothing to do with wheter a claim is true or not.
+This has nothing to do with whether a claim is true or not.
 For it to be a hypothesis it must be _testable_.
 
 ## Vulcan
@@ -116,6 +116,13 @@ For it to be a hypothesis it must be _testable_.
 - In 1915, Einstein's theory of relativity, provided a new approach to understanding gravity entirely differently from Newton's classical mechanics.
 - It showed that the mismatch between Le Verrier's model and Mercury's orbit were the results of the curvature of spacetime caused by the mass of the Sun.
 
+- A surprising observation does not automatically tell us which part of our explanation is wrong.
+- The Mercury anomaly could be explained by an unseen planet, measurement problems, or a failure of the underlying theory of gravity.
+- Scientists therefore generate competing, testable explanations and try to rule them out.
+- Vulcan ultimately failed; Einstein’s theory explained Mercury’s orbit without the extra planet.
+- Scientific progress comes from explanations surviving serious attempts at falsification—not from a single confirming observation.
+- This becomes harder with noisy data: apparent discrepancies can arise simply through chance. That is the problem NHST is designed to address.
+
 :::
 
 ## From Hypotheses to Theories
@@ -129,6 +136,13 @@ In our _sample_ we observed that movies with male directors fail the Bechdel tes
 But what does this tell us about the population?
 
 <!-- TODO insert Bechdel data from previous lecture -->
+|              |        | Director Gender |             |           |
+|-------------:|:------:|:---------------:|:-----------:|-----------|
+| Test         | Female | Male            | Mixed/other | Total row |
+| FAIL         | 21     | 957             | 13          | 991       |
+| PASS         | 94     | 689             | 20          | 803       |
+| Total column | 115    | 1646            | 33          | 1794      |
+
 
 ## Null Hypothesis Significance Testing
 
@@ -150,9 +164,9 @@ This is _falsification under uncertainty_.
 
 There are three options:
 
-  1. The data suggests to reject $\hypo_0$
+  1. The data suggest to reject $\hypo_0$
   2. The data are not informative to reject or accept $\hypo_0$
-  3. The data suggests to accept $\hypo_0$
+  3. The data suggest to accept $\hypo_0$
 
 . . .
 
@@ -176,7 +190,7 @@ $\alpha$ controls how often we are willing to falsely reject $\hypo_0$.
 
 - In the social sciences, usually $\alpha = .05$. When $\hypo_0$ is true, we falsely reject it in 1 out of 20 studies.
 - Smaller $\alpha$ demands stronger evidence before rejection.
-- For example, physics uses a 5 sigma rule, $\alpha = P(Z>5) = 0.000000287$. A true $\hypo_0$ is falsely reject in 1 out of 3.5 million studies.
+- For example, physics uses a 5 sigma rule, $\alpha = P(Z>5) = 0.000000287$. A true $\hypo_0$ is falsely rejected in 1 out of 3.5 million studies.
 
 . . .
 
@@ -216,6 +230,451 @@ In (3), NHST asks: "how surprising are our observed data if $\hypo_0$ were true?
 
 But how do we answer that question?
 
+# Sampling Distributions
+
+## Sampling Distributions
+
+Recall the Bechdel-test dataset:
+
+|              |        | Director Gender |           |
+|-------------:|:------:|:---------------:|-----------|
+| Test         | Female | Male            | Total row |
+| FAIL         | 21     | 957             | 978       |
+| PASS         | 94     | 689             | 783       |
+| Total column | 115    | 1646            | 1761      |
+
+We observed that female-directed movies fail less often than male-directed movies.
+
+. . .
+
+Could a difference this large arise simply because of _sampling variability_?
+
+## Sampling Distributions
+
+Assume the null hypothesis is true:
+
+- $\hypo_0$: Director gender and Bechdel-test outcome are unrelated.
+
+Keep the totals fixed:
+
+- 1761 movies
+- 115 female-directed and 1646 male-directed
+- 978 FAIL and 783 PASS
+. . .
+
+Under $\hypo_0$, the 978 FAILs occur randomly across the 1761 movies.
+
+For every hypothetical repetition, record:
+
+- How many of the 115 female-directed movies FAIL?
+
+## Sampling Distributions
+
+If $\hypo_0$ is true, we expect the female-directed movies to have approximately the same failure rate as the complete sample.
+
+The expected number of FAILs is therefore
+
+$$
+\text{No. Female} \times \frac{\text{No. FAILs}}{\text{No. Movies}} =  115 \times \frac{978}{1761} \approx 63.9.
+$$
+
+. . .
+
+But because of sampling variability, we would not observe exactly 64 every time.
+
+Sometimes we might observe 60, sometimes 70, sometimes 50, ...
+
+The distribution of these hypothetical outcomes is a _sampling distribution_.
+
+::: {.notes}
+
+More literally, the sampling distribution is how we'd expect things to look like in our sample, assuming a particular hypothesis or model is true.
+
+:::
+
+## Sampling Distributions: Example
+
+![](images/sampling_distribution.jpg)
+
+. . .
+
+The observed no. FAILs lies far in the tail of the distribution.
+
+## From Sampling Distributions to $p$-values
+
+The $p$-value asks:
+
+> Assuming $\hypo_0$ is true, how probable is a result at least as extreme as the one we observed?
+
+Our observed value was $X_\text{observed} = 21$.
+
+Under $\hypo_0$, observing _21 or fewer_ FAILs among female-directed movies has probability $2.38 \times 10^{-17} \approx 0.\underbrace{0000000000000000}_{16 \text{ zeros}}238$
+
+<!-- phyper(21, m = 978, n = 783, k = 115) -->
+
+This is very unlikely, if $\hypo_0$ is true.
+
+
+## Alternative Hypothesis
+
+So far we've only stated our null hypothesis.
+
+- $\hypo_0$: Director gender and Bechdel-test outcome are unrelated.
+
+. . .
+
+- $\hypo_1$: Director gender and Bechdel-test outcome are related.
+  + $P(\text{PASS} | \text{Female}) != P(\text{PASS} | \text{Male})$
+
+. . .
+
+Or:
+
+- $\hypo_1$: Female directors pass the Bechdel-test more often than Male directors
+  + $P(\text{PASS} | \text{Female}) > P(\text{PASS} | \text{Male})$
+
+. . .
+
+This matters for the question we ask from the sampling distribution!
+
+## One tailed vs. Two tailed testing
+
+The alternative hypothesis determines the tail area of the sampling distribution.
+
+![](images/one_vs_two_tailed.jpg){fig-align="center"}
+
+. . .
+
+For many symmetric continuous tests, the two-tailed $p$$-value is twice the corresponding one-tailed $p$-value.
+
+::: {.notes}
+
+p-value from before was based on a one-tailed result.
+
+:::
+
+
+
+## Sampling Distributions
+
+Previous weeks, we observed:
+
+$x_1, x_2, \dots, x_n$
+
+. . .
+
+$x_{n+1}, x_{n+2}, \dots, x_{2n}$
+
+. . .
+
+$x_{2n+1}, x_{2n+2}, \dots, x_{3n}$
+
+. . .
+
+etc.
+
+. . .
+
+And eventually the empirical distribution of these $x$ approaches the population distribution, say $\mathcal{N}(\mu, \sigma^2)$.
+
+## Sampling Distributions
+
+Now we examine:
+
+$x_1, x_2, \dots, x_n$, compute $\bar{x}_1$
+
+. . .
+
+$x_{n+1}, x_{n+2}, \dots, x_{2n}$, compute $\bar{x}_2$
+
+. . .
+
+$x_{2n+1}, x_{2n+2}, \dots, x_{3n}$, compute $\bar{x}_3$
+
+. . .
+
+repeat and for each sample $i$, compute the sample mean $\bar{x}_i$.
+
+What is the distribution of $\bar{x}_1, \bar{x}_2, \dots$?
+
+. . .
+
+- Each sample mean consists of _finite_ observations
+- The sampling distribution describes how these behave if we'd repeat this experiment infinitely many times
+- We look where our sample statistic falls in this distribution
+
+## Sampling Distributions
+
+In general, the _sampling distribution_ is:
+
+> The distribution of a statistic across hypothetical repeated samples from the same population.
+
+Examples of statistics include:
+
+- a proportion
+- a correlation
+- a sample mean, $\bar{x}$
+- a difference between means
+
+. . .
+
+For NHST, we care about the sampling distribution _assuming $\hypo_0$ is true_.
+
+
+## Sampling Distributions
+
+For our Bechdel example, we could derive the sampling distribution exactly.
+
+But suppose instead we observe
+
+$$
+x_1, x_2, \dots, x_n
+$$
+
+and are interested in the sample mean
+
+$$
+\bar{x}.
+$$
+
+What does the sampling distribution of $\bar{x}$ look like?
+
+. . .
+
+Deriving the exact sampling distribution for every possible population distribution would be difficult.
+
+Fortunately, there is a remarkably general result:
+
+# Central Limit Theorem
+
+## Central Limit Theorem
+
+Suppose $x_1, x_2, \dots, x_n \overset{\mathrm{iid}}{\sim} \mathcal{D}(\mu, \sigma^2, \dots)$.
+
+Then, as $n$ becomes large,
+
+$$
+\bar{x} = \frac{1}{n}\sum_{i=1}^n x_i
+\approx \mathcal{N}\left(\mu, \frac{\sigma^2}{n}\right).
+$$
+
+This holds for a very broad class of population distributions $\mathcal{D}$.
+
+Specifically, the distribution must have a finite mean $\mu$ and variance $\sigma^2$.
+
+::: {style="font-size: 70%;"}
+Definitions:
+
+- $\overset{\mathrm{iid}}{\sim}$ means _independent_ and _identically distributed_.
+- _independent_: "knowing the outcome or value of one variable or event provides no information about the probability or outcome of another.", i.e., observing $x_2$ has no influence on what $x_7$.
+- _identically distributed_: All the $x_i$ come from the same population distribution
+:::
+
+## The sampling distribution of the mean
+
+{{< include ../common_resources/components/samplingdistribution.qmd >}}
+
+## Why the Central Limit Theorem matters
+
+The impact of
+$$
+\bar{x} \sim \mathcal{N}\left(\mu, \frac{\sigma^2}{n}\right).
+$$
+is huge!
+
+Sums and averages are all around us. For example:
+
+- In educational science, we study at the performance of pupils.
+  + Even though grades are scored 1 - 10, we examine the sum, so CLT applies
+- fMRI machines' raw data are voxels (3D pixels) of the brain.
+  + Preprocessing steps involve averaging and smoothing the data across multiple voxels. CLT applies.
+- We often study proportions, such as the proportion of movies that pass the Bechdel test.
+  + Each response can be coded as $x_i = 0$ or $x_i = 1$.
+  + The proportion is the average: $\hat{p} = \frac{1}{n}\sum_i x_i$.
+  + Therefore, for sufficiently large $n$, $\hat{p}$ is approximately normally distributed.
+
+::: {.notes}
+- For the grades example, mention that already at the binary item level this applies.
+:::
+
+## Central Limit Theorem -- Addendum
+
+Sometimes, we can derive the sampling distribution _exactly_.
+
+Assume $x_1, x_2, \dots, x_n \overset{\mathrm{iid}}{\sim} \mathcal{N}(\mu, \sigma^2)$.
+
+- Then $\frac{\bar X-\mu}{S/\sqrt n} \sim t_{n-1}$.
+- But as $n$ tends to $\infty$, $t_{n-1}$ tends to $\mathcal{N}(0,1)$.
+
+. . .
+
+So the CLT still applies, but when available we use more precise results for the sampling distribution.
+
+. . .
+
+Examples are the $t$-distribution, $F$-distribution, $\chi^2$-distribution.
+
+You do not need to learn or memorize these distributions!
+
+## Sampling Distribution: Summary
+
+Recall NHST:
+
+::: {style="font-size: 80%;"}
+
+1. Define $\hypo_0$ and pick $\alpha$.
+2. Assume $\hypo_0$ is true.
+3. Ask: how surprising are our observed data under $\hypo_0$?
+4. $p = P(\text{data at least this extreme} \mid \hypo_0)$
+5. If $p < \alpha$, reject $\hypo_0$.
+
+:::
+
+. . .
+
+6. The sampling distribution tells us how unusual our observed statistic is under $\hypo_0$
+7. The Central Limit Theorem gives a very practical approximation to the sampling distribution
+
+
+
+# Statistical Power
+
+::: {.notes}
+
+So far, we have asked what happens when H0 is true.
+Power asks the complementary question: what happens when H0 is false?
+
+:::
+
+## Statistical Power
+
+$\alpha$ is the Type-I error rate: The probability of rejecting a true $\hypo_0$.
+
+. . .
+
+$\beta$ is the Type-II error rate: The probability of failing to reject a false $\hypo_0$.
+
+$1 - \beta$ is the power: The probability of rejecting a false $\hypo_0$.
+
+## Statistical Power
+
+|                       | $H_0$ false                         | $H_0$ true            |
+| ---------------------:| ----------------------------------- | --------------------- |
+| Reject $H_0$          | Correct rejection / power $1-\beta$ | Type I error $\alpha$ |
+| Do not reject $H_0$   | Type II error $\beta$               | Correct non-rejection |
+
+## Statistical Power: Demo
+
+{{< include ../common_resources/components/power.qmd >}}
+
+## Statistical Power: Summary
+
+- $\alpha$ is the Type-I error rate: The probability of rejecting a true $\hypo_0$.
+- $\beta$ is the Type-II error rate: The probability of failing to reject a false $\hypo_0$.
+- power ($1 - \beta$) is the probability of rejecting a false $\hypo_0$.
+  + Larger effects are easier to detect.
+  + A larger sample size increases the power to detect a given effect.
+  + A larger $\alpha$ increases the power, but also increase the type-I error rate.
+
+
+## Addendum: Contingency test
+
+We only count FAILs among female-directed movies. Why?
+
+If we keep the row and column totals fixed, we have only one unknown:
+
+|              |           | Director Gender   |           |
+|-------------:|:---------:|:-----------------:|-----------|
+| Test         | Female    | Male              | Total row |
+| FAIL         | $X$       | $978 - X$         | $978$     |
+| PASS         | $115 - X$ | $783 - (115 - X)$ | $783$     |
+| Total column | $115$     | $1646$            | $1761$    |
+
+If $X = 21$, $21$ female-directed movies FAIL, then $978−21=957$ male-directed movies must FAIL.
+
+Thus it does not matter what gender we examine, the results would be identical.
+
+
+<!-- slide graveyard -->
+
+## Sampling Distributions {.hidden}
+
+::: {style="font-size: 80%;"}
+We talked about probability distributions:
+
+- The theoretical distributions obtained from sampling the entire population.
+- Models for the data.
+:::
+
+. . .
+
+Probability distributions also come about in finite samples.
+
+For example, what is the _distribution of the sample mean_?
+
+Suppose $x_1, x_2, \dots, x_n \sim \mathcal{N}(0, \sigma^2)$.
+What is
+$$
+p(\bar{x} >= \bar{x}_\text{observed} \mid x_1, x_2, \dots, x_n \sim \mathcal{N}(0, \sigma^2))
+$$
+
+In words: "What is the probability to observe a sample mean equal to or more extreme to the one we actually observed, if the data are normally distributed with mean zero and unknown variance?"
+
+## Sampling Distributions {.hidden}
+
+Suppose we want to test that the population mean is not zero, or some other specified value $\mu_0$.
+
+- Assumptions: $x_1, x_2, \dots, x_n \sim \mathcal{N}(\mu, \sigma)$
+- $\hypo_0$: $\mu = \mu_0 = 0$
+- $p$-value: $p(\bar{x} \geq \bar{x}_\text{observed} \mid x_1, x_2, \dots, x_n \sim \mathcal{N}(\mu_0, \sigma))$
+- If $p$-value $< \alpha$, reject $\hypo_0$, $\mu \neq \mu_0 = 0$
+
+. . .
+
+So _Sampling Distributions_ are the distributions we derive assuming $\hypo_0$ is true, and compute a $p$-value from using an observed statistic from the data!
+
+
+<!--
+
+## From Sampling Distributions to $p$-values
+
+For a formal test, we also count outcomes that are comparably extreme in the **other direction**.
+
+For this $2\times2$ table, this procedure is known as **Fisher's exact test**.
+
+#| echo: false
+#| results: asis
+
+tab <- matrix(
+  c(21, 957,
+    94, 689),
+  nrow = 2,
+  byrow = TRUE
+)
+
+p <- fisher.test(tab)$p.value
+
+cat(
+  "$$",
+  "p = ",
+  format(p, scientific = TRUE, digits = 3),
+  "$$"
+)
+
+Since $p < \alpha$, we reject $\hypo_0$.
+
+. . .
+
+The important idea is **not** Fisher's exact test itself.
+
+The important idea is:
+
+::: {.callout-important}
+A $p$-value tells us where our observed statistic lies in its **sampling distribution under $\hypo_0$**.
+:::
+ -->
+
+
 <!-- ## Null Hypothesis Significance Testing in Practice
 
 Typically, we do the opposite of our hypothesis.
@@ -251,147 +710,3 @@ There is a famous article by Cohen (1995): [The Earth Is Round (p < .05)](https:
 This is key because to apply NHST correctly, you must know its limitations.
 
 After the reproducibility crisis in psychology (2015), there were calls to abandon NSHT, along with calls to "justify your $\alpha$" to improve on the practices at that time. -->
-
-
-# Sampling Distributions
-
-## Sampling Distributions
-
-::: {style="font-size: 80%;"}
-We talked about probability distributions:
-
-- The theoretical distributions obtained from sampling the entire population.
-- Models for the data.
-- But probability distributions also come about in finite samples.
-:::
-
-For example, what is the _distribution of the sample mean_?
-
-Suppose $x_1, x_2, \dots, x_n \sim \mathcal{N}(0, \sigma^2)$.
-What is
-$$
-p(\bar{x} >= \bar{x}_\text{observed} \mid x_1, x_2, \dots, x_n \sim \mathcal{N}(0, \sigma^2))
-$$
-
-In words: "What is the probability to observe a sample mean equal to or more extreme to the one we actually observed, if the data are normally distributed with mean zero and unknown variance?"
-
-## Sampling Distributions
-
-Suppose we want to test that the population mean is not zero, or some other specified value $\mu_0$.
-
-- Assumptions: $x_1, x_2, \dots, x_n \sim \mathcal{N}(\mu, \sigma)$
-- $\hypo_0$: $\mu = \mu_0 = 0$
-- $p$-value: $p(\bar{x} \geq \bar{x}_\text{observed} \mid x_1, x_2, \dots, x_n \sim \mathcal{N}(\mu_0, \sigma))$
-- If $p$-value $< \alpha$, reject $\hypo_0$, $\mu \neq \mu_0 = 0$
-
-. . .
-
-So _Sampling Distributions_ are the distributions we derive assuming $\hypo_0$, and compute a $p$-value from using an observed statistic from the data!
-
-
-## Sampling Distributions
-
-Unfortunately, the exact solution for
-$$
-p(\bar{x} >= \bar{x}_\text{observed} \mid x_1, x_2, \dots, x_n \sim \mathcal{D}(\dots))
-$$
-is hard.
-
-But there is a solution, the Central Limit Theorem
-
-## Central Limit Theorem
-
-Suppose $x_1, x_2, \dots, x_n \overset{\mathrm{iid}}{\sim} \mathcal{D}(\mu, \sigma^2, \dots)$.
-
-Then, as $n$ becomes large,
-
-$$
-\bar{x} = \frac{1}{n}\sum_{i=1}^n x_i
-\approx \mathcal{N}\left(\mu, \frac{\sigma^2}{n}\right).
-$$
-
-This holds for a very broad class of population distributions $\mathcal{D}$.
-
-Specifically, the distribution must have a finite mean $\mu$ and variance $\sigma^2$.
-
-::: {style="font-size: 70%;"}
-Definitions:
-
-- $\overset{\mathrm{iid}}{\sim}$ means _independent_ and _identically distributed_.
-- _independent_: "knowing the outcome or value of one variable or event provides no information about the probability or outcome of another.", i.e., observing $x_2$ has no influence on what $x_7$.
-- _identically distributed_: All the $x_i$ come from the same population distribution
-:::
-
-## The sampling distribution of the mean
-
-{{< include ../common_resources/components/samplingdistribution.qmd >}}
-
-## Central Limit Theorem
-
-The impact of
-$$
-\bar{x} \sim \mathcal{N}\left(\mu, \frac{\sigma^2}{n}\right).
-$$
-is huge!
-
-Sums and average are all around us. For example:
-
-- In educational science, we study at the performance of pupils.
-  + Even though grades are scored 1 - 10, we examine the sum, so CLT applies
-- fMRI machine collects data raw voxels.
-  + Preprocessing steps involve averaging and smoothing the data across multiple voxels. CLT applies.
-- We often study proportions, such as the proportion of movies that pass the Bechdel test.
-  + Each response can be coded as $x_i = 0$ or $x_i = 1$.
-  + The proportion is the average: $\hat{p} = \frac{1}{n}\sum_i x_i$.
-  + Therefore, for sufficiently large $n$, $\hat{p}$ is approximately normally distributed.
-
-::: {.notes}
-- For the grades example, mention that already at the binary item level this applies.
-:::
-
-## Central Limit Theorem -- Addendum
-
-Sometimes, we can derive the sampling distribution _exactly_.
-
-Assume $x_1, x_2, \dots, x_n \overset{\mathrm{iid}}{\sim} \mathcal{N}(\mu, \sigma^2)$.
-
-- Then
-  $$
-  \frac{\bar X-\mu}{S/\sqrt n} \sim t_{n-1}.
-  $$
-- But as $n$ tends to $\infty$, $t_{n-1}$ tends to $\mathcal{N}(0,1)$.
-
-. . .
-
-So the CLT still applies, but when available we use more precise results for the sampling distribution.
-
-. . .
-
-Examples:
-
-- $t$-distribution
-- $F$-distribution
-- $\chi^2$-distribution
-
-You do not to learn/ memorize these distributions!
-
-
-# Statistical Power
-
-## Statistical Power
-
-$\alpha$ is the Type-I error rate: The probability of rejecting a true $\hypo_0$.
-
-. . .
-
-$\beta$ is the Type-II error rate: The probability of failing to reject a false $\hypo_0$.
-
-$1 - \beta$ is the power: The probability of rejecting a false $\hypo_0$.
-
-## Statistical Power
-
-|                       | $H_0$ false                         | $H_0$ true            |
-| ---------------------:| ----------------------------------- | --------------------- |
-| Reject $H_0$          | Correct rejection / power $1-\beta$ | Type I error $\alpha$ |
-| Retain $H_0$   | Type II error $\beta$               | Correct non-rejection |
-
