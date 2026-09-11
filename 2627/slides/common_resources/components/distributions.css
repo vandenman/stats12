@@ -358,3 +358,125 @@
   fill: #4c78a8;
   fill-opacity: 0.25;
 }
+
+/* ============================================================
+   CLT / sampling distribution demo
+   ============================================================ */
+
+.clt-layout {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
+  display: grid;
+  grid-template-columns: 30% minmax(0, 1fr);
+  gap: 0.6em;
+  align-items: center;
+
+  overflow-x: hidden;
+}
+
+.clt-panel {
+  min-width: 0;
+  max-width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+}
+
+.clt-control {
+  width: 100%;
+  min-width: 0;
+
+  display: grid;
+  grid-template-columns: 2.8em minmax(0, 1fr) 2.5em;
+  gap: 0.2em;
+  align-items: center;
+}
+
+.clt-control > * {
+  min-width: 0;
+}
+
+.clt-control input[type="range"] {
+  width: 100%;
+  min-width: 0;
+}
+
+.clt-plots {
+  min-width: 0;
+  height: 500px;
+
+  display: grid;
+  grid-template-rows: 1fr 2fr;
+  gap: 0.35em;
+}
+
+.clt-top {
+  min-width: 0;
+
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.3em;
+}
+
+.clt-bottom {
+  min-width: 0;
+}
+
+.clt-plot {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.clt-plot svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+
+  pointer-events: none;
+}
+
+.clt-axis {
+  stroke: currentColor;
+  stroke-width: 1;
+  opacity: 0.5;
+}
+
+.clt-density {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+}
+
+.clt-normal-reference {
+  fill: none;
+  stroke: #4c78a8;
+  stroke-width: 2.5;
+  stroke-dasharray: 7 5;
+}
+
+.clt-histogram {
+  fill: #4c78a8;
+  fill-opacity: 0.45;
+}
+
+.clt-title {
+  font-size: 16px;
+  fill: currentColor;
+  text-anchor: middle;
+}
+
+.clt-label {
+  font-size: 14px;
+  fill: currentColor;
+}
+
+.clt-summary {
+  font-size: 15px;
+  fill: currentColor;
+  text-anchor: middle;
+}

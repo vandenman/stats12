@@ -2,7 +2,7 @@
 title: "Sampling Distributions\n&\nHypothesis Testing"
 subtitle: "Lecture 4 - LAS"
 author:   "Don van den Bergh"
-date: 2026-09-07
+date: 2026-09-14
 date-format: "DD-MM-YYYY"
 format:
     dtslides-revealjs:
@@ -13,7 +13,7 @@ format:
         toc: true
         toc-depth: 1
         toc-title: "Today"
-        embed-resources: true # true
+        embed-resources: false # true
         include-in-header:
         - text: |
             <script src="https://cdn.jsdelivr.net/npm/jstat@1.9.6/dist/jstat.min.js"></script>
@@ -25,12 +25,18 @@ format:
 
 [Chapter 7](https://cjvanlissa.github.io/stats12/samplingdistribution.html) and [Chapter 9](https://cjvanlissa.github.io/stats12/testing.html) from the gitbook.
 
+$$
+\newcommand{\hypo}{\mathcal{H}}
+$$
+
+
 ## Learning Goals:
 
 - What are hypotheses?
 - What is the logic behind Null Hypothesis Significance Testing (NHST)?
 - What is a sampling distribution?
 - How do we test hypotheses?
+- What is statistical power?
 
 # Hypothesis Testing
 
@@ -40,12 +46,17 @@ What are hypotheses?
 
 . . .
 
-Example:
+Examples:
+
+::: {.column width="60%"}
 
 - All swans are white
 - A film director's gender has no impact on whether a movie passes the Bechdel test
 - This medicine helps patients recover faster than no medicine
 
+:::
+
+![](images/flock_of_swans.jpg){.absolute top=50 right=100 width="300" height="300"}
 
 
 ## Falsification
@@ -55,98 +66,236 @@ Example:
 - If we observe 100 white swans, this does not tell us that all swans are white.
 - If we observe one black swan, we can reject the hypothesis that all swans are white.
 
+![](images/black_swan.jpg){fig-align="right"  width="500" height="500" style="overflow-y: visible;"}
+
+
 ## Falsification - Logic
 
-<!-- TODO, somewhat formal logic -->
+1. Hypothesis/ Statement: All swans are white
+2. Data: A black swan
+3. Implication: Not all swans are white
+4. Conclusion: Reject the hypothesis
 
-Hypothesis/ Statement: All swans are white
+## Falsification - Requirements
 
-Data: A black swan
-
-Ergo, not all swans are white
-
-We reject the hypothesis
-
-## Falsification under Uncertainty
-
-In our _sample_ we observe that male directors fail the Bechdel test more often than female directors
-
-But what does this tell us about the population?
+A hypothesis must be testable and capable of being proven false.
 
 . . .
 
-We can ask:
+Is "God exists" a valid hypothesis?
 
--If the _null hypothesis_ is true, then male and female directors fail/ pass equally often.
--We observe the following test statistics: TODO
-- If the _null hypothesis_ is true then the probability of observing this test statistic, or a more extreme one, is XXX.
-- This is smaller than $\alpha = .05$, therefore we reject the null hypothesis.
+. . .
+
+No, because we cannot (scientifically) test the existence of god.
+
+This has nothing to do with wheter a claim is true or not.
+For it to be a hypothesis it must be _testable_.
+
+## Vulcan
+
+![](images/Planet-Vulcan.jpg){.absolute top=80 left=20 width="1000"}
+
+::: notes
+
+- Celestial bodies between Mercury and the sun had been hypothesized, searched for, and were even claimed to have been observed, for centuries.
+- "Observed" for the first time in 1611 by German astronomer Christoph Scheiner
+- Amateur astronomer Capel Lofft's also observed of 'an opaque body traversing the sun's disc' on 6 January 1818
+- In 1840 François Arago, the director of the Paris Observatory, suggested to mathematician Urbain Le Verrier that he would work out Mercury's orbit around the Sun.
+- The goal of the study was to construct a model based on Isaac Newton's laws of motion and gravitation.
+- A detailed presentation published in 1845, which would be tested during a transit of Mercury across the face of the Sun in 1848.
+- Predictions from Le Verrier's model failed to match the observations.
+- Le Verrier continued his work
+- In 1859 he published a more thorough study of Mercury's motion. That was based on a series of observations of the planet and 14 transits across the sun.
+- The study's rigor meant that any differences between the motion predicted and what was observed would point to the influence of an unknown factor.
+- Le Verrier suggested that the mismatch between the observations and his model's predictions could be explained by the presence of some unidentified object inside the orbit of Mercury.
+- This was credible, because Le Verrier had accurately predicted the existence Neptune in 1846.
+- Le Verrier received a letter from Lescarbault who said he observed a possible planet.
+- Lescarbault described in detail how, on 26 March 1859, he observed a small black dot on the face of the Sun.
+- On 2 January 1860, Le Verrier announced the discovery of the new planet with the proposed name from mythology, "Vulcan".
+- Tons of Attempts to confirm the discovery followed and Le Verrier received numerous reports from amateur astronomers.
+- In 1915, Einstein's theory of relativity, provided a new approach to understanding gravity entirely differently from Newton's classical mechanics.
+- It showed that the mismatch between Le Verrier's model and Mercury's orbit were the results of the curvature of spacetime caused by the mass of the Sun.
+
+:::
+
+## From Hypotheses to Theories
+
+Theories are the hypotheses that survive despite serious attempts to refute them.
+
+## Null Hypothesis Significance Testing
+
+In our _sample_ we observed that movies with male directors fail the Bechdel test more often than movies with female directors.
+
+But what does this tell us about the population?
+
+<!-- TODO insert Bechdel data from previous lecture -->
+
+## Null Hypothesis Significance Testing
+
+We expect male and female directors to differ.
+
+But we test the opposite:
+
+- $\hypo_0$: male and female directors pass equally often.
+- Assume $\hypo_0$ is true.
+- Ask: how surprising are our observed data under $\hypo_0$?
+- $p = P(\text{data at least this extreme} \mid \hypo_0)$
+- If $p < \alpha$, reject $\hypo_0$.
+
+. . .
+
+This is _falsification under uncertainty_.
+
+## Falsification under Uncertainty {.small-slide}
+
+There are three options:
+
+  1. The data suggests to reject $\hypo_0$
+  2. The data are not informative to reject or accept $\hypo_0$
+  3. The data suggests to accept $\hypo_0$
+
+. . .
+
+NHST allows us to distinguish **1** from **not 1**:
+
+. . .
+
+- $p = P(\text{Data at least this extreme} | \hypo_0)$
+- $p < \alpha \rightarrow \text{reject } \hypo_0$.
+- $p \geq \alpha \rightarrow \text{do not reject } \hypo_0$.
+
+. . .
+
+Failing to reject $\hypo_0$ is not evidence for $\hypo_0$!
+
+## Incorrect Rejections: Error Rates
+
+Even if $\hypo_0$ is true, unusual samples sometimes occur.
+
+$\alpha$ controls how often we are willing to falsely reject $\hypo_0$.
+
+- In the social sciences, usually $\alpha = .05$. When $\hypo_0$ is true, we falsely reject it in 1 out of 20 studies.
+- Smaller $\alpha$ demands stronger evidence before rejection.
+- For example, physics uses a 5 sigma rule, $\alpha = P(Z>5) = 0.000000287$. A true $\hypo_0$ is falsely reject in 1 out of 3.5 million studies.
+
+. . .
+
+This is a strength of NHST:
+
+sampling uncertainty makes errors unavoidable, but we can control their long-run rate.
+
+## What a $p$-value Does *Not* Tell Us
 
 
+The logic doesn't necessarily hold!
 
+- $\hypo_0$: Piet is Dutch.
+- Observation: Piet is a member of the Tweede Kamer (parlement).
+- $P(\text{Tweede Kamerlid}\mid\text{Dutch})$ is extremely small.
+- An NHST-like argument says: That observation would be extremely unlikely if Piet were Dutch, so reject $\hypo_0$.
 
-## Falsification in Practice
+Yet the observation is obviously evidence for Piet being Dutch rather than against it.
+
+. . .
+
+The problem: $P(\text{data}\mid\hypo_0)\neq P(\hypo_0\mid\text{data})$
+
+NHST computes the left-hand side.
+
+## NHST Summary
+
+1. Define $\hypo_0$ and pick $\alpha$.
+2. Assume $\hypo_0$ is true.
+3. Ask: how surprising are our observed data under $\hypo_0$?
+4. $p = P(\text{data at least this extreme} \mid \hypo_0)$
+5. If $p < \alpha$, reject $\hypo_0$.
+
+. . .
+
+In (3), NHST asks: "how surprising are our observed data if $\hypo_0$ were true?"
+
+But how do we answer that question?
+
+<!-- ## Null Hypothesis Significance Testing in Practice
 
 Typically, we do the opposite of our hypothesis.
 
-- We _expect_ a _difference_ between male and female directors on the Bechdel test
+- We _expect_ a _difference_ between male and female directors on the Bechdel test.
 - Instead, we _test_ the hypothesis that male and female directors perform _equally_ well.
 - If we can reject this hypothesis of equality, we have obtained evidence that male and female directors perform differently on the Bechdel test.
-  + Only at this point should we actually call an effect _significant_ and place additional value on the point estimates.
+  + Only at this point do we actually call any observed effect in our sample _significant_ and place additional value on the sample estimates.
 
 ## NHST: Limitations
 
 The deductive argument without uncertainty is 100% correct.
 
-However, the sample to population argument is not.
+The inductive argument, generalizing from sample to population, need not be correct.
 
-## Limitations: Error Rates
+## Incorrect Rejections: Error Rates
 
-$\alpha$ is our _error rate_. With $\alpha = .05$ we expect and accept that in 1 / 20 tests we make a mistake.
-  - Other fields use different values for $\alpha$, e.g., physics uses 6 sigma which translates to $\alpha = TODO$.
+$\alpha$ is an _error rate_.
 
-## Limitations: Logic Errors
+- In the social sciences, usually $\alpha = .05$. We expect and accept that in 1 / 20 tests we make a mistake.
+- Other fields use a different $\alpha$. In physics, they use a 5 sigma rule which translates to $\alpha = P(Z>5) = 0.000000287$. In physics for about 1 in 3.5 million tests make a wrong decision.
 
-The logic doesn't necessarily hold!
+. . .
 
-- $\mathcal{H}_0$: Piet is Dutch.
-- Observation: Piet is a member of the Tweede Kamer (parlement).
-- $P(\text{Tweede Kamerlid}\mid\text{Dutch})$ is extremely small.
-- An NHST-like argument says: “That observation would be extremely unlikely if Piet were Dutch, so reject $H_0$.
+The fact that we can control our error rate is a strength of NSHT, because when making decision under sampling uncertainty mistakes are unavoidable.
 
-Yet the observation is obviously evidence for Piet being Dutch rather than against it.
+## Incorrect Rejections: Logic Errors
 
-## Limitations: Logic Errors
+## Other Limitations
 
 There is a famous article by Cohen (1995): [The Earth Is Round (p < .05)](https://psycnet.apa.org/record/1995-12080-001) which discusses other drawbacks of NHST that are often encountered in empirical practice.
 
-This is key because to apply NHST correctly, you must know its limitations
+This is key because to apply NHST correctly, you must know its limitations.
+
+After the reproducibility crisis in psychology (2015), there were calls to abandon NSHT, along with calls to "justify your $\alpha$" to improve on the practices at that time. -->
 
 
 # Sampling Distributions
 
 ## Sampling Distributions
 
-- So we talked about probability distributions
-  + So far, these were the theoretical distributions that, if we sample the entire population, we recover.
+::: {style="font-size: 80%;"}
+We talked about probability distributions:
+
+- The theoretical distributions obtained from sampling the entire population.
+- Models for the data.
 - But probability distributions also come about in finite samples.
+:::
 
-For example, what is the _distribution of the sample mean_ if the population is distributed as $\mathcal{N}(\mu, \sigma)$? And what if it's $\mathcal{N}(0, \sigma)$?
+For example, what is the _distribution of the sample mean_?
 
-So, specifically, if $x_1, x_2, \dots, x_n \sim \mathcal{N}(0, \sigma)$.
-What is $p(\bar{x})$?
-More often we specifically want to know:
+Suppose $x_1, x_2, \dots, x_n \sim \mathcal{N}(0, \sigma^2)$.
+What is
 $$
-p(\bar{x} >= \bar{x}_\text{observed} \mid x_1, x_2, \dots, x_n \sim \mathcal{N}(0, \sigma))
+p(\bar{x} >= \bar{x}_\text{observed} \mid x_1, x_2, \dots, x_n \sim \mathcal{N}(0, \sigma^2))
 $$
 
-In words:
-
-"What is the probability to observe a sample mean equal to or more extreme to the one we actually observed, if the data are normally distributed with mean zero and some unknown variance?"
+In words: "What is the probability to observe a sample mean equal to or more extreme to the one we actually observed, if the data are normally distributed with mean zero and unknown variance?"
 
 ## Sampling Distributions
 
-Unfortunately, the exact solution for $p(\bar{x} >= \bar{x}_\text{observed} \mid x_1, x_2, \dots, x_n \sim \mathcal{N}(0, \sigma))$ is hard.
+Suppose we want to test that the population mean is not zero, or some other specified value $\mu_0$.
+
+- Assumptions: $x_1, x_2, \dots, x_n \sim \mathcal{N}(\mu, \sigma)$
+- $\hypo_0$: $\mu = \mu_0 = 0$
+- $p$-value: $p(\bar{x} \geq \bar{x}_\text{observed} \mid x_1, x_2, \dots, x_n \sim \mathcal{N}(\mu_0, \sigma))$
+- If $p$-value $< \alpha$, reject $\hypo_0$, $\mu \neq \mu_0 = 0$
+
+. . .
+
+So _Sampling Distributions_ are the distributions we derive assuming $\hypo_0$, and compute a $p$-value from using an observed statistic from the data!
+
+
+## Sampling Distributions
+
+Unfortunately, the exact solution for
+$$
+p(\bar{x} >= \bar{x}_\text{observed} \mid x_1, x_2, \dots, x_n \sim \mathcal{D}(\dots))
+$$
+is hard.
 
 But there is a solution, the Central Limit Theorem
 
@@ -163,13 +312,14 @@ $$
 
 This holds for a very broad class of population distributions $\mathcal{D}$.
 
-Specifically, the population must have a finite mean $\mu$ and finite variance $\sigma^2$.
+Specifically, the distribution must have a finite mean $\mu$ and variance $\sigma^2$.
 
 ::: {style="font-size: 70%;"}
 Definitions:
-$\overset{\mathrm{iid}}{\sim}$ means _independent_ and _identically distributed_.
-_independent_: "knowing the outcome or value of one variable or event provides no information about the probability or outcome of another.", i.e., observing $x_2$ has no influence on what $x_7$.
-_identically distributed_: All the $x_i$ come from the same population distribution
+
+- $\overset{\mathrm{iid}}{\sim}$ means _independent_ and _identically distributed_.
+- _independent_: "knowing the outcome or value of one variable or event provides no information about the probability or outcome of another.", i.e., observing $x_2$ has no influence on what $x_7$.
+- _identically distributed_: All the $x_i$ come from the same population distribution
 :::
 
 ## The sampling distribution of the mean
@@ -182,9 +332,9 @@ The impact of
 $$
 \bar{x} \sim \mathcal{N}\left(\mu, \frac{\sigma^2}{n}\right).
 $$
-is huge, because sums and average are all around us.
+is huge!
 
-Example:
+Sums and average are all around us. For example:
 
 - In educational science, we study at the performance of pupils.
   + Even though grades are scored 1 - 10, we examine the sum, so CLT applies
@@ -195,25 +345,53 @@ Example:
   + The proportion is the average: $\hat{p} = \frac{1}{n}\sum_i x_i$.
   + Therefore, for sufficiently large $n$, $\hat{p}$ is approximately normally distributed.
 
-If we want to compare the means, then we
-
 ::: {.notes}
 - For the grades example, mention that already at the binary item level this applies.
-- For the fMRI example, we're looking at the BOLD response
-
 :::
 
 ## Central Limit Theorem -- Addendum
 
-Sometimes, we can derive the sampling distribution more accurately.
+Sometimes, we can derive the sampling distribution _exactly_.
 
 Assume $x_1, x_2, \dots, x_n \overset{\mathrm{iid}}{\sim} \mathcal{N}(\mu, \sigma^2)$.
 
-Then:
-- $(n - 1)s_x^2 / \sigma^2 ~ \chi^2_{n-1}$
+- Then
+  $$
+  \frac{\bar X-\mu}{S/\sqrt n} \sim t_{n-1}.
+  $$
+- But as $n$ tends to $\infty$, $t_{n-1}$ tends to $\mathcal{N}(0,1)$.
+
+. . .
+
+So the CLT still applies, but when available we use more precise results for the sampling distribution.
+
+. . .
+
+Examples:
+
+- $t$-distribution
+- $F$-distribution
+- $\chi^2$-distribution
+
+You do not to learn/ memorize these distributions!
 
 
+# Statistical Power
 
-::: footer
-$\chi$ is the Greek letter "chi"
-:::
+## Statistical Power
+
+$\alpha$ is the Type-I error rate: The probability of rejecting a true $\hypo_0$.
+
+. . .
+
+$\beta$ is the Type-II error rate: The probability of failing to reject a false $\hypo_0$.
+
+$1 - \beta$ is the power: The probability of rejecting a false $\hypo_0$.
+
+## Statistical Power
+
+|                       | $H_0$ false                         | $H_0$ true            |
+| ---------------------:| ----------------------------------- | --------------------- |
+| Reject $H_0$          | Correct rejection / power $1-\beta$ | Type I error $\alpha$ |
+| Retain $H_0$   | Type II error $\beta$               | Correct non-rejection |
+
