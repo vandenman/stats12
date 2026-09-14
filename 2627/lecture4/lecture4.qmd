@@ -13,7 +13,7 @@ format:
         toc: true
         toc-depth: 1
         toc-title: "Today"
-        embed-resources: false # true
+        embed-resources: true
         include-in-header:
         - text: |
             <script src="https://cdn.jsdelivr.net/npm/jstat@1.9.6/dist/jstat.min.js"></script>
@@ -194,23 +194,25 @@ $\alpha$ controls how often we are willing to falsely reject $\hypo_0$.
 
 . . .
 
-This is a strength of NHST:
-
-sampling uncertainty makes errors unavoidable, but we can control their long-run rate.
+This is a strength of NHST: Sampling uncertainty makes errors unavoidable, but we can control their long-run rate.
 
 ## What a $p$-value Does *Not* Tell Us
 
 
 The logic doesn't necessarily hold!
 
+::: {style="font-size: 80%;"}
 - $\hypo_0$: Piet is Dutch.
 - Observation: Piet is a member of the Tweede Kamer (parlement).
 - $P(\text{Tweede Kamerlid}\mid\text{Dutch})$ is extremely small.
 - An NHST-like argument says: That observation would be extremely unlikely if Piet were Dutch, so reject $\hypo_0$.
 
+:::
+
 Yet the observation is obviously evidence for Piet being Dutch rather than against it.
 
 . . .
+
 
 The problem: $P(\text{data}\mid\hypo_0)\neq P(\hypo_0\mid\text{data})$
 
@@ -257,9 +259,12 @@ Assume the null hypothesis is true:
 
 Keep the totals fixed:
 
+::: {style="font-size: 90%;"}
 - 1761 movies
 - 115 female-directed and 1646 male-directed
 - 978 FAIL and 783 PASS
+:::
+
 . . .
 
 Under $\hypo_0$, the 978 FAILs occur randomly across the 1761 movies.
@@ -323,17 +328,17 @@ So far we've only stated our null hypothesis.
 
 . . .
 
-- $\hypo_1$: Director gender and Bechdel-test outcome are related.
-  + $P(\text{PASS} | \text{Female}) != P(\text{PASS} | \text{Male})$
+- $\hypo_{1a}$: Director gender and Bechdel-test outcome are related.
+  + $P(\text{PASS} | \text{Female}) \neq P(\text{PASS} | \text{Male})$
 
 . . .
 
-Or:
-
-- $\hypo_1$: Female directors pass the Bechdel-test more often than Male directors
+- $\hypo_{1b}$: Female directors pass the Bechdel-test more often than Male directors
   + $P(\text{PASS} | \text{Female}) > P(\text{PASS} | \text{Male})$
 
 . . .
+
+$\hypo_{1a}$ is an _undirected_ hypothesis, while $\hypo_{1b}$ is directed.
 
 This matters for the question we ask from the sampling distribution!
 
@@ -411,11 +416,14 @@ In general, the _sampling distribution_ is:
 
 Examples of statistics include:
 
+::: {style="font-size: 90%;"}
+
 - a proportion
 - a correlation
 - a sample mean, $\bar{x}$
 - a difference between means
 
+:::
 . . .
 
 For NHST, we care about the sampling distribution _assuming $\hypo_0$ is true_.
@@ -458,11 +466,9 @@ $$
 \approx \mathcal{N}\left(\mu, \frac{\sigma^2}{n}\right).
 $$
 
-This holds for a very broad class of population distributions $\mathcal{D}$.
-
-Specifically, the distribution must have a finite mean $\mu$ and variance $\sigma^2$.
-
 ::: {style="font-size: 70%;"}
+This holds for all population distributions $\mathcal{D}$, as long as they have a finite mean $\mu$ and variance $\sigma^2$.
+
 Definitions:
 
 - $\overset{\mathrm{iid}}{\sim}$ means _independent_ and _identically distributed_.
@@ -470,19 +476,37 @@ Definitions:
 - _identically distributed_: All the $x_i$ come from the same population distribution
 :::
 
+
+## Central Limit Theorem
+
+Suppose $x_1, x_2, \dots, x_n \overset{\mathrm{iid}}{\sim} \mathcal{D}(\mu, \sigma^2, \dots)$.
+
+Then, as $n$ becomes large,
+
+$$
+\bar{x} = \frac{1}{n}\sum_{i=1}^n x_i
+\approx \mathcal{N}\left(\mu, \frac{\sigma^2}{n}\right).
+$$
+
+Here, $\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}}$ is known as the _standard error_.
+
+. . .
+
+Note that $\sigma_{\bar{x}}$ goes to 0 as n grows.
+
+This indicates that the sample mean converges to the population mean as the no. samples increases.
+
 ## The sampling distribution of the mean
 
 {{< include ../common_resources/components/samplingdistribution.qmd >}}
 
 ## Why the Central Limit Theorem matters
 
-The impact of
-$$
-\bar{x} \sim \mathcal{N}\left(\mu, \frac{\sigma^2}{n}\right).
-$$
-is huge!
+The impact of $\bar{x} \sim \mathcal{N}\left(\mu, \frac{\sigma^2}{n}\right).$ is huge!
 
 Sums and averages are all around us. For example:
+
+::: {style="font-size: 80%;"}
 
 - In educational science, we study at the performance of pupils.
   + Even though grades are scored 1 - 10, we examine the sum, so CLT applies
@@ -492,6 +516,8 @@ Sums and averages are all around us. For example:
   + Each response can be coded as $x_i = 0$ or $x_i = 1$.
   + The proportion is the average: $\hat{p} = \frac{1}{n}\sum_i x_i$.
   + Therefore, for sufficiently large $n$, $\hat{p}$ is approximately normally distributed.
+
+:::
 
 ::: {.notes}
 - For the grades example, mention that already at the binary item level this applies.
@@ -514,7 +540,7 @@ So the CLT still applies, but when available we use more precise results for the
 
 Examples are the $t$-distribution, $F$-distribution, $\chi^2$-distribution.
 
-You do not need to learn or memorize these distributions!
+Some of these we'll revisit in the second half of the course.
 
 ## Sampling Distribution: Summary
 
@@ -565,6 +591,8 @@ $1 - \beta$ is the power: The probability of rejecting a false $\hypo_0$.
 
 ## Statistical Power: Demo
 
+Sampling distributions under $\hypo_0$ and $\hypo_1$
+
 {{< include ../common_resources/components/power.qmd >}}
 
 ## Statistical Power: Summary
@@ -594,119 +622,3 @@ If $X = 21$, $21$ female-directed movies FAIL, then $978−21=957$ male-directed
 
 Thus it does not matter what gender we examine, the results would be identical.
 
-
-<!-- slide graveyard -->
-
-## Sampling Distributions {.hidden}
-
-::: {style="font-size: 80%;"}
-We talked about probability distributions:
-
-- The theoretical distributions obtained from sampling the entire population.
-- Models for the data.
-:::
-
-. . .
-
-Probability distributions also come about in finite samples.
-
-For example, what is the _distribution of the sample mean_?
-
-Suppose $x_1, x_2, \dots, x_n \sim \mathcal{N}(0, \sigma^2)$.
-What is
-$$
-p(\bar{x} >= \bar{x}_\text{observed} \mid x_1, x_2, \dots, x_n \sim \mathcal{N}(0, \sigma^2))
-$$
-
-In words: "What is the probability to observe a sample mean equal to or more extreme to the one we actually observed, if the data are normally distributed with mean zero and unknown variance?"
-
-## Sampling Distributions {.hidden}
-
-Suppose we want to test that the population mean is not zero, or some other specified value $\mu_0$.
-
-- Assumptions: $x_1, x_2, \dots, x_n \sim \mathcal{N}(\mu, \sigma)$
-- $\hypo_0$: $\mu = \mu_0 = 0$
-- $p$-value: $p(\bar{x} \geq \bar{x}_\text{observed} \mid x_1, x_2, \dots, x_n \sim \mathcal{N}(\mu_0, \sigma))$
-- If $p$-value $< \alpha$, reject $\hypo_0$, $\mu \neq \mu_0 = 0$
-
-. . .
-
-So _Sampling Distributions_ are the distributions we derive assuming $\hypo_0$ is true, and compute a $p$-value from using an observed statistic from the data!
-
-
-<!--
-
-## From Sampling Distributions to $p$-values
-
-For a formal test, we also count outcomes that are comparably extreme in the **other direction**.
-
-For this $2\times2$ table, this procedure is known as **Fisher's exact test**.
-
-#| echo: false
-#| results: asis
-
-tab <- matrix(
-  c(21, 957,
-    94, 689),
-  nrow = 2,
-  byrow = TRUE
-)
-
-p <- fisher.test(tab)$p.value
-
-cat(
-  "$$",
-  "p = ",
-  format(p, scientific = TRUE, digits = 3),
-  "$$"
-)
-
-Since $p < \alpha$, we reject $\hypo_0$.
-
-. . .
-
-The important idea is **not** Fisher's exact test itself.
-
-The important idea is:
-
-::: {.callout-important}
-A $p$-value tells us where our observed statistic lies in its **sampling distribution under $\hypo_0$**.
-:::
- -->
-
-
-<!-- ## Null Hypothesis Significance Testing in Practice
-
-Typically, we do the opposite of our hypothesis.
-
-- We _expect_ a _difference_ between male and female directors on the Bechdel test.
-- Instead, we _test_ the hypothesis that male and female directors perform _equally_ well.
-- If we can reject this hypothesis of equality, we have obtained evidence that male and female directors perform differently on the Bechdel test.
-  + Only at this point do we actually call any observed effect in our sample _significant_ and place additional value on the sample estimates.
-
-## NHST: Limitations
-
-The deductive argument without uncertainty is 100% correct.
-
-The inductive argument, generalizing from sample to population, need not be correct.
-
-## Incorrect Rejections: Error Rates
-
-$\alpha$ is an _error rate_.
-
-- In the social sciences, usually $\alpha = .05$. We expect and accept that in 1 / 20 tests we make a mistake.
-- Other fields use a different $\alpha$. In physics, they use a 5 sigma rule which translates to $\alpha = P(Z>5) = 0.000000287$. In physics for about 1 in 3.5 million tests make a wrong decision.
-
-. . .
-
-The fact that we can control our error rate is a strength of NSHT, because when making decision under sampling uncertainty mistakes are unavoidable.
-
-## Incorrect Rejections: Logic Errors
-
-## Other Limitations
-
-There is a famous article by Cohen (1995): [The Earth Is Round (p < .05)](https://psycnet.apa.org/record/1995-12080-001) which discusses other drawbacks of NHST that are often encountered in empirical practice.
-
-This is key because to apply NHST correctly, you must know its limitations.
-
-After the reproducibility crisis in psychology (2015), there were calls to abandon NSHT, along with calls to "justify your $\alpha$" to improve on the practices at that time. -->
