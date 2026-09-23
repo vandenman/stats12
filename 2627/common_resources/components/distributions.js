@@ -2356,6 +2356,509 @@ function powerDemo(selector, options = {}) {
   draw();
 }
 
+/* ============================================================
+   Bayesian updating demo
+   ============================================================ */
+
+function bayesUpdateDemo(selector, options = {}) {
+  const root = document.querySelector(selector);
+  if (!root) return;
+
+  const histSvg = root.querySelector(".bayes-histogram");
+  const densitySvg = root.querySelector(".bayes-density");
+
+  const controls = {};
+
+  root.querySelectorAll("[data-param]").forEach(input => {
+    controls[input.dataset.param] = input;
+
+    const output = root.querySelector(
+      `[data-value="${input.dataset.param}"]`
+    );
+
+    const updateLabel = () => {
+      if (!output) return;
+
+      const x = Number(input.value);
+
+      if (input.dataset.param === "n") {
+        output.textContent = Math.round(x);
+      } else {
+        output.textContent = x.toFixed(1);
+      }
+    };
+
+    input.addEventListener("input", () => {
+      updateLabel();
+      draw();
+    });
+
+    updateLabel();
+  });
+
+  function value(name, fallback) {
+    return controls[name]
+      ? Number(controls[name].value)
+      : fallback;
+  }
+
+  function meanOf(x) {
+    return x.reduce((a, b) => a + b, 0) / x.length;
+  }
+
+  function histogram(values, bins, xmin, xmax) {
+    const width = (xmax - xmin) / bins;
+    const counts = Array(bins).fill(0);
+
+    for (const x of values) {
+      const index = Math.floor(
+        (x - xmin) / (xmax - xmin) * bins
+      );
+
+      if (index >= 0 && index < bins) {
+        counts[index]++;
+      } else if (x === xmax) {
+        counts[bins - 1]++;
+      }
+    }
+
+    return counts.map((count, i) => ({
+      x0: xmin + i * width,
+      x1: xmin + (i + 1) * width,
+      count
+    }));
+  }
+
+  function simulateData(n, observedMean) {
+    const x = Array.from(
+      { length: n },
+      () => jStat.normal.sample(0, 1)
+    );
+
+    const currentMean = meanOf(x);
+
+    return x.map(v => v - currentMean + observedMean);
+  }
+
+  function draw() {
+    const priorMean = value("priorMean", 0);
+    const priorSd = value("priorSd", 1);
+
+    const observedMean = value("observedMean", 1);
+    const n = Math.max(
+      1,
+      Math.round(value("n", 20))
+    );
+
+    /*
+      Known observation SD = 1
+    */
+    const sigma = 1;
+
+    /*
+      Likelihood / data-information curve for μ
+      is Normal(observedMean, sigma / sqrt(n))
+    */
+    const dataSd = sigma / Math.sqrt(n);
+
+    /*
+      Conjugate posterior:
+      prior:     μ ~ N(m0, s0^2)
+      data info: μ | data ∝ N(xbar, sigma^2 / n)
+    */
+    const priorVar = priorSd * priorSd;
+    const dataVar = dataSd * dataSd;
+
+    const posteriorVar =
+      1 / (1 / priorVar + 1 / dataVar);
+
+    const posteriorSd =
+      Math.sqrt(posteriorVar);
+
+    const posteriorMean =
+      posteriorVar * (
+        priorMean / priorVar +
+        observedMean / dataVar
+      );
+
+    /*
+      Simulated raw data for the histogram
+    */
+    const sample = simulateData(n, observedMean);
+
+    /*
+      Shared x-axis for both panels
+    */
+    const means = [
+      priorMean,
+      observedMean,
+      posteriorMean
+    ];
+
+    const sds = [
+      priorSd,
+      dataSd,
+      posteriorSd,
+      sigma
+    ];
+
+    const xmin =
+      Math.min(...means) - 4.5 * Math.max(...sds);
+
+    const xmax =
+      Math.max(...means) + 4.5 * Math.max(...sds);
+
+    drawHistogram(
+      sample,
+      xmin,
+      xmax,
+      observedMean
+    );
+
+    drawDensityPanel(
+      xmin,
+      xmax,
+      priorMean,
+      priorSd,
+      observedMean,
+      dataSd,
+      posteriorMean,
+      posteriorSd
+    );
+  }
+
+  function drawHistogram(
+    sample,
+    xmin,
+    xmax,
+    observedMean
+  ) {
+    const width = 900;
+    const height = 180;
+
+    const margin = {
+      left: 40,
+      right: 15,
+      top: 30,
+      bottom: 35
+    };
+
+    histSvg.setAttribute(
+      "viewBox",
+      `0 0 ${width} ${height}`
+    );
+
+    const bins = Math.max(
+      6,
+      Math.min(
+        30,
+        Math.round(Math.sqrt(sample.length) * 2)
+      )
+    );
+
+    const hist = histogram(
+      sample,
+      bins,
+      xmin,
+      xmax
+    );
+
+    const ymax = Math.max(
+      1,
+      ...hist.map(d => d.count)
+    ) * 1.1;
+
+    const plotWidth =
+      width - margin.left - margin.right;
+
+    const plotHeight =
+      height - margin.top - margin.bottom;
+
+    const sx = x =>
+      margin.left +
+      (x - xmin) / (xmax - xmin) * plotWidth;
+
+    const sy = y =>
+      margin.top +
+      plotHeight -
+      y / ymax * plotHeight;
+
+    const bars = hist.map(d => `
+      <rect
+        class="bayes-hist"
+        x="${sx(d.x0)}"
+        y="${sy(d.count)}"
+        width="${Math.max(0, sx(d.x1) - sx(d.x0) - 1)}"
+        height="${sy(0) - sy(d.count)}">
+      </rect>
+    `).join("");
+
+    const ticks = niceTicks(xmin, xmax, 5);
+
+    const tickSvg = ticks.map(x => `
+      <line
+        class="bayes-tick"
+        x1="${sx(x)}"
+        x2="${sx(x)}"
+        y1="${sy(0)}"
+        y2="${sy(0) + 7}">
+      </line>
+
+      <text
+        class="bayes-label"
+        x="${sx(x)}"
+        y="${sy(0) + 25}"
+        text-anchor="middle">
+        ${x.toFixed(1)}
+      </text>
+    `).join("");
+
+    histSvg.innerHTML = `
+      <text
+        class="bayes-title"
+        x="${width / 2}"
+        y="20">
+        Simulated raw data
+      </text>
+
+      <line
+        class="bayes-axis"
+        x1="${sx(xmin)}"
+        x2="${sx(xmax)}"
+        y1="${sy(0)}"
+        y2="${sy(0)}">
+      </line>
+
+      ${bars}
+
+      <line
+        class="bayes-vline-data"
+        x1="${sx(observedMean)}"
+        x2="${sx(observedMean)}"
+        y1="${sy(0)}"
+        y2="${margin.top}">
+      </line>
+
+      ${tickSvg}
+    `;
+  }
+
+  function drawDensityPanel(
+    xmin,
+    xmax,
+    priorMean,
+    priorSd,
+    observedMean,
+    dataSd,
+    posteriorMean,
+    posteriorSd
+  ) {
+    const width = 900;
+    const height = 320;
+
+    const margin = {
+      left: 40,
+      right: 20,
+      top: 45,
+      bottom: 40
+    };
+
+    densitySvg.setAttribute(
+      "viewBox",
+      `0 0 ${width} ${height}`
+    );
+
+    const priorDensity = x =>
+      jStat.normal.pdf(x, priorMean, priorSd);
+
+    const dataDensity = x =>
+      jStat.normal.pdf(x, observedMean, dataSd);
+
+    const posteriorDensity = x =>
+      jStat.normal.pdf(x, posteriorMean, posteriorSd);
+
+    const xs = linspace(xmin, xmax, 500);
+
+    const ymax = Math.max(
+      ...xs.map(priorDensity),
+      ...xs.map(dataDensity),
+      ...xs.map(posteriorDensity)
+    ) * 1.1;
+
+    const plotWidth =
+      width - margin.left - margin.right;
+
+    const plotHeight =
+      height - margin.top - margin.bottom;
+
+    const sx = x =>
+      margin.left +
+      (x - xmin) / (xmax - xmin) * plotWidth;
+
+    const sy = y =>
+      margin.top +
+      plotHeight -
+      y / ymax * plotHeight;
+
+    const priorPoints = xs.map(x => [
+      sx(x),
+      sy(priorDensity(x))
+    ]);
+
+    const dataPoints = xs.map(x => [
+      sx(x),
+      sy(dataDensity(x))
+    ]);
+
+    const posteriorPoints = xs.map(x => [
+      sx(x),
+      sy(posteriorDensity(x))
+    ]);
+
+    const ticks = niceTicks(xmin, xmax, 5);
+
+    const tickSvg = ticks.map(x => `
+      <line
+        class="bayes-tick"
+        x1="${sx(x)}"
+        x2="${sx(x)}"
+        y1="${sy(0)}"
+        y2="${sy(0) + 7}">
+      </line>
+
+      <text
+        class="bayes-label"
+        x="${sx(x)}"
+        y="${sy(0) + 25}"
+        text-anchor="middle">
+        ${x.toFixed(1)}
+      </text>
+    `).join("");
+
+    densitySvg.innerHTML = `
+      <text
+        class="bayes-title"
+        x="${width / 2}"
+        y="22">
+        Prior + data → posterior
+      </text>
+
+      <line
+        class="bayes-axis"
+        x1="${sx(xmin)}"
+        x2="${sx(xmax)}"
+        y1="${sy(0)}"
+        y2="${sy(0)}">
+      </line>
+
+      ${tickSvg}
+
+      <path
+        class="bayes-prior"
+        d="${pathFromPoints(priorPoints)}">
+      </path>
+
+      <path
+        class="bayes-data"
+        d="${pathFromPoints(dataPoints)}">
+      </path>
+
+      <path
+        class="bayes-posterior"
+        d="${pathFromPoints(posteriorPoints)}">
+      </path>
+
+      <line
+        class="bayes-vline-prior"
+        x1="${sx(priorMean)}"
+        x2="${sx(priorMean)}"
+        y1="${sy(0)}"
+        y2="${sy(priorDensity(priorMean))}">
+      </line>
+
+      <line
+        class="bayes-vline-data"
+        x1="${sx(observedMean)}"
+        x2="${sx(observedMean)}"
+        y1="${sy(0)}"
+        y2="${sy(dataDensity(observedMean))}">
+      </line>
+
+      <line
+        class="bayes-vline-post"
+        x1="${sx(posteriorMean)}"
+        x2="${sx(posteriorMean)}"
+        y1="${sy(0)}"
+        y2="${sy(posteriorDensity(posteriorMean))}">
+      </line>
+
+      <text
+        class="bayes-label"
+        x="${sx(priorMean)}"
+        y="${sy(priorDensity(priorMean)) - 10}"
+        text-anchor="middle">
+        prior
+      </text>
+
+      <text
+        class="bayes-label"
+        x="${sx(observedMean)}"
+        y="${sy(dataDensity(observedMean)) - 10}"
+        text-anchor="middle">
+        data
+      </text>
+
+      <text
+        class="bayes-label"
+        x="${sx(posteriorMean)}"
+        y="${sy(posteriorDensity(posteriorMean)) - 10}"
+        text-anchor="middle">
+        posterior
+      </text>
+
+      <text
+        class="bayes-summary"
+        x="${width / 2}"
+        y="${height - 8}">
+        posterior mean = ${posteriorMean.toFixed(2)},
+        posterior SD = ${posteriorSd.toFixed(2)}
+      </text>
+    `;
+  }
+
+  function niceTicks(xmin, xmax, n = 5) {
+    const span = xmax - xmin;
+    const rawStep = span / (n - 1);
+    const power = Math.floor(Math.log10(rawStep));
+    const base = Math.pow(10, power);
+
+    const candidates = [1, 2, 2.5, 5, 10];
+    let step = candidates[0] * base;
+
+    for (const c of candidates) {
+      if (rawStep <= c * base) {
+        step = c * base;
+        break;
+      }
+    }
+
+    const start = Math.ceil(xmin / step) * step;
+    const out = [];
+
+    for (let x = start; x <= xmax + 1e-9; x += step) {
+      out.push(
+        Math.abs(x) < 1e-10 ? 0 : x
+      );
+    }
+
+    return out;
+  }
+
+  draw();
+}
+
+  window.bayesUpdateDemo = bayesUpdateDemo;
+
   window.powerDemo = powerDemo;
 
   window.cltShashDemo = cltShashDemo;
