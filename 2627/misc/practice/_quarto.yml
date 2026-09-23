@@ -1,0 +1,8 @@
+# Making this folder its own Quarto project keeps Quarto's project directory
+# identical to the folder that holds practice.qmd.  Quarto resolves some
+# internal paths relative to the project, so this avoids surprises when the
+# document sits in a sub-folder of the larger course project.
+#
+# Render from inside this folder:  cd practice && quarto render practice.qmd
+project:
+  type: default

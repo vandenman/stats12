@@ -1,0 +1,71 @@
+<div id="bayes-demo" class="bayes-layout">
+
+<div class="bayes-panel">
+
+<label class="bayes-control">
+<span>m₀</span>
+<input
+  data-param="priorMean"
+  type="range"
+  min="-3"
+  max="3"
+  step="0.1"
+  value="0">
+<span data-value="priorMean"></span>
+</label>
+
+<label class="bayes-control">
+<span>s₀</span>
+<input
+  data-param="priorSd"
+  type="range"
+  min="0.3"
+  max="3"
+  step="0.1"
+  value="1.2">
+<span data-value="priorSd"></span>
+</label>
+
+<label class="bayes-control">
+<span>x̄</span>
+<input
+  data-param="observedMean"
+  type="range"
+  min="-3"
+  max="3"
+  step="0.1"
+  value="1">
+<span data-value="observedMean"></span>
+</label>
+
+<label class="bayes-control">
+<span>n</span>
+<input
+  data-param="n"
+  type="range"
+  min="1"
+  max="200"
+  step="1"
+  value="20">
+<span data-value="n"></span>
+</label>
+
+</div>
+
+<div class="bayes-plots">
+
+<div class="bayes-plot">
+<svg class="bayes-histogram"></svg>
+</div>
+
+<div class="bayes-plot">
+<svg class="bayes-density"></svg>
+</div>
+
+</div>
+
+</div>
+
+<script>
+bayesUpdateDemo("#bayes-demo");
+</script>

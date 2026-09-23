@@ -1,0 +1,281 @@
+---
+title: "Statistics Skills Practice"
+format:
+  html:
+    embed-resources: true
+---
+
+<!-- This document deliberately does not use Quarto Live's `live-html`
+     format.  Quarto Live is built on Quarto's OJS runtime, and that runtime
+     refuses to start from a file:// URL: it shows "This document uses OJS,
+     which requires JavaScript features disabled when running in file://...
+     URLs".  Because the requirement is one downloadable HTML file that
+     students can open straight from their downloads folder, R is started
+     directly through the webR JavaScript API instead - see the module script
+     below.  `embed-resources: true` puts Quarto's own CSS and JS inside the
+     file, so the only thing fetched from the internet is webR itself. -->
+
+This page generates statistics practice questions for you. It is for
+**practising calculations and procedures** — choosing the right formula,
+standardising, using the z table and doing the arithmetic. It is *not* a
+substitute for practising conceptual questions, which you get separately.
+
+How it works:
+
+- choose a **seed** (any whole number), a **difficulty**, the number of
+  **questions** and which **topics** to include;
+- press **Generate practice set**;
+- type your answer in the box and press **Check answer**;
+- if you are stuck, ask for a **hint**, or open the **worked solution**.
+
+The questions are generated from the seed: the same seed with the same
+settings always gives exactly the same set of questions. So you can write down
+"seed 18492, difficulty 2, question 4" and come back to that question later.
+Generate as many sets as you like — nothing is saved or sent anywhere.
+
+The first time you open the page, R itself (about 10 MB) is downloaded from
+the webR project; the browser caches it, so later visits are quick. An
+internet connection is needed for that, but the file needs no web server: it
+works straight from your downloads folder.
+
+<!-- A little styling, nothing more: readability matters, polish does not. -->
+<style>
+.practice-controls label { margin-right: 1rem; }
+.practice-controls input[type="checkbox"] { margin-left: 0.75rem; }
+.pq-header { background: #f4f6f8; border-left: 4px solid #4a6785; padding: 0.5rem 0.75rem; margin: 1rem 0; }
+.pq-header p { margin: 0; }
+.pq-tip { font-size: 0.9rem; }
+.pq-question { border-top: 1px solid #dddddd; margin-top: 1rem; padding-top: 0.5rem; }
+.pq-question h3 { margin-bottom: 0.25rem; }
+.pq-topic { font-size: 0.8rem; font-weight: normal; color: #666666; }
+.pq-prompt { white-space: pre-line; }
+.pq-feedback { min-height: 1.2rem; font-weight: bold; }
+.pq-correct { color: #116329; }
+.pq-wrong { color: #a40e26; }
+.pq-error { color: #a40e26; background: #fff0f0; padding: 0.5rem; white-space: pre-wrap; }
+.pq-hint { background: #fffbe6; padding: 0.5rem; }
+.pq-solution pre { background: #f6f6f6; padding: 0.5rem; overflow-x: auto; }
+.pq-zgrid { margin-top: 0.5rem; overflow-x: auto; }
+.pq-zgrid table { border-collapse: collapse; font-family: monospace; font-size: 0.85rem; }
+.pq-zgrid th, .pq-zgrid td { border: 1px solid #dddddd; padding: 0.1rem 0.3rem; text-align: right; }
+.practice-source { display: none; }
+#practice-status { font-size: 0.9rem; color: #444444; }
+</style>
+
+## Generate a practice set
+
+<div class="practice-controls">
+  <p>
+    <label>Seed: <input id="practice-seed" type="number" value="1234" step="1" size="8"></label>
+    <label>Difficulty:
+      <select id="practice-difficulty">
+        <option value="1">1 - one step</option>
+        <option value="2">2 - two steps</option>
+        <option value="3">3 - work backwards</option>
+      </select>
+    </label>
+    <label>Questions:
+      <select id="practice-n">
+        <option value="5">5</option>
+        <option value="10" selected>10</option>
+        <option value="15">15</option>
+      </select>
+    </label>
+  </p>
+  <p>Topics:
+    <label><input id="practice-normal" type="checkbox" checked> Normal distribution</label>
+    <label><input id="practice-clt" type="checkbox" checked> Central limit theorem</label>
+    <label><input id="practice-bayes" type="checkbox" checked> Bayes theorem</label>
+  </p>
+  <p><button id="practice-generate" type="button">Generate practice set</button></p>
+</div>
+
+<p id="practice-status"><em>Starting R&hellip;</em></p>
+
+<div id="practice-output"></div>
+
+<script>
+// Page logic.  This only reads the form and shows what R sends back: the
+// questions, the answers and the grading all come from the R functions
+// further down the page.
+(function () {
+  "use strict";
+
+  const output = document.getElementById("practice-output");
+  const status = document.getElementById("practice-status");
+  let webR = null;   // the R session, once the module script below has it
+
+  // A JavaScript string written as R source.  JSON escaping is close enough
+  // to R's own for the values we pass across.
+  const rString = (text) => JSON.stringify(text);
+
+  // The current settings, read straight off the form.
+  const settings = () => {
+    const topics = [];
+    if (document.getElementById("practice-normal").checked) topics.push("normal");
+    if (document.getElementById("practice-clt").checked) topics.push("clt");
+    if (document.getElementById("practice-bayes").checked) topics.push("bayes");
+    return {
+      seed: Number(document.getElementById("practice-seed").value),
+      difficulty: Number(document.getElementById("practice-difficulty").value),
+      n_questions: Number(document.getElementById("practice-n").value),
+      topics: topics
+    };
+  };
+
+  // Show an error rather than leaving the page stuck.
+  const showError = (error) => {
+    output.innerHTML = "";
+    const pre = document.createElement("pre");
+    pre.className = "pq-error";
+    pre.textContent = String(error);
+    output.appendChild(pre);
+  };
+
+  // Generate a set.
+  const generate = async () => {
+    if (webR === null) {
+      output.innerHTML = "<p><strong>R is still starting up.</strong></p>";
+      return;
+    }
+    const chosen = settings();
+    if (chosen.topics.length === 0) {
+      output.innerHTML = "<p><strong>Tick at least one topic.</strong></p>";
+      return;
+    }
+    output.innerHTML = "<p><em>Generating&hellip;</em></p>";
+    try {
+      const call =
+        "practice_html(" +
+        chosen.seed + ", " + chosen.n_questions + ", " + chosen.difficulty + ", c(" +
+        chosen.topics.map(rString).join(", ") + "))";
+      output.innerHTML = await webR.evalRString(call);
+    } catch (error) {
+      showError(error);
+    }
+  };
+
+  // One click handler for the whole set: check an answer, show a hint, show
+  // the worked solution.
+  output.addEventListener("click", async (event) => {
+    const button = event.target;
+    const question = button.closest(".pq-question");
+    if (!question) return;
+
+    if (button.classList.contains("pq-hint-button")) {
+      const box = question.querySelector(".pq-hint");
+      box.hidden = !box.hidden;
+      button.textContent = box.hidden ? "Show hint" : "Hide hint";
+      return;
+    }
+
+    if (button.classList.contains("pq-solution-button")) {
+      const box = question.querySelector(".pq-solution");
+      box.hidden = !box.hidden;
+      button.textContent = box.hidden ? "Show worked solution" : "Hide worked solution";
+      return;
+    }
+
+    if (button.classList.contains("pq-check")) {
+      const input = question.querySelector(".pq-answer");
+      const feedback = question.querySelector(".pq-feedback");
+      feedback.textContent = "Checking...";
+      try {
+        feedback.textContent = await webR.evalRString(
+          "check_answer_text(" + rString(input.value) + ", " +
+          Number(input.dataset.correct) + ", " + Number(input.dataset.tolerance) + ")"
+        );
+        feedback.className = feedback.textContent === "Correct!"
+          ? "pq-feedback pq-correct"
+          : "pq-feedback pq-wrong";
+      } catch (error) {
+        showError(error);
+      }
+    }
+  });
+
+  document.getElementById("practice-generate").addEventListener("click", generate);
+
+  // The module script below calls one of these once R is running (or has
+  // failed to start).
+  window.practiceReady = (instance) => {
+    webR = instance;
+    status.textContent = "R is running. Choose your settings and press \u201cGenerate practice set\u201d.";
+  };
+  window.practiceFailed = (error) => {
+    status.innerHTML = "<strong>R could not be started:</strong> " + String(error);
+  };
+})();
+</script>
+
+<script type="module">
+// R in the browser.  webR is a WebAssembly build of R, loaded from the webR
+// project's CDN; this page needs an internet connection for that, and nothing
+// else.  (Quarto Live's own live-html format cannot be used here, because the
+// OJS runtime it is built on refuses to start from file:// URLs.)
+import { WebR } from "https://webr.r-wasm.org/v0.6.0/webr.mjs";
+
+try {
+  const webR = new WebR({ baseUrl: "https://webr.r-wasm.org/v0.6.0/" });
+  await webR.init();
+
+  // The R functions are the contents of the files in R/, bundled into this
+  // page as one hidden code block further down; read it back and evaluate it.
+  const rCode = document.querySelector(".practice-source code").textContent;
+  await webR.evalRVoid(rCode);
+
+  window.practiceReady(webR);
+} catch (error) {
+  window.practiceFailed(error);
+}
+</script>
+
+## The R helper functions
+
+The code block below holds the contents of the five files in `R/`, in the
+order they are loaded. It is hidden (see the `.practice-source` rule in the
+style block above); when the page is opened, the script above reads that text
+back and evaluates it inside R. The files stay the single source of truth:
+edit `R/normal.R`, render again, and the change is in the page.
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Emit one hidden code block holding every R helper file, in load order.
+helper_files <- c("R/utils.R", "R/normal.R", "R/clt.R", "R/bayes.R", "R/generators.R")
+
+cat("::: {.practice-source}\n\n```\n")
+for (file in helper_files) {
+  cat(paste(readLines(file), collapse = "\n"), "\n")
+}
+cat("```\n\n:::\n")
+```
+
+## Standard normal table
+
+For negative z, use `Phi(-z) = 1 - Phi(z)`; for an interval, subtract the two
+cumulative probabilities. The table below is read from `tables/z-table.csv`
+when the page is rendered, so you can edit that file if you want a different
+table.
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Pandoc turns this markdown table into the HTML table.  Markdown, rather
+# than raw HTML from a chunk, so that Quarto does not treat the output as a
+# "preserved HTML chunk" (which needs a post-render pass that is easily
+# confused by the project layout).
+z_table <- read.csv("tables/z-table.csv", check.names = FALSE)
+
+cat("::: {.pq-zgrid}\n\n")
+cat("| z | ", paste(colnames(z_table)[-1], collapse = " | "), " |\n", sep = "")
+cat("|---:", strrep("|---:", ncol(z_table) - 1), "|\n", sep = "")
+for (i in seq_len(nrow(z_table))) {
+  cat("| ", sprintf("%.1f", z_table[i, 1]), " | ",
+      paste(sprintf("%.4f", unlist(z_table[i, -1])), collapse = " | "),
+      " |\n", sep = "")
+}
+cat("\n:::\n")
+```
