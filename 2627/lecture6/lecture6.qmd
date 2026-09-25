@@ -64,9 +64,10 @@ $$
 
 ## Today {.unlisted}
 
-No new collection of statistical tests.
+- Z-test
+- $t$-test
 
-Instead, we will use the statistics from the previous lectures to answer several real questions from beginning to end.
+These are mostly the names for tests we've already applied during the previous lectures.
 
 . . .
 
@@ -82,16 +83,16 @@ One recurring workflow.
 
 ::: {style="font-size: 90%;"}
 
-1. What is the **research question**?
-2. What are the **population**, **sample**, and **variables**?
-3. What do the **raw data** look like?
-4. Which **descriptive statistics** are useful?
+1. What is the _research question_?
+2. What are the _population_, _sample_, _variables_, and _measurement levels_?
+3. What do the _raw data_ look like?
+4. Which _descriptive statistics_ are useful?
 5. What are $\hypo_0$ and $\hypo_1$?
-6. What would we expect because of **sampling variability** if $\hypo_0$ were true?
-7. How far is our estimate from $\hypo_0$ in **standard errors**?
-8. What is the **$p$-value**?
-9. What does a **confidence interval** tell us?
-10. What can we **conclude** -- and what can we not conclude?
+6. What would we expect because of __sampling variability_ if $\hypo_0$ were true?
+7. How far is our estimate from $\hypo_0$ in _standard errors_?
+8. What is the _$p$-value_?
+9. What does a _confidence interval_ tell us?
+10. What _can_ and what _can't_ we conclude?
 
 :::
 
@@ -178,7 +179,7 @@ billboard_population <- billboard |>
 # We deliberately pretend that we only observed a random sample.
 set.seed(1209)
 billboard_sample <- billboard_population |>
-  slice_sample(n = 40)
+  slice_sample(n = 30)
 ```
 
 ::: footer
@@ -193,16 +194,24 @@ What is the population we are trying to say something about?
 
 . . .
 
-For today's analysis:
-
-- _Population_: Billboard Hot 100 number-one songs in this database
-- _Sample_: 40 randomly selected number-one songs
-- _Variable_: song length in seconds
-- Measurement level: **ratio**
+Popular songs
 
 . . .
 
-Is this population "all pop songs"?
+What is the measurement level?
+
+. . .
+
+Ratio, because distances have a meaning and zero has a meaning.
+
+. . .
+
+For today's analysis:
+
+- _Population_: Billboard Hot 100 number-one songs in this database
+- _Sample_: 30 randomly selected number-one songs
+- _Variable_: song length in seconds
+- _Measurement level_: ratio
 
 
 ## Our Sample
@@ -278,6 +287,13 @@ The sample mean is `{r} round(song_mean - 180, 1)` seconds away from three minut
 
 Is that a **large** difference?
 
+. . .
+
+The median is near the mean, what does this tell us?
+
+. . .
+
+Distribution is roughly symmetric / little skew.
 
 ## Research Hypotheses
 
@@ -300,13 +316,13 @@ Two-tailed. Why?
 
 If $\hypo_0$ is true, the population mean is 180 seconds.
 
-Even then, a random sample of 40 songs will almost never have a mean of *exactly* 180.
+Even then, a random sample of 30 songs will almost never have a mean of *exactly* 180.
 
 . . .
 
 Why?
 
-> **Sampling variability**
+Sampling variability!
 
 
 ## Standard Error
@@ -357,7 +373,9 @@ $$
 
 . . .
 
-Our sample mean lies about **`{r} abs(round(song_t, 2))` standard errors** from the value predicted by $\hypo_0$.
+Our sample mean lies about `{r} abs(round(song_t, 2))` standard errors from the value predicted by $\hypo_0$.
+
+The "degrees of freedom" are $df = 29$.
 
 
 ## The Sampling Distribution Under $\hypo_0$
@@ -388,26 +406,26 @@ ggplot(t_plot, aes(t, density)) +
 
 ## The $p$-value
 
+. . .
+
+Examine the $t$-table.
+
+. . .
+
+Look up the row matching $df = 29$ and go right until the next value is larger than $t$.
+
+. . .
+
 The probability of a result at least this extreme under $\hypo_0$ is
 
 $$
-p `{r} pretty_p(song_p)`.
+p < 0.001.
 $$
 
 Using $\alpha = .05$:
 
-```{r}
-#| results: asis
-if (song_p < .05) {
-  cat("**We reject $\\mathcal{H}_0$.**")
-} else {
-  cat("**We do not reject $\\mathcal{H}_0$.**")
-}
-```
+We reject $\mathcal{H}_0$.
 
-. . .
-
-What does that conclusion **not** mean?
 
 
 ## Confidence Interval
@@ -435,7 +453,7 @@ How does that relate to our hypothesis test?
 
 ## We Have Been Cheating
 
-For teaching purposes, we pretended that these 40 songs were all the data we had.
+For teaching purposes, we pretended that these 30 songs were all the data we had.
 
 . . .
 
@@ -500,10 +518,10 @@ sim_song <- data.frame(mean = sim_song_means)
 #| fig-height: 5
 
 ggplot(sim_song, aes(x = mean)) +
-  geom_histogram(bins = 40) +
+  geom_histogram(bins = 30) +
   geom_vline(xintercept = population_mean_song, linewidth = 1) +
   labs(
-    x = "Mean song length in a sample of 40",
+    x = "Mean song length in a sample of 30",
     y = "Number of simulated samples",
     title = "5,000 hypothetical repeated samples"
   )

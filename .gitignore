@@ -6,3 +6,4 @@ wvs.rdata
 varatt.rdata
 
 **/*.quarto_ipynb
+docs/

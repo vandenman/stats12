@@ -12,7 +12,7 @@ How it works:
 
 - choose a **seed** (any whole number), a **difficulty**, the number of  **questions** and which **topics** to include;
 - press **Generate practice set**;
-- Use the formula sheet (link) for equations, z and $t$-tables.
+- Use the formula sheet ([link](https://vandenman.github.io/stats12/2627/misc/formula_sheet/formula_sheet.html)) for equations, z and $t$-tables.
 - type your answer in the box and press **Check answer**;
 - if you are stuck, ask for a **hint**, or open the **worked solution**.
 
