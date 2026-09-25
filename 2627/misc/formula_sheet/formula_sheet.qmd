@@ -12,7 +12,7 @@ format:
         # toc: true
         # toc-depth: 1
         # toc-title: "Today"
-        embed-resources: false # true
+        embed-resources: true
         # include-in-header:
         # - text: |
         #     <script src="https://cdn.jsdelivr.net/npm/jstat@1.9.6/dist/jstat.min.js"></script>

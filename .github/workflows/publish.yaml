@@ -41,6 +41,10 @@ jobs:
         working-directory: 2627/misc/practice
         run: quarto render practice.qmd
 
+      - name: Render formula sheet
+        working-directory: 2627/misc/formula_sheet
+        run: quarto render formula_sheet.qmd --to html
+
       - name: Render and Publish
         uses: quarto-dev/quarto-actions/publish@v2
         with:

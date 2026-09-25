@@ -4,6 +4,7 @@ project:
   resources:
     - resources
     - 2627/misc/practice/practice.html
+    - 2627/misc/formula_sheet/formula_sheet.html
 execute:
   freeze: auto
   warnings: false
@@ -14,6 +15,8 @@ book:
     left:
       - text: "Practice"
         href: 2627/misc/practice/practice.html
+      - text: "Formula Sheet"
+        href: 2627/misc/formula_sheet/formula_sheet.html
   subtitle: ''
   author: Don van den Bergh & Caspar J. Van Lissa
   doi: ''
