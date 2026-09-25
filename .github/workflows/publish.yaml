@@ -38,12 +38,10 @@ jobs:
       - uses: r-lib/actions/setup-renv@v2
 
       - name: Render practice exercises
-        working-directory: 2627/misc/practice
-        run: quarto render practice.qmd
+        run: quarto render 2627/misc/practice/practice.qmd
 
       - name: Render formula sheet
-        working-directory: 2627/misc/formula_sheet
-        run: quarto render formula_sheet.qmd --to html
+        run: quarto render 2627/misc/formula_sheet/formula_sheet.qmd --to html
 
       - name: Render and Publish
         uses: quarto-dev/quarto-actions/publish@v2
