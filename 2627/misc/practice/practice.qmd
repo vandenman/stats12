@@ -5,38 +5,18 @@ format:
     embed-resources: true
 ---
 
-<!-- This document deliberately does not use Quarto Live's `live-html`
-     format.  Quarto Live is built on Quarto's OJS runtime, and that runtime
-     refuses to start from a file:// URL: it shows "This document uses OJS,
-     which requires JavaScript features disabled when running in file://...
-     URLs".  Because the requirement is one downloadable HTML file that
-     students can open straight from their downloads folder, R is started
-     directly through the webR JavaScript API instead - see the module script
-     below.  `embed-resources: true` puts Quarto's own CSS and JS inside the
-     file, so the only thing fetched from the internet is webR itself. -->
-
-This page generates statistics practice questions for you. It is for
-**practising calculations and procedures** — choosing the right formula,
-standardising, using the z table and doing the arithmetic. It is *not* a
-substitute for practising conceptual questions, which you get separately.
+This page generates practice questions. It is for
+practising calculations and procedures, choosing the right formula, standardising, using the Z-table, $t$-table and doing the arithmetic. This does not generate or practice conceptual questions.
 
 How it works:
 
-- choose a **seed** (any whole number), a **difficulty**, the number of
-  **questions** and which **topics** to include;
+- choose a **seed** (any whole number), a **difficulty**, the number of  **questions** and which **topics** to include;
 - press **Generate practice set**;
+- Use the formula sheet (link) for equations, z and $t$-tables.
 - type your answer in the box and press **Check answer**;
 - if you are stuck, ask for a **hint**, or open the **worked solution**.
 
-The questions are generated from the seed: the same seed with the same
-settings always gives exactly the same set of questions. So you can write down
-"seed 18492, difficulty 2, question 4" and come back to that question later.
-Generate as many sets as you like — nothing is saved or sent anywhere.
-
-The first time you open the page, R itself (about 10 MB) is downloaded from
-the webR project; the browser caches it, so later visits are quick. An
-internet connection is needed for that, but the file needs no web server: it
-works straight from your downloads folder.
+The questions are generated from the seed: the same seed with the same settings always gives exactly the same set of questions. So you can write down "seed 18492, difficulty 2, question 4" and come back to that question later. Generate as many sets as you like. No data is saved or sent anywhere.
 
 <!-- A little styling, nothing more: readability matters, polish does not. -->
 <style>
@@ -49,6 +29,7 @@ works straight from your downloads folder.
 .pq-question h3 { margin-bottom: 0.25rem; }
 .pq-topic { font-size: 0.8rem; font-weight: normal; color: #666666; }
 .pq-prompt { white-space: pre-line; }
+.pq-prompt-fixed { white-space: pre-wrap; font-family: monospace; }
 .pq-feedback { min-height: 1.2rem; font-weight: bold; }
 .pq-correct { color: #116329; }
 .pq-wrong { color: #a40e26; }
@@ -83,6 +64,9 @@ works straight from your downloads folder.
     </label>
   </p>
   <p>Topics:
+    <label><input id="practice-probability" type="checkbox" checked> Probability Theory</label>
+    <label><input id="practice-Z" type="checkbox" checked> Z-test</label>
+    <label><input id="practice-t" type="checkbox" checked> t-test</label>
     <label><input id="practice-normal" type="checkbox" checked> Normal distribution</label>
     <label><input id="practice-clt" type="checkbox" checked> Central limit theorem</label>
     <label><input id="practice-bayes" type="checkbox" checked> Bayes theorem</label>
@@ -112,6 +96,9 @@ works straight from your downloads folder.
   // The current settings, read straight off the form.
   const settings = () => {
     const topics = [];
+    if (document.getElementById("practice-probability").checked) topics.push("probability");
+    if (document.getElementById("practice-Z").checked) topics.push("Z");
+    if (document.getElementById("practice-t").checked) topics.push("t");
     if (document.getElementById("practice-normal").checked) topics.push("normal");
     if (document.getElementById("practice-clt").checked) topics.push("clt");
     if (document.getElementById("practice-bayes").checked) topics.push("bayes");
@@ -230,52 +217,20 @@ try {
 }
 </script>
 
-## The R helper functions
-
-The code block below holds the contents of the five files in `R/`, in the
-order they are loaded. It is hidden (see the `.practice-source` rule in the
-style block above); when the page is opened, the script above reads that text
-back and evaluates it inside R. The files stay the single source of truth:
-edit `R/normal.R`, render again, and the change is in the page.
 
 ```{r}
 #| echo: false
 #| results: asis
 
 # Emit one hidden code block holding every R helper file, in load order.
-helper_files <- c("R/utils.R", "R/normal.R", "R/clt.R", "R/bayes.R", "R/generators.R")
+helper_files <- c(
+  "R/utils.R", "R/probability.R", "R/normal.R", "R/clt.R", "R/bayes.R",
+  "R/ztests.R", "R/ttests.R", "R/generators.R"
+)
 
 cat("::: {.practice-source}\n\n```\n")
 for (file in helper_files) {
   cat(paste(readLines(file), collapse = "\n"), "\n")
 }
 cat("```\n\n:::\n")
-```
-
-## Standard normal table
-
-For negative z, use `Phi(-z) = 1 - Phi(z)`; for an interval, subtract the two
-cumulative probabilities. The table below is read from `tables/z-table.csv`
-when the page is rendered, so you can edit that file if you want a different
-table.
-
-```{r}
-#| echo: false
-#| results: asis
-
-# Pandoc turns this markdown table into the HTML table.  Markdown, rather
-# than raw HTML from a chunk, so that Quarto does not treat the output as a
-# "preserved HTML chunk" (which needs a post-render pass that is easily
-# confused by the project layout).
-z_table <- read.csv("tables/z-table.csv", check.names = FALSE)
-
-cat("::: {.pq-zgrid}\n\n")
-cat("| z | ", paste(colnames(z_table)[-1], collapse = " | "), " |\n", sep = "")
-cat("|---:", strrep("|---:", ncol(z_table) - 1), "|\n", sep = "")
-for (i in seq_len(nrow(z_table))) {
-  cat("| ", sprintf("%.1f", z_table[i, 1]), " | ",
-      paste(sprintf("%.4f", unlist(z_table[i, -1])), collapse = " | "),
-      " |\n", sep = "")
-}
-cat("\n:::\n")
 ```

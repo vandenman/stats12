@@ -8,9 +8,9 @@
 #   Rscript --vanilla show.R 18492 2 5 normal,clt   # seed 18492, difficulty 2, 5 questions
 #
 # The arguments are seed, difficulty (1-3), number of questions and topics (a
-# comma-separated list of normal, clt, bayes).  Anything you leave out keeps
-# its default, and no difficulty means "one set per difficulty", which is a
-# quick check that all three levels still generate.
+# comma-separated list of probability, Z, t, normal, clt, bayes).  Anything you
+# leave out keeps its default, and no difficulty means "one set per
+# difficulty", which is a quick check that all three levels still generate.
 #
 # What is printed here is exactly what the browser generates from the same
 # seed, difficulty, number and topics.
@@ -20,7 +20,8 @@ if (!file.exists("R/generators.R")) {
   stop("Run this from the practice folder: cd <...>/practice && Rscript --vanilla show.R")
 }
 
-for (file in c("R/utils.R", "R/normal.R", "R/clt.R", "R/bayes.R", "R/generators.R")) {
+for (file in c("R/utils.R", "R/probability.R", "R/normal.R", "R/clt.R",
+               "R/bayes.R", "R/ztests.R", "R/ttests.R", "R/generators.R")) {
   source(file)
 }
 

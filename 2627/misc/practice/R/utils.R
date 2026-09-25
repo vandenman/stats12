@@ -6,8 +6,8 @@
 # that topic's file instead.  Base R only.
 # ---------------------------------------------------------------------------
 
-# The topics the practice tool knows about.
-known_topics <- c("normal", "clt", "bayes")
+# The topics the practice tool knows about, in the order the form lists them.
+known_topics <- c("probability", "Z", "t", "normal", "clt", "bayes")
 
 # Probabilities are reported to four decimals, i.e. to the precision of the
 # z table that students use.
@@ -62,9 +62,12 @@ clean_topics <- function(topics) {
 # A readable name for a topic.
 topic_label <- function(topic) {
   switch(topic,
-    normal = "Normal distribution",
-    clt    = "Central limit theorem",
-    bayes  = "Bayes theorem",
+    probability = "Probability theory",
+    Z           = "Z-test",
+    t           = "t-test",
+    normal      = "Normal distribution",
+    clt         = "Central limit theorem",
+    bayes       = "Bayes theorem",
     topic
   )
 }
@@ -134,12 +137,23 @@ check_answer_text <- function(student, correct, tolerance) {
 
 # One question, as HTML.  The browser shows this and hands the typed answer
 # back to check_answer_text(); everything else is already in the page.
+#
+# Questions that contain a small aligned block (a frequency table, a list of
+# data values) get a prompt class that keeps the spaces and a monospace font,
+# otherwise the columns of the block line up nowhere.  Everything else is
+# ordinary prose.
 question_html <- function(question, number) {
+  prompt_class <- if (grepl("\n +", question$prompt)) {
+    "pq-prompt pq-prompt-fixed"
+  } else {
+    "pq-prompt"
+  }
+
   paste0(
     '<div class="pq-question">\n',
     '<h3>Question ', number, ' <span class="pq-topic">',
     esc(topic_label(question$topic)), '</span></h3>\n',
-    '<p class="pq-prompt">', esc(question$prompt), '</p>\n',
+    '<p class="', prompt_class, '">', esc(question$prompt), '</p>\n',
     '<p><label>Your answer: <input type="text" class="pq-answer" size="12"',
     ' data-correct="', fmt_num(question$answer, digits = 12), '"',
     ' data-tolerance="', fmt_num(question$tolerance, digits = 12), '"></label> ',

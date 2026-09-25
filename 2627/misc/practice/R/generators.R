@@ -9,9 +9,12 @@
 
 # One question, on one topic, at one difficulty.
 generate_question <- function(topic, difficulty) {
-  if (topic == "normal") return(generate_normal_question(difficulty))
-  if (topic == "clt")    return(generate_clt_question(difficulty))
-  if (topic == "bayes")  return(generate_bayes_question(difficulty))
+  if (topic == "probability") return(generate_probability_question(difficulty))
+  if (topic == "Z")           return(generate_z_test_question(difficulty))
+  if (topic == "t")           return(generate_t_test_question(difficulty))
+  if (topic == "normal")      return(generate_normal_question(difficulty))
+  if (topic == "clt")         return(generate_clt_question(difficulty))
+  if (topic == "bayes")       return(generate_bayes_question(difficulty))
   stop("Unknown topic: ", topic)
 }
 

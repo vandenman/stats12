@@ -1,19 +1,26 @@
 project:
   type: book
   output-dir: docs
-  resources: resources
+  resources:
+    - resources
+    - 2627/misc/practice/practice.html
 execute:
   freeze: auto
   warnings: false
   echo: false
 book:
   title: Statistics 1 and 2
+  navbar:
+    left:
+      - text: "Practice"
+        href: 2627/misc/practice/practice.html
   subtitle: ''
-  author: Caspar J. Van Lissa
+  author: Don van den Bergh & Caspar J. Van Lissa
   doi: ''
   license: CC-BY
   downloads: [pdf]
-  repo-url: https://github.com/cjvanlissa/stats12
+  site-url: https://vandenman.github.io/stats12/
+  repo-url: https://github.com/vandenman/stats12
   description: Book Description
   cover-image: images/logos/logo.jpg
   image: images/logos/logo.jpg
