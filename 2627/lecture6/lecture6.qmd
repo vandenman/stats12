@@ -64,6 +64,8 @@ $$
 
 ## Today {.unlisted}
 
+Two statistical tests:
+
 - Z-test
 - $t$-test
 
@@ -88,7 +90,7 @@ One recurring workflow.
 3. What do the _raw data_ look like?
 4. Which _descriptive statistics_ are useful?
 5. What are $\hypo_0$ and $\hypo_1$?
-6. What would we expect because of __sampling variability_ if $\hypo_0$ were true?
+6. What would we expect because of _sampling variability_ if $\hypo_0$ were true?
 7. How far is our estimate from $\hypo_0$ in _standard errors_?
 8. What is the _$p$-value_?
 9. What does a _confidence interval_ tell us?
@@ -194,7 +196,7 @@ What is the population we are trying to say something about?
 
 . . .
 
-Popular songs
+- Billboard Hot 100 number-one songs, 1958–2025.
 
 . . .
 
@@ -202,7 +204,7 @@ What is the measurement level?
 
 . . .
 
-Ratio, because distances have a meaning and zero has a meaning.
+- Ratio, because distances have a meaning and zero has a meaning.
 
 . . .
 
@@ -253,7 +255,7 @@ ggplot(billboard_sample, aes(x = length_sec)) +
   labs(
     x = "Song length (seconds)",
     y = "Number of songs",
-    title = "Lengths of the 40 sampled number-one hits"
+    title = "Lengths of the 30 sampled number-one hits"
   )
 ```
 
@@ -406,13 +408,20 @@ ggplot(t_plot, aes(t, density)) +
 
 ## The $p$-value
 
+We know:
+
+$$
+df = n - 1 = 30 - 1 = 29
+t = 5.26
+$$
+
 . . .
 
-Examine the $t$-table.
+Let's examine the $t$-table to find the $p$-value.
 
 . . .
 
-Look up the row matching $df = 29$ and go right until the next value is larger than $t$.
+Look up the row matching $df = 29$ and go right until the next value is larger than $t=5.26$.
 
 . . .
 
@@ -422,11 +431,11 @@ $$
 p < 0.001.
 $$
 
-Using $\alpha = .05$:
+Using $\alpha = .05$, we reject $\mathcal{H}_0$.
 
-We reject $\mathcal{H}_0$.
+. . .
 
-
+Why don't we need to know the exact $p$-value?
 
 ## Confidence Interval
 
@@ -440,6 +449,15 @@ song_ci <- song_mean + c(-1, 1) * song_crit * song_se
 A 95% confidence interval for the population mean is
 
 $$
+[
+\bar{x} - t_{95\%} \times SE_{\bar{x}},\;
+\bar{x} + t_{95\%} \times SE_{\bar{x}}
+]
+$$
+
+. . .
+
+$$
 [`r round(song_ci[1], 1)`,\; `r round(song_ci[2], 1)`]
 \text{ seconds}.
 $$
@@ -450,14 +468,18 @@ Does 180 seconds fall inside this interval?
 
 How does that relate to our hypothesis test?
 
+. . .
 
-## We Have Been Cheating
+Because $\sigma$ is unknown, we replaced it with $s$. That means our standardized statistic follows a $t$-distribution rather than a standard normal distribution.
+Compared to last week, the only difference is using a $t$ distribution instead of a $Z$-distribution for the $p$-value and confidence interval.
 
-For teaching purposes, we pretended that these 30 songs were all the data we had.
+## What if we examine all the data?
+
+For teaching purposes, I pretended that these 30 songs were all data we had.
 
 . . .
 
-But this dataset contains **the whole sampling frame**.
+But this dataset contains 1177 songs obtained between 1958 and 2025.
 
 So now we can look behind the curtain.
 
@@ -482,9 +504,10 @@ ggplot(billboard_population, aes(x = length_sec)) +
   )
 ```
 
-Population mean: **`{r} round(population_mean_song, 1)` seconds**.
+- Population mean: `{r} round(population_mean_song, 1)` seconds.
+- Sample mean: `{r} round(song_mean, 1)` seconds.
 
-
+<!--
 ## Raw Data vs. Sampling Distribution
 
 These are different distributions:
@@ -555,8 +578,9 @@ Simulation: `{r} round(empirical_se_song, 2)`
 
 Formula: `{r} round(theoretical_se_song, 2)`
 
+-->
 
-## Case Study 1: What Did We Use?
+## Case Study 1: Summary
 
 ::: {style="font-size: 90%;"}
 
@@ -571,17 +595,15 @@ Formula: `{r} round(theoretical_se_song, 2)`
 - Test statistic
 - $p$-value
 - Confidence interval
-- Central Limit Theorem
 
-:::
+## Case Study 1: Summary
 
-. . .
+We use a one-sample $t$-test because the standard devation was unknown/ estimated from the data.
 
-Almost the entire first half of the course from **one question**.
+What if we do know the standard deviation?
 
 
 # Case Study 2: Movies {.section-slide}
-
 
 ## Does Passing the Bechdel Test Pay?
 
