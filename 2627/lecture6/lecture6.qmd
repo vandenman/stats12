@@ -15,6 +15,8 @@ format:
         embed-resources: true
 ---
 
+## Today {.unlisted}
+
 ```{r}
 #| include: false
 #| label: setup
@@ -62,7 +64,6 @@ $$
 $$
 
 
-## Today {.unlisted}
 
 Two statistical tests:
 
@@ -168,10 +169,12 @@ It contains songs that reached number 1 between 1958 and 2025, including their l
 # TODO: If you want fully offline rendering, download this file once
 #       and replace the URL by "scripts/billboard.csv".
 
-billboard_url <- paste0(
-  "https://raw.githubusercontent.com/rfordatascience/tidytuesday/",
-  "main/data/2025/2025-08-26/billboard.csv"
-)
+# billboard_url <- paste0(
+#   "https://raw.githubusercontent.com/rfordatascience/tidytuesday/",
+#   "main/data/2025/2025-08-26/billboard.csv"
+# )
+billboard_url <- "data/billboard.csv"
+
 
 billboard <- read.csv(billboard_url)
 
@@ -285,19 +288,19 @@ song_se <- song_sd / sqrt(song_n)
 
 . . .
 
-The sample mean is `{r} round(song_mean - 180, 1)` seconds away from three minutes.
-
-Is that a **large** difference?
-
-. . .
-
 The median is near the mean, what does this tell us?
 
 . . .
 
 Distribution is roughly symmetric / little skew.
 
-## Research Hypotheses
+. . .
+
+The sample mean is `{r} round(song_mean - 180, 1)` seconds away from three minutes.
+
+Is that a large difference?
+
+## Hypotheses
 
 Let $\mu$ be the population mean song length.
 
@@ -314,7 +317,7 @@ Is this one or two tailed?
 Two-tailed. Why?
 
 
-## Assume the Null Hypothesis
+## Assume the Null Hypothesis is true
 
 If $\hypo_0$ is true, the population mean is 180 seconds.
 
@@ -350,6 +353,9 @@ $$
 
 What does this number represent?
 
+. . .
+
+Note that we _estimate_ SE rather than that we know it!
 
 ## Test Statistic
 
@@ -362,15 +368,11 @@ song_p <- 2 * pt(-abs(song_t), df = song_df)
 ```
 
 $$
-t
-=
-\frac{\bar{x} - 180}
+t =\frac{\bar{x} - 180}
      {SE_{\bar{x}}}
-=
-\frac{`r round(song_mean, 1)` - 180}
+=\frac{`r round(song_mean, 1)` - 180}
      {`r round(song_se, 2)`}
-=
-`r round(song_t, 2)`.
+= `r round(song_t, 2)`.
 $$
 
 . . .
@@ -378,7 +380,6 @@ $$
 Our sample mean lies about `{r} abs(round(song_t, 2))` standard errors from the value predicted by $\hypo_0$.
 
 The "degrees of freedom" are $df = 29$.
-
 
 ## The Sampling Distribution Under $\hypo_0$
 
@@ -408,12 +409,7 @@ ggplot(t_plot, aes(t, density)) +
 
 ## The $p$-value
 
-We know:
-
-$$
-df = n - 1 = 30 - 1 = 29
-t = 5.26
-$$
+We know $df = n - 1 = 30 - 1 = 29$ and $t = 5.26$
 
 . . .
 
@@ -470,8 +466,12 @@ How does that relate to our hypothesis test?
 
 . . .
 
-Because $\sigma$ is unknown, we replaced it with $s$. That means our standardized statistic follows a $t$-distribution rather than a standard normal distribution.
-Compared to last week, the only difference is using a $t$ distribution instead of a $Z$-distribution for the $p$-value and confidence interval.
+::: {style="font-size: 80%;"}
+
+- Because $\sigma$ is unknown, we replaced it with $s$. That means our standardized statistic follows a $t$-distribution rather than a standard normal distribution.
+- Compared to last week, the only difference is using a $t$ distribution instead of a $Z$-distribution for the $p$-value and confidence interval.
+
+:::
 
 ## What if we examine all the data?
 
@@ -507,79 +507,6 @@ ggplot(billboard_population, aes(x = length_sec)) +
 - Population mean: `{r} round(population_mean_song, 1)` seconds.
 - Sample mean: `{r} round(song_mean, 1)` seconds.
 
-<!--
-## Raw Data vs. Sampling Distribution
-
-These are different distributions:
-
-1. Distribution of **individual song lengths**
-2. Distribution of **sample means**
-
-Let's simulate the second one.
-
-
-## Simulate Repeated Samples
-
-```{r}
-#| include: false
-
-set.seed(1210)
-B <- 5000
-sim_song_means <- replicate(
-  B,
-  mean(sample(billboard_population$length_sec, size = song_n, replace = TRUE))
-)
-
-sim_song <- data.frame(mean = sim_song_means)
-```
-
-
-## Sampling Distribution of the Mean
-
-```{r}
-#| fig-width: 9
-#| fig-height: 5
-
-ggplot(sim_song, aes(x = mean)) +
-  geom_histogram(bins = 30) +
-  geom_vline(xintercept = population_mean_song, linewidth = 1) +
-  labs(
-    x = "Mean song length in a sample of 30",
-    y = "Number of simulated samples",
-    title = "5,000 hypothetical repeated samples"
-  )
-```
-
-What happened to the shape and spread?
-
-
-## The Central Limit Theorem, in Action
-
-The **raw population** can be somewhat irregular.
-
-The distribution of **sample means** is much more regular.
-
-. . .
-
-Its standard deviation should be approximately
-
-$$
-\frac{\sigma}{\sqrt{n}}.
-$$
-
-```{r}
-#| include: false
-
-empirical_se_song <- sd(sim_song_means)
-theoretical_se_song <- population_sd_song / sqrt(song_n)
-```
-
-Simulation: `{r} round(empirical_se_song, 2)`
-
-Formula: `{r} round(theoretical_se_song, 2)`
-
--->
-
 ## Case Study 1: Summary
 
 ::: {style="font-size: 90%;"}
@@ -595,6 +522,8 @@ Formula: `{r} round(theoretical_se_song, 2)`
 - Test statistic
 - $p$-value
 - Confidence interval
+
+:::
 
 ## Case Study 1: Summary
 
@@ -624,9 +553,7 @@ Now we ask a different question:
 
 ## Operationalize "Earn Back Its Budget"
 
-We need to turn that question into a variable.
-
-Define
+To turn that question into a variable, let's define _return on investment_:
 
 $$
 ROI
@@ -643,10 +570,10 @@ Then:
 
 . . .
 
-Is this literally the same thing as **profit**?
+Is this the same thing as _profit_?
 
 
-## Important Measurement Caveat
+## Operationalize "Earn Back Its Budget"
 
 No.
 
@@ -656,14 +583,12 @@ Worldwide box office is not the amount that goes directly to the studio.
 
 . . .
 
-So our variable is better described as:
+So technically our variable is better described as:
 
-> **Worldwide box-office gross relative to production budget**
+"Worldwide box-office gross relative to production budget"
 
-This is an **operationalization** of financial performance.
+This is an _operationalization_ of financial performance.
 
-
-## Load the Bechdel Data
 
 ```{r}
 #| include: false
@@ -732,7 +657,8 @@ movie_n <- nrow(bechdel_sample)
 movie_mean <- mean(bechdel_sample$roi)
 movie_median <- median(bechdel_sample$roi)
 movie_sd <- sd(bechdel_sample$roi)
-movie_se <- movie_sd / sqrt(movie_n)
+movie_sigma <- sd(bechdel_roi$roi)
+movie_se <- movie_sigma / sqrt(movie_n)
 ```
 
 ::: {style="font-size: 105%;"}
@@ -750,7 +676,7 @@ Why can the mean and median differ substantially here?
 
 ## But Our Hypothesis Is About a Mean
 
-Let $\mu$ be the **population mean ROI** among passing movies in our sampling frame.
+Let $\mu$ be the _population mean ROI_ among passing movies in our sampling frame.
 
 We ask whether the average exceeds break-even:
 
@@ -766,7 +692,7 @@ $$
 
 . . .
 
-This is a **one-tailed** hypothesis.
+This is a _one-tailed Z-test_.
 
 
 ## Your Turn: What Comes Next?
@@ -776,15 +702,18 @@ This is a **one-tailed** hypothesis.
 We know:
 
 - $\bar{x} = `{r} round(movie_mean, 2)`$
-- $s = `{r} round(movie_sd, 2)`$
 - $n = `{r} movie_n`$
+
+We assume: $\sigma = `{r} round(movie_sigma, 2)`$ as known from the entire dataset.
+
+- Typically there is some previous large-scale industry research that has established that the population standard deviation of this gross-to-budget ratio is $\sigma = `{r} round(movie_sigma, 2)`$.
 
 What should we calculate next?
 
 . . .
 
 $$
-SE_{\bar{x}} = \frac{s}{\sqrt{n}}.
+SE_{\bar{x}} = \frac{\sigma}{\sqrt{n}}.
 $$
 
 
@@ -793,7 +722,7 @@ $$
 $$
 SE_{\bar{x}}
 =
-\frac{`r round(movie_sd, 2)`}
+\frac{`r round(movie_sigma, 2)`}
 {\sqrt{`r movie_n`}}
 =
 `r round(movie_se, 3)`.
@@ -817,28 +746,27 @@ What is the test statistic?
 ```{r}
 #| include: false
 
-movie_t <- (movie_mean - 1) / movie_se
-movie_df <- movie_n - 1
-movie_p <- 1 - pt(movie_t, df = movie_df)
+movie_z <- (movie_mean - 1) / movie_se
+movie_p <- 1 - pnorm(movie_z)
 ```
 
 $$
-t
+Z
 =
 \frac{`r round(movie_mean, 2)` - 1}
      {`r round(movie_se, 3)`}
 =
-`r round(movie_t, 2)`.
+`r round(movie_z, 2)`.
 $$
 
 
 ## Interpret It Before Looking at $p$
 
-Our observed mean is **`{r} abs(round(movie_t, 2))` standard errors** above the null value.
+Our observed mean is `{r} abs(round(movie_z, 2))` standard errors above the value predicted by $\hypo_0$.
 
 . . .
 
-Would you expect the $p$-value to be:
+If you had to guess the $p$-value, is it:
 
 - large,
 - around .05,
@@ -851,20 +779,20 @@ Would you expect the $p$-value to be:
 #| fig-width: 9
 #| fig-height: 5
 
-movie_x_t <- seq(-4, max(6, movie_t + 1), length.out = 1200)
-movie_t_plot <- data.frame(
-  t = movie_x_t,
-  density = dt(movie_x_t, df = movie_df)
+movie_x_z <- seq(-4, max(6, movie_z + 1), length.out = 1200)
+movie_z_plot <- data.frame(
+  z = movie_x_z,
+  density = dnorm(movie_x_z)
 )
 
-ggplot(movie_t_plot, aes(t, density)) +
+ggplot(movie_z_plot, aes(z, density)) +
   geom_line(linewidth = 1.2) +
   geom_area(
-    data = subset(movie_t_plot, t >= movie_t),
+    data = subset(movie_z_plot, z >= movie_z),
     aes(y = density),
     alpha = .35
   ) +
-  geom_vline(xintercept = movie_t, linetype = 2) +
+  geom_vline(xintercept = movie_z, linetype = 2) +
   labs(
     x = "Test statistic under H0",
     y = "Density",
@@ -876,7 +804,7 @@ ggplot(movie_t_plot, aes(t, density)) +
 ## Conclusion
 
 $$
-p `{r} pretty_p(movie_p)`.
+p = `{r} format(movie_p, digits = 2)`.
 $$
 
 Using $\alpha=.05$:
@@ -890,11 +818,6 @@ if (movie_p < .05) {
 }
 ```
 
-. . .
-
-Complete this sentence:
-
-> "If the null hypothesis were true, ..."
 
 
 ## Confidence Interval
@@ -902,7 +825,7 @@ Complete this sentence:
 ```{r}
 #| include: false
 
-movie_crit <- qt(.975, df = movie_df)
+movie_crit <- qnorm(.975)
 movie_ci <- movie_mean + c(-1, 1) * movie_crit * movie_se
 ```
 
@@ -914,6 +837,13 @@ $$
 
 What does this add beyond the $p$-value?
 
+. . .
+
+It contains 0!
+
+. . .
+
+It contains ~~0~~1! The value expected under $\hypo_0$ is 1!
 
 ## Does Skewness Break Everything?
 
@@ -976,26 +906,46 @@ ggplot(sim_movies, aes(x = mean)) +
 
 . . .
 
-The Central Limit Theorem is about the **second** distribution.
+The Central Limit Theorem is about the _second_ distribution.
 
 ## Sampling Distribution
+
+In this case, the sampling distribution doesn't look normal.
+
+Keep in mind, that the CLT talks about _the limit_.
+
+Typically $n = 30$ suffices, in this (extreme) case it did not.
+
+## What if we had larger samples?
+
 
 ```{r}
 #| fig-width: 9
 #| fig-height: 5
 
-set.seed(2410)
+set.seed(2409)
+ns <- c(50, 100, 200, 400, 600, 1000)
 B <- 5000
 
-sim_movie_means_100 <- replicate(
-  B,
-  mean(sample(bechdel_roi$roi, size = 100, replace = TRUE))
+sim_movies_tmp <- data.frame(
+  mean = numeric(B),
+  n = numeric(B)
 )
+sim_movies2 <- NULL
 
-sim_movies_100 <- data.frame(mean = sim_movie_means_100)
+for (i in 1:6) {
 
-ggplot(sim_movies, aes(x = mean)) +
+  sim_movie_means_tmp <- replicate(B,
+    mean(sample(bechdel_roi$roi, size = ns[i], replace = TRUE))
+  )
+  sim_movies_tmp$mean <- sim_movie_means_tmp
+  sim_movies_tmp$n <- ns[i]
+  sim_movies2 <- rbind(sim_movies2, sim_movies_tmp)
+}
+
+ggplot(sim_movies2, aes(x = mean)) +
   geom_histogram(bins = 40) +
+  facet_wrap(. ~ n, labeller = label_both) +
   labs(
     x = paste0("Mean ROI in a sample of ", movie_n, " movies"),
     y = "Number of simulated samples",
@@ -1012,30 +962,27 @@ What exactly can we generalize to?
 
 . . .
 
-The dataset is **not** a simple random sample of every movie ever made.
-
-The inferential calculation does not repair problems in the sampling frame.
+The dataset is _not_ a simple random sample of every movie ever made.
 
 
 ## Statistical Significance Is Not Enough
 
 A small $p$-value answers a narrow question:
 
-> Are these data difficult to reconcile with $\hypo_0$?
+- Are these data evidence against $\hypo_0$?
 
-It does **not** automatically tell us:
+It does _not_ automatically tell us:
 
 - whether the effect is important,
 - whether the measurement is ideal,
-- whether the sample represents the target population,
-- whether one variable **causes** another.
-
-<!-- TODO: Keep causality discussion brief here; full treatment comes with regression. -->
+- whether the sample represents the target population
 
 
 ## Case Study 2: What Changed?
 
 The statistical machinery was nearly identical.
+
+- We used a $Z$-test instead of a $t$-test.
 
 But the data raised new questions about:
 
@@ -1049,246 +996,9 @@ But the data raised new questions about:
 
 Good statistics is more than calculating the correct formula.
 
-
-# Case Study 3: Us {.section-slide}
-
-
-## How Much Did This Room Sleep?
-
-At the start of the lecture, you reported how many hours you slept last night.
-
-Now we have a dataset.
-
-
-## Load the Class Data
-
-```{r}
-#| include: false
-
-# TODO: REPLACE THIS PLACEHOLDER VECTOR WITH THE LIVE RESPONSES.
-#
-# Easy option during preparation:
-# sleep_hours <- c(7, 6.5, 8, ...)
-#
-# Or, if you export a polling tool:
-# sleep_data <- read.csv("scripts/sleep_today.csv")
-# sleep_hours <- sleep_data$hours
-#
-# The placeholder below exists only so the .qmd renders before class.
-
-sleep_hours <- c(
-  7.0, 6.5, 8.0, 7.5, 6.0, 7.0, 8.5, 5.5, 7.0, 6.0,
-  7.5, 8.0, 6.5, 7.0, 9.0, 5.0, 6.5, 7.5, 8.0, 6.0,
-  7.0, 7.0, 6.5, 8.5, 7.5, 5.5, 6.0, 7.0, 8.0, 6.5
-)
-
-sleep <- data.frame(hours = sleep_hours) |>
-  filter(!is.na(hours), hours > 0, hours <= 24)
-```
-
-
-## The Raw Data
-
-```{r}
-#| fig-width: 9
-#| fig-height: 5
-
-ggplot(sleep, aes(x = hours)) +
-  geom_histogram(binwidth = .5, boundary = 0) +
-  geom_vline(xintercept = 8, linetype = 2, linewidth = 1) +
-  labs(
-    x = "Hours slept last night",
-    y = "Number of students",
-    title = "Sleep in this room"
-  )
-```
-
-
-## Describe the Sample
-
-```{r}
-#| include: false
-
-sleep_n <- nrow(sleep)
-sleep_mean <- mean(sleep$hours)
-sleep_median <- median(sleep$hours)
-sleep_sd <- sd(sleep$hours)
-sleep_se <- sleep_sd / sqrt(sleep_n)
-```
-
-- $n = `{r} sleep_n`$
-- Mean = `{r} round(sleep_mean, 2)` hours
-- Median = `{r} round(sleep_median, 2)` hours
-- SD = `{r} round(sleep_sd, 2)` hours
-
-. . .
-
-Do **we** look sleep deprived?
-
-
-## What Is the Hypothesis?
-
-Suppose we choose eight hours as the benchmark.
-
-If our claim was decided **before looking at the data**:
-
-$$
-\hypo_0: \mu = 8
-$$
-
-$$
-\hypo_1: \mu < 8.
-$$
-
-. . .
-
-Why does it matter whether we chose the direction before or after seeing the histogram?
-
-
-## Discovery vs. Confirmation
-
-Imagine we first inspect the data and notice that the mean is below 8.
-
-Then we announce:
-
-> "Our hypothesis was that students sleep **less** than eight hours."
-
-. . .
-
-That is not the same as having predicted the direction beforehand.
-
-**Exploration can generate hypotheses. Confirmation tests hypotheses specified in advance.**
-
-
-## You Know the Routine
-
-Calculate:
-
-$$
-SE_{\bar{x}} = ?
-$$
-
-and
-
-$$
-t = ?
-$$
-
-```{r}
-#| include: false
-
-sleep_t <- (sleep_mean - 8) / sleep_se
-sleep_df <- sleep_n - 1
-sleep_p <- pt(sleep_t, df = sleep_df)
-sleep_crit <- qt(.975, df = sleep_df)
-sleep_ci <- sleep_mean + c(-1, 1) * sleep_crit * sleep_se
-```
-
-
-## Solution
-
-$$
-SE_{\bar{x}}
-=
-\frac{`r round(sleep_sd, 2)`}
-{\sqrt{`r sleep_n`}}
-=
-`r round(sleep_se, 3)`.
-$$
-
-$$
-t
-=
-\frac{`r round(sleep_mean, 2)` - 8}
-{`r round(sleep_se, 3)`}
-=
-`r round(sleep_t, 2)`.
-$$
-
-$$
-p `{r} pretty_p(sleep_p)`.
-$$
-
-
-## Confidence Interval
-
-The 95% confidence interval is
-
-$$
-[`r round(sleep_ci[1], 2)`,\; `r round(sleep_ci[2], 2)`]
-\text{ hours}.
-$$
-
-. . .
-
-We now have a mathematically valid analysis.
-
-But have we answered the question we thought we were answering?
-
-
-## What Is Our Population?
-
-Which of these is justified?
-
-- Students in the Netherlands?
-- Tilburg University students?
-- Liberal Arts students?
-- Students enrolled in this course?
-- Students who attended today's lecture?
-- Students who attended **and answered the poll**?
-
-. . .
-
-The statistical test does not decide this for us.
-
-
-## Selection Matters
-
-Today's sample might systematically exclude:
-
-- students who skipped because they were tired,
-- students who had other commitments,
-- students unwilling to answer,
-- students who attend another lecture group.
-
-. . .
-
-A tiny standard error cannot compensate for a badly defined or unrepresentative sample.
-
-
-## Deduction and Induction
-
-We used **deduction** when we said:
-
-> If $\hypo_0$ is true, what should repeated samples look like?
-
-We use **induction** when we move in the other direction:
-
-> We observed this sample; what does it tell us about a larger population?
-
-. . .
-
-The second step always requires assumptions about how the data were obtained.
-
-
-# Three Studies, One Logic {.section-slide}
-
-
-## Same Machinery, Different Stories
-
-| | Billboard | Bechdel | Sleep |
-|---|---|---|---|
-| Variable | Song length | ROI | Hours slept |
-| Null value | 180 sec | 1 | 8 h |
-| Alternative | $\neq$ | $>$ | $<$ |
-| Main challenge | Sampling variability | Skew + measurement | Sampling / selection |
-| Statistic | Mean | Mean | Mean |
-| Core tool | SE + test statistic | SE + test statistic | SE + test statistic |
-
-
 ## The Core Pattern
 
-In all three cases:
+In both  cases:
 
 $$
 \text{observed sample}
@@ -1358,40 +1068,24 @@ Instead:
 
 > If we repeated the procedure many times, 95% of the intervals produced by this procedure would contain the true population value.
 
+. . .
+
+(The first interpretation is the Bayesian credible interval)
 
 ## Raw Distribution vs. Sampling Distribution
 
 This distinction appeared repeatedly today.
 
-**Raw-data distribution**
+_Raw-data distribution_
 
 - describes individual observations
 - e.g., individual movies or songs
 
-**Sampling distribution**
+_Sampling distribution_
 
 - describes a statistic over repeated samples
 - e.g., sample means
 - determines the uncertainty of our estimate
-
-
-## Standard Deviation vs. Standard Error
-
-**Standard deviation**
-
-> How much do individual observations vary?
-
-$$
-s
-$$
-
-**Standard error**
-
-> How much would our sample estimate vary over repeated samples?
-
-$$
-SE_{\bar{x}} = \frac{s}{\sqrt{n}}
-$$
 
 
 ## What Happens When $n$ Increases?
@@ -1412,7 +1106,7 @@ As $n$ increases:
 
 ## But Large $n$ Does Not Fix Everything
 
-A huge sample does **not** automatically fix:
+A huge sample does _not_ automatically fix:
 
 - poor measurement,
 - selection bias,
@@ -1422,7 +1116,16 @@ A huge sample does **not** automatically fix:
 
 . . .
 
-Statistics quantifies **sampling uncertainty**.
+Statistics quantifies _sampling uncertainty_.
 
-It does not make every other research problem disappear.
+## Comparison
 
+| | Billboard | Bechdel |
+|---|---:|---:|
+| Question about | Mean | Mean |
+| $\sigma$ | Unknown | Known |
+| Standard error | $s/\sqrt{n}$ | $\sigma/\sqrt{n}$ |
+| Test statistic | $t$ | $Z$ |
+| Reference distribution | $t_{n-1}$ | $N(0,1)$ |
+| $df$ | $n-1$ | — |
+| Basic logic | Same | Same |
