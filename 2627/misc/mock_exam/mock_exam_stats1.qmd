@@ -1,0 +1,343 @@
+---
+title: "Mock Exam"
+subtitle: "LAS"
+author: "Don van den Bergh"
+date: 2026-09-30
+date-format: "DD-MM-YYYY"
+format:
+  pdf:
+    documentclass: article
+    geometry:
+      - margin=2.2cm
+    fontsize: 11pt
+    number-sections: false
+params:
+  answers: false
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+#| include: false
+show_answer <- function(text) {
+  if (isTRUE(params$answers)) {
+    cat("\n\n::: {.callout-note title=\"Answer\"}\n")
+    cat(text)
+    cat("\n:::\n\n")
+  }
+}
+```
+
+## Instructions
+
+This mock exam contains 18 questions: 12 multiple-choice questions and 6 numerical fill-in questions.
+
+For numerical questions, follow the rounding instruction stated in the question. For multiple-choice questions, select the single best answer.
+
+
+## Question 1
+
+Below are the exam grades of 9 students:
+
+| Student | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Grade | 3.1 | 3.9 | 4.8 | 5.1 | 6.0 | 6.4 | 6.4 | 7.8 | 9.5 |
+
+Consider the median and variance of the grades. What happens to the median and variance if the two highest scores (7.8 and 9.5) are removed?
+
+A.  The median decreases and the variance increases.
+B.  Both the median and variance decrease.
+C.  The median remains the same but the variance increases.
+D.  The median decreases and the variance remains the same.
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: B.** The original median is 6.0. After removing 7.8 and 9.5, the median becomes 5.1. Removing the two largest observations also reduces the spread, so the variance decreases.")
+```
+
+## Question 2
+
+The variable $X$ follows a normal distribution with $\mu=66$ and $\sigma=14$. Which statement is true?
+
+A.  In the population, 34% of scores lie between 66 and 80.
+B.  In the population, 68% of scores lie between 38 and 94.
+C.  In the population, 84% of scores lie between 52 and 80.
+D.  In the population, 95% of scores lie between 52 and 94.
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: A.** The interval from 66 to 80 runs from the mean to one standard deviation above the mean. Approximately 68% lies of the scores lie between $\\mu - \\sigma$ and $\\mu + \\sigma$. Since the distribution is symmetric around the mean, approximately 34% of observations lie between $\\mu$ and $\\mu + \\sigma$.")
+```
+
+## Question 3
+
+A dataset has a mean of 20 and a standard deviation of 4. Suppose 10 is added to every score in the dataset.
+
+What happens to the mean and standard deviation?
+
+A.  The mean becomes 30 and the standard deviation remains 4.
+B.  The mean remains 20 and the standard deviation becomes 14.
+C.  The mean becomes 30 and the standard deviation becomes 14.
+D.  Both the mean and standard deviation remain unchanged.
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: A.** Adding the same constant to every observation shifts the mean by that constant but does not change the spread of the observations. The new mean is 30 and the standard deviation remains 4.")
+```
+
+## Question 4
+
+Which statement is _incorrect_?
+
+A.  About 95% of observations from a normal distribution lie within approximately two standard deviations of the mean.
+B.  The standard normal distribution has mean 100 and standard deviation 15.
+C.  A $z$-score indicates how many standard deviations an observation lies from the mean.
+D.  A probability can be interpreted as the long-run proportion of times an outcome would occur under repeated identical conditions.
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: B.** The standard normal distribution has mean 0 and standard deviation 1.")
+```
+
+## Question 5
+
+Consider a study on student loans. Researchers test
+
+$$
+H_0:\mu=330
+\qquad\text{against}\qquad
+H_1:\mu\neq330.
+$$
+
+The population standard deviation is known to be $\sigma=73$. A random sample of $n=25$ students has a mean monthly loan payment of $366$ euros.
+
+Researcher I uses $\alpha=.10$, Researcher II uses $\alpha=.05$, and Researcher III uses $\alpha=.01$.
+
+Who rejects $H_0$?
+
+A.  None of the researchers
+B.  Researcher I only
+C.  Researchers I and II
+D.  All three researchers
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: C.** The test statistic is $z=(366-330)/(73/\\sqrt{25})\\approx2.47$, giving a two-sided p-value of about .014. Thus the result is significant at .10 and .05, but not at .01.")
+```
+
+## Question 6
+
+A researcher rejects the null hypothesis at a significance level of $\alpha=.05$.
+
+Which statement must also be true, keeping everything else constant?
+
+A.  The researcher would also reject the null hypothesis at $\alpha=.10$.
+B.  The researcher would also reject the null hypothesis at $\alpha=.01$.
+C.  The p-value must be exactly .05.
+D.  The researcher must have made a Type I error.
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: A.** Rejection at $\\alpha=.05$ implies that $p<.05$, and therefore also $p<.10$. It does not imply that $p<.01$, nor that a Type I error occurred.")
+```
+
+## Question 7
+
+Variable $W$ is not normally distributed in the population. It has population mean $\mu=75$ and population standard deviation $\sigma=24$. A random sample of $n=36$ observations is drawn.
+
+Which statement about the sampling distribution of the sample mean is _incorrect_?
+
+A.  The mean of the sampling distribution is 75.
+B.  The sampling distribution of the sample mean is approximately normal.
+C.  The standard deviation of the sampling distribution is 24.
+D.  The standard error is smaller than the population standard deviation.
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: C.** The standard error is $\\sigma/\\sqrt{n}=24/6=4$, not 24. For $n=36$, the sampling distribution of the mean is approximately normal by the central limit theorem.")
+```
+
+## Question 8
+
+Mark carried out a statistical test. Unknowingly, he made a Type I error. What happened?
+
+A.  Mark rejected $H_0$, while in reality $H_0$ was true.
+B.  Mark rejected $H_0$, while in reality $H_0$ was false.
+C.  Mark did not reject $H_0$, while in reality $H_0$ was true.
+D.  Mark did not reject $H_0$, while in reality $H_0$ was false.
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: A.** A Type I error means rejecting a true null hypothesis.")
+```
+
+## Question 9
+
+A researcher studies the effect of disco lights on concentration using a two-sided hypothesis test. She does _not_ reject the null hypothesis.
+
+Which is _not_ a possible explanation for this result?
+
+A.  The study did not have sufficient power.
+B.  There is no effect of disco lights on concentration in the population.
+C.  A Type I error occurred.
+D.  A Type II error occurred.
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: C.** A Type I error requires rejecting a true null hypothesis. Since the researcher did not reject $H_0$, a Type I error cannot have occurred.")
+```
+
+
+## Question 10
+
+A manufacturer claims that bags contain 150 M&M's on average. Hailey suspects that the true population mean is _lower_ than 150. The population standard deviation is known, so she performs a one-sided $Z$-test with $\alpha=.10$.
+
+Using the provided $Z$-table, what is the _absolute value_ of the critical $z$-value?
+
+Round your answer to two decimal places.
+
+A.  1.28
+B.  1.64
+C.  1.96
+D.  2.33
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: A.** For a one-sided test with $\\alpha=.10$, we need $P(Z>z)=.10$. The provided standard normal table gives $P(Z>1.28)=0.100$, so the critical value has absolute value **1.28**. Because Hailey's alternative hypothesis is lower-tailed, the actual critical value is $-1.28$.")
+```
+
+## Question 11
+
+Which statement about the confidence interval for a one-sample $t$-test is correct?
+
+A.  Increasing the confidence level makes the interval narrower, all else equal.
+B.  Increasing the sample size makes the interval narrower, all else equal.
+C.  The population mean lies exactly in the center of the confidence interval.
+D.  A narrower interval indicates less precise estimation.
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: B.** Increasing $n$ reduces the standard error, so the confidence interval becomes narrower, all else equal.")
+```
+
+## Question 12
+
+A student has a $z$-score of $-1.5$ on an exam. Which interpretation is correct?
+
+A.  The student's score is 1.5 points below the mean.
+B.  The student's score is 1.5 standard deviations below the mean.
+C.  The student's score is 1.5 standard deviations above the mean.
+D.  The student's score is 15% below the mean.
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: B.** A $z$-score reports distance from the mean in standard-deviation units. A negative value indicates a score below the mean.")
+```
+
+## Question 13
+
+Suppose someone obtained the following five grades:
+
+$$
+7,\ 6,\ 8,\ 5,\ 9.
+$$
+
+What is the _sample variance_ of these grades?
+
+Round your answer to one decimal.
+
+```{r}
+#| results: asis
+show_answer("**Answer: 2.5.** The mean is 7. The squared deviations sum to $10$, and the sample variance is $10/(5-1)=2.5$.")
+```
+
+## Question 14
+
+Agreeableness is normally distributed with mean $0$ and standard deviation $1$. The probability of scoring _below_ Maria's score is $0.961$.
+
+What is Maria's $z$-score? Round to two decimals.
+
+```{r}
+#| results: asis
+show_answer("**Answer: 1.76.** Since $P(Z<z)=0.961$, we have $P(Z>z)=0.039$. The standard normal table gives $z=1.76$.")
+```
+
+## Question 15
+
+Daily calorie consumption is normally distributed with
+
+$$
+\mu=2250,\qquad \sigma=300.
+$$
+
+What proportion of the population consumes _less than 3000 calories per day_?
+
+Round your answer to three decimals.
+
+```{r}
+#| results: asis
+show_answer("**Answer: 0.994.** $z=(3000-2250)/300=2.50$, so $P(X<3000)=P(Z<2.50)\\approx0.9938$.")
+```
+
+## Question 16
+
+Let $X$ be normally distributed in the population with
+
+$$
+\mu=78,\qquad \sigma=12.
+$$
+
+A random sample of $n=9$ people is drawn. What is the probability that the sample mean is _smaller than 72_?
+
+Round your answer to three decimals.
+
+```{r}
+#| results: asis
+show_answer("**Answer: 0.067.** The standard error is $12/\\sqrt{9}=4$. Therefore $z=(72-78)/4=-1.5$, and $P(Z<-1.5)\\approx0.0668$.")
+```
+
+## Question 17
+
+IQ is normally distributed in the population with
+
+$$
+\mu=100,\qquad \sigma=15.
+$$
+
+Suppose we form 500 teams, each consisting of 81 randomly selected people.
+
+Approximately how many teams would you expect to have an _average IQ greater than 97_?
+
+Round to the nearest whole number.
+
+```{r}
+#| results: asis
+show_answer("**Answer: 482.** The standard error is $15/\\sqrt{81}=1.667$. Thus $z=(97-100)/1.667\\approx-1.80$, so $P(\\bar X>97)\\approx0.964$. Multiplying by 500 gives 482 teams.")
+```
+
+## Question 18
+
+The city council tests
+
+$$
+H_0:\mu=75
+\qquad\text{against}\qquad
+H_1:\mu>75.
+$$
+
+For a sample of $n=53$, the one-sample $t$-test output reports
+
+$$
+t=1.781,\qquad df=52,\qquad p_{\text{two-sided}}=.081.
+$$
+
+Because the observed effect is in the direction specified by $H_1$, what is the corresponding _one-sided p-value_?
+
+Round your answer to three decimals.
+
+```{r}
+#| results: asis
+show_answer("**Answer: 0.041.** For a symmetric $t$-distribution, when the observed effect is in the direction of the one-sided alternative, the one-sided p-value is half the two-sided value: $0.081/2=0.0405\\approx0.041$.")
+```
