@@ -31,19 +31,6 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
 set.seed(2026)
 
-# ------------------------------------------------------------
-# TODO BEFORE THE LECTURE
-# ------------------------------------------------------------
-# 1. Check that the Bechdel data path below matches your project.
-# 2. Decide how to collect the live sleep data (Mentimeter / Forms /
-#    show of hands / typed values) and replace the placeholder vector.
-# 3. Consider downloading billboard.csv once to scripts/billboard.csv
-#    if you want the lecture to render completely offline.
-# 4. Render once and check that the fixed random samples give results
-#    that are pedagogically useful.
-# 5. Optional: replace some tables by screenshots / images if preferred.
-# ------------------------------------------------------------
-
 # Useful plotting theme for this lecture
 theme_set(
   theme_minimal(base_size = 18) +
@@ -65,19 +52,14 @@ $$
 
 
 
-Two statistical tests:
+Two statistical tests using two datasets:
 
 - Z-test
 - $t$-test
 
 These are mostly the names for tests we've already applied during the previous lectures.
 
-. . .
-
-Three very different datasets.
-
-One recurring workflow.
-
+The workflow is mostly the same.
 
 # The Statistical Workflow {.section-slide}
 
@@ -100,7 +82,7 @@ One recurring workflow.
 :::
 
 
-## One Quantity We Will Keep Using
+## The Recurring Test Statistic
 
 For a sample mean,
 
@@ -124,21 +106,6 @@ Interpretation:
 _How many standard errors away from the null hypothesis is our estimate?_
 
 
-<!-- ## Before We Start -->
-
-<!-- TODO: Insert QR code / Mentimeter link here. -->
-
-<!-- One question: -->
-
-<!-- > **How many hours did you sleep last night?** -->
-
-<!-- Please answer now. -->
-
-<!-- . . . -->
-
-<!-- We will come back to your answers later. -->
-
-
 # Case Study 1: Hit Songs {.section-slide}
 
 
@@ -159,7 +126,9 @@ Is that a reasonable description of songs that reach number 1 on the Billboard H
 
 Let's use a dataset on the Billboard Hot 100 Number Ones.
 
-It contains songs that reached number 1 between 1958 and 2025, including their length in seconds.
+It contains 1177 songs that reached number 1 between 1958 and 2025, including their length in seconds.
+
+We examine a sample of 30 songs.
 
 ```{r}
 #| include: false
@@ -251,6 +220,7 @@ billboard_sample |>
 ```{r}
 #| fig-width: 9
 #| fig-height: 5
+#| fig-align: center
 
 ggplot(billboard_sample, aes(x = length_sec)) +
   geom_histogram(binwidth = 20, boundary = 0) +
@@ -386,6 +356,7 @@ The "degrees of freedom" are $df = 29$.
 ```{r}
 #| fig-width: 9
 #| fig-height: 5
+#| fig-align: center
 
 x_t <- seq(-4.5, 4.5, length.out = 1000)
 dens_t <- dt(x_t, df = song_df)
@@ -417,14 +388,18 @@ Let's examine the $t$-table to find the $p$-value.
 
 . . .
 
-Look up the row matching $df = 29$ and go right until the next value is larger than $t=5.26$.
+Go to row $df = 29$ and go right until the next value exceeds $t=5.26$.
 
 . . .
 
-The probability of a result at least this extreme under $\hypo_0$ is
+The _one-sided_ probability in the table for a result at least this extreme under $\hypo_0$ is $p < 0.001$.
+
+. . .
+
+Since this is a two-sided test,  we know
 
 $$
-p < 0.001.
+p < 2 \times 0.001 = 0.002.
 $$
 
 Using $\alpha = .05$, we reject $\mathcal{H}_0$.
@@ -446,8 +421,8 @@ A 95% confidence interval for the population mean is
 
 $$
 [
-\bar{x} - t_{95\%} \times SE_{\bar{x}},\;
-\bar{x} + t_{95\%} \times SE_{\bar{x}}
+\bar{x} - t_{97.5\%,\,29} \times SE_{\bar{x}},\;
+\bar{x} + t_{97.5\%,\,29} \times SE_{\bar{x}}
 ]
 $$
 
@@ -489,6 +464,7 @@ So now we can look behind the curtain.
 ```{r}
 #| fig-width: 9
 #| fig-height: 5
+#| fig-align: center
 
 population_mean_song <- mean(billboard_population$length_sec)
 population_sd_song <- sd(billboard_population$length_sec)
@@ -526,6 +502,8 @@ ggplot(billboard_population, aes(x = length_sec)) +
 :::
 
 ## Case Study 1: Summary
+
+We doubled the $p$-value because it was a two-sided test and the table gave a one-sided $p$-value.
 
 We use a one-sample $t$-test because the standard devation was unknown/ estimated from the data.
 
@@ -634,6 +612,7 @@ What do you expect the distribution of ROI to look like?
 ```{r}
 #| fig-width: 9
 #| fig-height: 5
+#| fig-align: center
 
 ggplot(bechdel_sample, aes(x = roi)) +
   geom_histogram(bins = 30) +
@@ -676,26 +655,27 @@ Why can the mean and median differ substantially here?
 
 ## But Our Hypothesis Is About a Mean
 
-Let $\mu$ be the _population mean ROI_ among passing movies in our sampling frame.
+Let $\mu$ be the _population mean ROI_ among passing movies in our sample.
 
 We ask whether the average exceeds break-even:
 
 $$
-\hypo_0: \mu = 1
+\hypo_0: \mu \leq 1 \qquad \text{against} \qquad \hypo_1: \mu > 1.
 $$
 
-against
-
-$$
-\hypo_1: \mu > 1.
-$$
 
 . . .
 
 This is a _one-tailed Z-test_.
 
+. . .
 
-## Your Turn: What Comes Next?
+To conduct the test, we evaluate the null at the boundary:
+$$
+\mu_0 = 1.
+$$
+
+## What Comes Next?
 
 <!-- Give students 1-2 minutes before revealing. -->
 
@@ -704,9 +684,7 @@ We know:
 - $\bar{x} = `{r} round(movie_mean, 2)`$
 - $n = `{r} movie_n`$
 
-We assume: $\sigma = `{r} round(movie_sigma, 2)`$ as known from the entire dataset.
-
-- Typically there is some previous large-scale industry research that has established that the population standard deviation of this gross-to-budget ratio is $\sigma = `{r} round(movie_sigma, 2)`$.
+Suppose, that some previous large-scale research established that the standard deviation of this gross-to-budget ratio is $\sigma = `{r} round(movie_sigma, 2)`$.
 
 What should we calculate next?
 
@@ -730,12 +708,10 @@ $$
 
 . . .
 
-Notice:
-
-> A highly variable raw distribution can still give a much less variable distribution of **sample means**.
+A highly variable distribution of  raw varlues can still give a much less variable distribution of sample means.
 
 
-## Your Turn: Test Statistic
+## Test Statistic
 
 Under $\hypo_0$, the expected population mean is 1.
 
@@ -752,6 +728,8 @@ movie_p <- 1 - pnorm(movie_z)
 
 $$
 Z
+=\frac{\bar{x} - 1}
+     {SE_{\bar{x}}}
 =
 \frac{`r round(movie_mean, 2)` - 1}
      {`r round(movie_se, 3)`}
@@ -778,6 +756,7 @@ If you had to guess the $p$-value, is it:
 ```{r}
 #| fig-width: 9
 #| fig-height: 5
+#| fig-align: center
 
 movie_x_z <- seq(-4, max(6, movie_z + 1), length.out = 1200)
 movie_z_plot <- data.frame(
@@ -803,8 +782,9 @@ ggplot(movie_z_plot, aes(z, density)) +
 
 ## Conclusion
 
+<!-- `{r} format(movie_p, digits = 2)`. but the formatting got messed up-->
 $$
-p = `{r} format(movie_p, digits = 2)`.
+p = 0.087.
 $$
 
 Using $\alpha=.05$:
@@ -839,24 +819,26 @@ What does this add beyond the $p$-value?
 
 . . .
 
+::: {.fragment}
+::: {.fragment .strike}
 It contains 0!
+:::
+:::
 
 . . .
 
-It contains ~~0~~1! The value expected under $\hypo_0$ is 1!
+It contains 1! The value expected under $\hypo_0$ is 1!
 
 ## Does Skewness Break Everything?
 
-The **raw ROI values** are strongly skewed.
+The raw ROI values are strongly skewed.
 
-But our test concerns the **sample mean**.
+But our test concerns the sample mean.
 
 So the relevant question is:
 
 > What does the sampling distribution of the sample mean look like?
 
-
-## Simulate the Sampling Distribution
 
 ```{r}
 #| include: false
@@ -914,7 +896,9 @@ In this case, the sampling distribution doesn't look normal.
 
 Keep in mind, that the CLT talks about _the limit_.
 
-Typically $n = 30$ suffices, in this (extreme) case it did not.
+A rule of thumb says $n = 30$ is often enough for the CLT to give a useful approximation.
+
+  - But, as we saw, this isn't always enough.
 
 ## What if we had larger samples?
 
@@ -947,7 +931,7 @@ ggplot(sim_movies2, aes(x = mean)) +
   geom_histogram(bins = 40) +
   facet_wrap(. ~ n, labeller = label_both) +
   labs(
-    x = paste0("Mean ROI in a sample of ", movie_n, " movies"),
+    x = paste0("Mean ROI"),
     y = "Number of simulated samples",
     title = "Means of repeated samples"
   )
@@ -1038,26 +1022,6 @@ What does that mean?
 
 This interpretation is much more useful than memorizing formulas.
 
-
-## What Does a $p$-value Mean?
-
-Suppose $p=.03$.
-
-Which statement is correct?
-
-A. There is a 3% probability that $\hypo_0$ is true.
-
-B. There is a 3% probability that the result occurred by chance.
-
-C. If $\hypo_0$ were true, results at least this extreme would occur about 3% of the time.
-
-D. There is a 97% probability that $\hypo_1$ is true.
-
-. . .
-
-**C**
-
-
 ## What Does a Confidence Interval Mean?
 
 A 95% confidence interval is **not**:
@@ -1128,4 +1092,3 @@ Statistics quantifies _sampling uncertainty_.
 | Test statistic | $t$ | $Z$ |
 | Reference distribution | $t_{n-1}$ | $N(0,1)$ |
 | $df$ | $n-1$ | — |
-| Basic logic | Same | Same |
