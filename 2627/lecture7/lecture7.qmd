@@ -104,8 +104,6 @@ Source: Ibrahim et al. (2023), *Scientific Reports*
 
 ## Detector performance
 
-Let
-
 - $A$ = the submission was AI-generated;
 - $H$ = the submission was human-written;
 - $F$ = GPTZero flags the submission as AI-generated.
@@ -124,7 +122,7 @@ What is $P(F\mid A)$?
 
 Since an AI-generated answer is either flagged or not flagged,
 $$
-P(F\mid A) = 1 - P(\mathrm{not}\; F\mid A) - 0.68
+P(F\mid A) = 1 - P(\mathrm{not}\; F\mid A) = 1 - 0.32 = 0.68
 $$
 
 ## A flagged submission
@@ -268,7 +266,7 @@ Based on the reported detector performance, what proportion of submitted work wo
 
 ## Finding the critical base rate {.scrollable}
 
-We need to solve
+We need to solve for $\pi$:
 
 $$
 \frac{
@@ -280,43 +278,45 @@ $$
 0.50.
 $$
 
-Multiplying both sides gives
-
+::: {style="font-size: 75%;"}
 $$
+\begin{align}
+\frac{0.68\pi}{0.68\pi+0.18(1-\pi)}
+&=
+0.50
+&& \text{given} \\[6pt]
 0.68\pi
-=
-0.50\left[
-0.68\pi+0.18(1-\pi)
-\right].
-$$
-
-Equivalently,
-
-$$
+&=
+0.50\left[0.68\pi+0.18(1-\pi)\right]
+&& \text{multiply by denominator} \\[6pt]
 0.68\pi
-=
-0.18(1-\pi).
-$$
-
-Therefore,
-
-$$
+&=
+0.34\pi+0.09(1-\pi)
+&& \text{multiply by }0.50 \\[6pt]
 0.68\pi
-=
-0.18-0.18\pi,
+&=
+0.34\pi+0.09-0.09\pi
+&& \text{expand} \\[6pt]
+0.68\pi+0.09\pi-0.34\pi
+&=
+0.09
+&& \text{collect }\pi \\[6pt]
+0.43\pi
+&=
+0.09
+&& \\[6pt]
+\pi
+&=
+\frac{0.09}{0.43}
+&& \text{divide by }0.43 \\[6pt]
+\pi
+&\approx
+0.209.
+&&
+\end{align}
 $$
 
-so
-
-$$
-0.86\pi=0.18.
-$$
-
-Thus,
-
-$$
-\pi=\frac{0.18}{0.86}\approx0.209.
-$$
+:::
 
 ## Interpretation
 
@@ -399,39 +399,39 @@ $$
 p=0.209.
 $$
 
-## Connecting proportions to means
+## From proportions to means
 
-<!--  TODO: continue here! -->
 
-Define
+Recall from week 2 (Bechdel example) that if we define
 
 $$
-X_i=
+x_i=
 \begin{cases}
 1, & \text{if submission }i\text{ is AI-generated},\\
 0, & \text{if submission }i\text{ is human-written}.
 \end{cases}
 $$
 
-For a binary variable,
-
-$$
-E(X_i)=p.
-$$
-
-And the sample mean is
-
-$$
-\bar X
-=
-\frac{1}{n}\sum_{i=1}^nX_i
-=
-\hat p.
-$$
+then, the sample mean is $\bar x=\frac{1}{n}\sum_{i=1}^nx_i=\hat p.$
+i.e., sample proportion of AI-generated submissions.
 
 . . .
 
-So testing a population **proportion** is equivalent to testing the population **mean of a binary variable**.
+So testing a population _proportion_ is equivalent to testing the population _mean of a binary variable_.
+
+. . .
+
+What does this tell us about the _sampling distribution_?
+
+. . .
+
+It's normal because of the central limit theorem
+
+::: {style="font-size: 80%;"}
+
+There are corrected sampling distributions that incorporate that proportions are between 0 and 1.
+
+:::
 
 ## Sampling distribution under the null
 
@@ -443,13 +443,7 @@ $$
 \sqrt{p(1-p)}.
 $$
 
-Under the null hypothesis,
-
-$$
-p_0=0.209.
-$$
-
-Therefore,
+Under the null hypothesis, $p_0=0.209$ and therefore,
 
 $$
 \sigma_X
@@ -462,32 +456,20 @@ The standard error of the sample mean is
 $$
 SE
 =
-\frac{\sigma_X}{\sqrt{n}}
+\sigma_X/\sqrt{n}
 =
 \sqrt{
 \frac{0.209(1-0.209)}{200}
-}.
+}\approx0.0287.
 $$
 
-This gives approximately
-
-$$
-SE\approx0.0287.
-$$
+::: notes
+need to tell that the variance is not exam material
+:::
 
 ## The Z statistic
 
-We observed
-
-$$
-\hat p=0.25.
-$$
-
-Under the null hypothesis,
-
-$$
-p_0=0.209.
-$$
+We observed $\hat p=0.25$ while $\hypo_0$ stipulates: $p_0=0.209.$
 
 Therefore,
 
@@ -499,12 +481,6 @@ Z
 }{
 SE
 }
-$$
-
-gives
-
-$$
-Z
 =
 \frac{
 0.25-0.209
@@ -514,31 +490,16 @@ Z
 \approx1.43.
 $$
 
-::: {.callout-tip}
-Using the standard normal table, approximately what is the one-sided $p$-value?
-:::
+Using the Z-table, what is the $p$-value?
+
 
 ## The p-value
 
-For
+For $Z\approx1.43,$ we obtain $P(Z>1.43) = 0.076.$
 
-$$
-Z\approx1.43,
-$$
+At $\alpha=0.05,$
 
-we obtain approximately
-
-$$
-P(Z>1.43)\approx0.076.
-$$
-
-At
-
-$$
-\alpha=0.05,
-$$
-
-we therefore **do not reject** the null hypothesis.
+we _do not reject_ the null hypothesis.
 
 . . .
 
@@ -556,13 +517,7 @@ $$
 
 submissions.
 
-Again,
-
-$$
-25\%
-$$
-
-of them are AI-generated.
+Again, we find that $25\%$ of them are AI-generated.
 
 So the observed proportion remains
 
@@ -581,16 +536,30 @@ The standard error is now
 $$
 SE
 =
+\frac{\sigma_X}{\sqrt{n}}
+=
+\frac{\sqrt{p_0(1-p_0)}}{\sqrt{n}}
+=
 \sqrt{
 \frac{0.209(1-0.209)}{1000}
 }
 \approx0.0129.
 $$
 
+_Increasing_ the sample size made the standard error _smaller_.
+
+. . .
+
 Therefore,
 
 $$
 Z
+=
+\frac{
+\hat p-p_0
+}{
+SE
+}
 =
 \frac{
 0.25-0.209
@@ -600,17 +569,9 @@ Z
 \approx3.18.
 $$
 
-This corresponds to a one-sided probability smaller than
+. . .
 
-$$
-0.001.
-$$
-
-We would now reject
-
-$$
-\hypo_0:p\leq0.209.
-$$
+Now, $p < 0.001$, and we would reject $\hypo_0$.
 
 ## Same effect, different evidence
 
@@ -623,26 +584,21 @@ $$
 But:
 
 $$
+\begin{align}
 n=200
-\qquad\Rightarrow\qquad
-Z\approx1.43
-$$
-
-whereas
-
-$$
+\qquad&\Rightarrow\qquad
+Z\approx1.43\\
 n=1000
-\qquad\Rightarrow\qquad
+\qquad&\Rightarrow\qquad
 Z\approx3.18.
+\end{align}
 $$
 
-::: {.callout-tip}
-The estimated proportion did not change.
+- The estimated proportion did not change.
+- The _uncertainty about that estimate_ changed.
 
-What changed was our **uncertainty about that estimate**.
-:::
 
-## Back to Bayes' theorem
+## Recap
 
 Our original question was
 
@@ -667,11 +623,13 @@ P(A\mid F)
 }.
 $$
 
+## Recap
+
 The significance test addressed a different question:
 
-> Do the data provide evidence that AI use is common enough for a GPTZero flag to be more likely correct than incorrect?
+Do the data provide evidence that AI use is common enough for a GPTZero flag to be more likely correct than incorrect?
 
-## One more complication...
+<!-- ## One more complication...
 
 The Ibrahim et al. study also investigated what happened when ChatGPT-generated answers were paraphrased using QuillBot.
 
@@ -691,9 +649,9 @@ $$
 
 . . .
 
-What happens to our conclusions?
+What happens to our conclusions? -->
 
-## The dean's criterion again
+<!-- ## The dean's criterion again
 
 We now need
 
@@ -728,19 +686,21 @@ $$
 }.
 $$
 
-So approximately **78.3% of submissions would need to be AI-generated** before a GPTZero flag was more likely to correspond to AI-generated than human-written work under these detector-performance numbers.
+So approximately **78.3% of submissions would need to be AI-generated** before a GPTZero flag was more likely to correspond to AI-generated than human-written work under these detector-performance numbers. -->
 
 ## What did we learn?
 
-A statement such as
+A statement like
 
-> “GPTZero detects 68% of AI-generated submissions”
+- "GPTZero detects 68% of AI-generated submissions"
 
-does **not** tell us
+does _not_ tell us
 
-> “A submission flagged by GPTZero has a 68% probability of being AI-generated.”
+- "A submission flagged by GPTZero has a 68% probability of being AI-generated."
 
-To answer the second question, we also need the **base rate**.
+To answer the second question, we also need the _base rate_.
+
+## What did we learn?
 
 Bayes' theorem combines
 
@@ -760,7 +720,11 @@ $$
 
 . . .
 
-And even if we estimate the base rate from data, we must account for **sampling uncertainty**.
+If we estimate the base rate from data, we must account for _sampling uncertainty_.
+
+. . .
+
+Note that this is very similar to how a $p$-value tells us how probable a test statistic at least this extreme would be if $\hypo_0$ were true, but does not tell us $P(\hypo_0\mid\text{data})$!
 
 ## Finally...
 
@@ -772,12 +736,494 @@ The detector results also come from a particular study:
 - a particular version of GPTZero;
 - data collected in 2023.
 
-::: {.callout-question}
-Would these probabilities necessarily be the same for current Tilburg University submissions?
-:::
+. . .
+
+If I apply this to your portfolio assignments, would these probabilities necessarily be the same?
 
 . . .
 
-Statistical calculations can tell us what follows **if our probabilities apply to the population of interest**.
+Probably not.
 
-Whether they actually generalize is a separate scientific question.
+# Case study 2: Do we know how much we use our smartphones?
+
+## Case study: Do we know how much we use our smartphones?
+
+How many hours did you use your smartphone yesterday?
+
+. . .
+
+And how many separate times did you pick it up or check it?
+
+. . .
+
+How accurate do you think your estimates would be?
+
+## Self-report versus actual behaviour
+
+Andrews et al. (2015) asked 23 participants to estimate their typical daily smartphone use.
+
+At the same time, an app objectively recorded their smartphone behavior for two weeks.
+
+For every participant we therefore have:
+
+- estimated number of daily uses;
+- actual number of daily uses;
+- estimated daily duration;
+- actual daily duration.
+
+::: footer
+Source: Andrews et al. (2015), *PLoS ONE*
+<https://doi.org/10.1371/journal.pone.0139004>
+:::
+
+## The data
+
+```{r}
+#| echo: false
+
+library(ggplot2)
+
+phone <- read.csv("data/smartphone_use.csv")
+
+phone$duration_difference <- phone$estimate_duration - phone$actual_duration
+phone$uses_difference <- phone$estimated_uses - phone$actual_uses
+```
+
+Each row represents one participant.
+
+```{r}
+#| echo: false
+#| output: asis
+
+knitr::kable(
+  head(phone[, c("estimated_uses", "actual_uses", "estimate_duration", "actual_duration")]),
+  digits = 2,
+  col.names = c("Estimated uses", "Actual uses", "Estimated hours", "Actual hours")
+)
+```
+
+## How long do we use our phones?
+
+Let's first consider total daily duration.
+
+Participants estimated that they used their smartphones for, on average,
+
+$$
+4.12\text{ hours per day}.
+$$
+
+The objective measurements showed an average of
+
+$$
+5.06\text{ hours per day}.
+$$
+
+. . .
+
+So participants underestimated their smartphone use by almost an hour.
+
+Is that convincing evidence that people systematically underestimate their smartphone use?
+
+## Looking at the individual participants
+
+```{r}
+#| echo: false
+#| fig-width: 7
+#| fig-height: 7
+#| fig-align: center
+
+ggplot(phone, aes(x = actual_duration, y = estimate_duration)) +
+  geom_point(size = 3, colour = "black", fill = "grey", shape = 21) +
+  geom_abline(
+    intercept = 0,
+    slope = 1,
+    linetype = "dashed"
+  ) +
+  labs(x = "Actual use (hours per day)", y = "Estimated use (hours per day)") +
+  theme_minimal(base_size = 24)
+```
+
+The dashed line represents a perfect agreement.
+
+. . .
+
+Points below the line are to participants who _underestimated_ their use.
+
+Points above the line are to participants who _overestimated_ their use.
+
+## Two measurements per participant
+
+For each participant, we now have _two observations_:
+
+$$
+\text{estimated use}
+\qquad\text{and}\qquad
+\text{actual use}.
+$$
+
+These observations are not independent.
+
+. . .
+
+But we can turn them into one variable.
+
+For participant $i$, define
+
+$$
+D_i =
+\text{estimated duration}_i
+-
+\text{actual duration}_i.
+$$
+
+## The difference score
+
+If somebody estimates their phone use perfectly, $D_i=0.$
+
+If they underestimate their use, $D_i<0.$
+
+If they overestimate their use, $D_i>0.$
+
+. . .
+
+Our original question can therefore be rewritten as:
+
+"Is the population mean of these difference scores equal to zero?"
+
+## The differences
+
+```{r}
+#| echo: false
+#| fig-width: 7
+#| fig-height: 7
+#| fig-align: center
+
+ggplot(phone, aes(x = duration_difference)) +
+  geom_histogram(
+    bins = 8,
+    boundary = 0
+  ) +
+  geom_vline(
+    xintercept = 0,
+    linetype = "dashed"
+  ) +
+  labs(
+    x = "Estimated − actual duration (hours)",
+    y = "Number of participants"
+  ) +
+  theme_minimal(base_size = 24)
+```
+
+The sample mean difference is
+
+$$
+\bar D
+=
+4.12-5.06
+=
+-0.93\text{ hours}.
+$$
+
+## Our hypotheses
+
+Let $\mu_D$ denote the population mean difference between estimated and actual smartphone use.
+
+We test
+
+$$
+\hypo_0:\mu_D=0
+\quad
+\mathrm{against}
+\quad
+\hypo_1:\mu_D\neq0.
+$$
+
+. . .
+
+Although every participant gave us two measurements, this is now simply a one-sample test of the difference scores.
+
+. . .
+
+Is this a Z or a $t$-test?
+
+. . .
+
+$t$-test
+
+## The test statistic
+
+The 23 differences have $\bar D=-0.93$ and $s_D\approx2.49.$
+
+So,
+
+$$
+SE_{\bar D}
+=
+\frac{s_D}{\sqrt{n}}
+=
+\frac{2.49}{\sqrt{23}}
+\approx0.52.
+$$
+
+The test statistic is
+
+$$
+t
+=
+\frac{\bar D-0}{SE_{\bar D}}
+=
+\frac{-0.93}{0.52}
+\approx-1.80.
+$$
+
+## Is this statistically significant?
+
+With $\alpha=0.05$, $df=22$, and $t = -1.80$ we examine the $t$-table.
+
+. . .
+
+We find $p(t > 1.717) = 0.05$. Since $1.717 < 1.80$ we know $p < 0.05$.
+
+Can we reject $\hypo_0$?
+
+. . .
+
+No!
+
+We have $p(t > 1.717) = 0.05$ and $p(t > 2.074) = 0.025$. Since $1.717 < 1.80 < 2.074$, we have that the actual $p$ value is between 0.05 and 0.025.
+
+But this is a _two-sided_ test, and the above are _one-tailed_ $p$ values.
+
+We need to multiply by 2.
+
+Thus, the actual $p$ value is between 0.10 and 0.05.
+
+## Confidence interval
+
+The corresponding 95% confidence interval is
+$$
+[
+\bar D - t_{97.5\%,\,22} \times SE_{\bar D},\;
+\bar D + t_{97.5\%,\,22} \times SE_{\bar D}
+]
+$$
+
+
+$$
+[-2.01,\;0.14]\text{ hours}.
+$$
+
+Note that the interval contains 0.
+
+(and yes, like last week you cannot compute this interval for a $t$-test yourself)
+
+## What can we conclude?
+
+Participants estimated 4.12 hours but actually used their phones for 5.06 hours.
+
+The observed difference was almost one hour.
+
+. . .
+
+But, $p > 0.05$.
+
+With only 23 participants, the data do not provide significant evidence that people under- or overestimate their total smartphone use.
+
+## Does that mean people know their smartphone use well?
+
+Not necessarily.
+
+. . .
+
+So far we have only considered _total duration_.
+
+The researchers asked another question:
+
+"How many separate times do you use your phone each day?"
+
+This is a different operationalization!
+
+## How often do we use our phones?
+
+Participants estimated an average of about $37.20$ uses per day.
+
+. . .
+
+Their phones recorded an average of $84.68$ uses per day.
+
+. . .
+
+Actual use was more than _twice_ as frequent as participants estimated.
+
+## Looking at the individual participants
+
+```{r}
+#| echo: false
+#| fig-width: 7
+#| fig-height: 7
+#| fig-align: center
+
+ggplot(
+  phone,
+  aes(x = actual_uses, y = estimated_uses)
+) +
+  geom_point(size = 3) +
+  geom_abline(
+    intercept = 0,
+    slope = 1,
+    linetype = "dashed"
+  ) +
+  labs(
+    x = "Actual uses per day",
+    y = "Estimated uses per day"
+  ) +
+  theme_minimal(base_size = 24)
+```
+
+## Difference scores again
+
+Define $D_i=\text{estimated uses}_i - \text{actual uses}_i.$
+
+Then $\bar D = 37.20-84.68 = -47.48.$
+
+So participants _underestimated_ their smartphone use by about $47.5$ separate uses _per day_.
+
+## The distribution of differences
+
+```{r}
+#| echo: false
+#| fig-width: 7
+#| fig-height: 7
+#| fig-align: center
+
+ggplot(phone, aes(x = uses_difference)) +
+  geom_histogram(
+    bins = 8,
+    boundary = 0
+  ) +
+  geom_vline(
+    xintercept = 0,
+    linetype = "dashed"
+  ) +
+  labs(
+    x = "Estimated − actual uses per day",
+    y = "Number of participants"
+  ) +
+  theme_minimal(base_size = 24)
+```
+
+Can we explain this difference by sampling variability?
+
+## Hypotheses
+
+Again, let $\mu_D$ denote the population mean difference.
+
+We test
+
+$$
+\hypo_0:\mu_D=0
+\quad
+\mathrm{against}
+\quad
+\hypo_1:\mu_D\neq0.
+$$
+
+The sample gives $\bar D=-47.48$ and $s_D\approx57.95$.
+
+## The test statistic
+
+The standard error is $SE_{\bar D} = \frac{s_D}{\sqrt{n}} = \frac{57.95}{\sqrt{23}} \approx12.09$.
+
+The test statistic is $t = \frac{\bar D - 0}{12.09} = \frac{-47.48}{12.09} \approx-3.93.$
+
+With $df=22$, we examine the $t$-table.
+
+. . .
+
+We find $p(t > 3.505) = 0.001$.
+
+Again, this is a one-sided $p$-value, so since $3.505 < 3.93$ we can conclude that
+
+$$
+p < 0.002
+$$
+
+## Conclusion
+
+We reject
+
+$$
+\hypo_0:\mu_D=0.
+$$
+
+The data provide strong evidence that participants systematically misestimate how often they use their smartphones.
+
+The 95% confidence interval for the mean difference is approximately
+
+$$
+[-72.55,\;-22.42].
+$$
+
+<!--
+In other words, the population mean underestimation is consistent with roughly 22 to 73 uses per day.
+-->
+
+## An interesting contrast
+
+::: {style="font-size: 90%;"}
+
+For total time:
+
+$$
+\begin{aligned}
+\text{Estimated} &= 4.12\text{ hours}\\
+\text{Actual} &= 5.06\text{ hours}\\
+p &> 0.05
+\end{aligned}
+$$
+
+We did not find sufficient evidence of systematic bias.
+
+. . .
+
+For number of uses:
+
+$$
+\begin{aligned}
+\text{Estimated} &= 37.20\\
+\text{Actual} &= 84.68\\
+p &<0.002
+\end{aligned}
+$$
+
+People dramatically underestimated how often they used their phones.
+
+:::
+
+## What did we learn?
+
+When the same person is measured twice, we can define a difference:
+
+$$
+D_i=X_{i,1}-X_{i,2}.
+$$
+
+Then a comparison between two paired measurements becomes a familiar one-sample problem:
+
+$$
+\hypo_0:\mu_D=0.
+$$
+
+The operationalization can determine the outcome!
+
+## Finally...
+
+The data were collected in **2015**.
+
+Smartphones, apps, notifications, and people's usage patterns have changed substantially since then.
+
+Would you expect the numerical results to be the same for students today?
+
+. . .
+
+Probably not necessarily.
