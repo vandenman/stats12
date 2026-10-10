@@ -12,7 +12,7 @@ format:
         toc: true
         toc-depth: 1
         toc-title: "Today"
-        embed-resources: false
+        embed-resources: true
 ---
 
 ## Today {.unlisted}
@@ -27,10 +27,6 @@ Two statistical tests using two datasets:
 
 - Z-test
 - $t$-test
-
-These are mostly the names for tests we've already applied during the previous lectures.
-
-The workflow is mostly the same.
 
 # The Statistical Workflow {.section-slide}
 
@@ -104,8 +100,10 @@ Source: Ibrahim et al. (2023), *Scientific Reports*
 
 ## Detector performance
 
-- $A$ = the submission was AI-generated;
-- $H$ = the submission was human-written;
+::: {style="font-size: 90%;"}
+
+- $A$ = the submission was AI-generated.
+- $H$ = the submission was human-written.
 - $F$ = GPTZero flags the submission as AI-generated.
 
 From the study,
@@ -124,6 +122,8 @@ Since an AI-generated answer is either flagged or not flagged,
 $$
 P(F\mid A) = 1 - P(\mathrm{not}\; F\mid A) = 1 - 0.32 = 0.68
 $$
+
+:::
 
 ## A flagged submission
 
@@ -744,6 +744,10 @@ If I apply this to your portfolio assignments, would these probabilities necessa
 
 Probably not.
 
+# Break {.unlisted}
+
+See you in ~10 minutes
+
 # Case study 2: Do we know how much we use our smartphones?
 
 ## Case study: Do we know how much we use our smartphones?
@@ -1218,7 +1222,7 @@ The operationalization can determine the outcome!
 
 ## Finally...
 
-The data were collected in **2015**.
+The data were collected in 2015.
 
 Smartphones, apps, notifications, and people's usage patterns have changed substantially since then.
 
@@ -1226,4 +1230,4 @@ Would you expect the numerical results to be the same for students today?
 
 . . .
 
-Probably not necessarily.
+Probably not.
