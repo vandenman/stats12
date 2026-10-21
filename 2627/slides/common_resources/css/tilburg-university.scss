@@ -97,3 +97,20 @@ $font-family-sans-serif: Arial, Helvetica, sans-serif;
     left: 20px;
   }
 }
+
+/* Left-align auto-generated agenda slides */
+.reveal .slides section.agenda-slide {
+  text-align: left;
+}
+
+.reveal .slides section.agenda-slide .agenda {
+  text-align: left;
+}
+
+.reveal .slides section.agenda-slide ul,
+.reveal .slides section.agenda-slide ol {
+  display: block;
+  text-align: left;
+  margin-left: 1em;
+  margin-right: 0;
+}
