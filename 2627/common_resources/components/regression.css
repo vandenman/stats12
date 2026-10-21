@@ -1,0 +1,78 @@
+.regression-demo {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 25% minmax(0, 1fr);
+  gap: 0.7em;
+  align-items: center;
+}
+
+.regression-panel {
+  min-width: 0;
+}
+
+.regression-controls {
+  display: grid;
+  gap: 0.8em;
+}
+
+.regression-controls p {
+  margin: 0;
+}
+
+.regression-control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 2.5em;
+  gap: 0.15em 0.35em;
+  align-items: center;
+}
+
+.regression-control > span:first-child {
+  grid-column: 1 / -1;
+}
+
+.regression-control input {
+  width: 100%;
+  min-width: 0;
+}
+
+.regression-demo svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-width: 0;
+}
+
+.regression-axis {
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+.regression-tick {
+  stroke: currentColor;
+  stroke-width: 1;
+}
+
+.regression-label {
+  fill: currentColor;
+  font-size: 20px;
+}
+
+.regression-error {
+  stroke: #2878b5;
+  stroke-width: 2;
+}
+
+.regression-line {
+  stroke: #c73535;
+  stroke-width: 4;
+}
+
+.regression-point {
+  fill: #444;
+  stroke: white;
+  stroke-width: 1;
+}
+
+.regression-total {
+  margin: 0.8em 0 0;
+}
