@@ -1,0 +1,472 @@
+---
+title: "GLM"
+subtitle: "Lecture 9 - LAS"
+author: "Don van den Bergh"
+date: 2026-10-26
+date-format: "DD-MM-YYYY"
+format:
+    dtslides-revealjs:
+        theme: [../common_resources/css/tilburg-university.scss]
+        logo: ../common_resources/logos/logo_tu_small.svg
+        slide-number: c/t
+        toc: true
+        toc-depth: 1
+        toc-title: "Today"
+        embed-resources: true
+        include-in-header:
+        - text: |
+            <link rel="stylesheet" href="../common_resources/components/regression.css">
+            <script src="../common_resources/components/regression.js"></script>
+---
+
+# General Linear Model (GLM)
+
+<!-- TODO -->
+<!-- Follow standard BKO outline -->
+<!-- Learning goals summary slide -->
+<!-- Have this slide come back each time -->
+
+$$
+\newcommand{\hypo}{\mathcal{H}}
+\newcommand{\SE}{\mathrm{SE}}
+\newcommand{\dnorm}[2]{\mathcal{N}\left(#1, #2\right)}
+\newcommand{\res}{e}
+\newcommand{\rep}{\epsilon}
+$$
+
+## The GLM
+
+A family of models to analyze the relationship between one outcome and one or more predictors
+
+- Last week we talked about bivariate linear regression
+    * Describes a linear relationship between a continuous outcome variable and a continuous predictor
+    * Intercept and slope
+    * Assumptions
+    * Significance testing
+
+## The GLM
+
+```{dot}
+strict digraph GLM {
+    graph [
+        rankdir=TB,
+        bgcolor="transparent",
+        nodesep=0.35,
+        ranksep=0.85,
+        ordering=out
+    ];
+
+    node [
+        shape=box,
+        style="rounded,filled",
+        fillcolor="#f1f5f9",
+        color="#64748b",
+        penwidth=1.5,
+        fontname="Helvetica",
+        fontsize=15,
+        margin="0.18,0.12"
+    ];
+
+    edge [
+        color="#64748b",
+        penwidth=1.5,
+        arrowsize=0.7,
+        fontname="Helvetica",
+        fontsize=11
+    ];
+
+    GLM [label="General Linear Models"];
+    LM  [label="Linear model"];
+    LOG [label="Logistic regression"];
+
+    O [label="One-sample\nt-test"];
+    S [label="Simple\nlinear\nregression"];
+    I [label="Independent-samples\nt-test"];
+    A [label="One-way\nANOVA"];
+    M [label="Multiple\nregression"];
+
+    GLM -> LM  [label="  Identity\nlink"];
+    GLM -> LOG [label="Logit\nlink"];
+
+    // Highlight the GLM -> LM -> ANOVA branch
+    // GLM [penwidth=4, color="#2563eb"];
+    // LM  [penwidth=4, color="#2563eb"];
+    // O   [penwidth=4, color="#2563eb"];
+
+    // GLM -> LM [penwidth=4, color="#2563eb"];
+    // LM  -> O  [penwidth=4, color="#2563eb"];
+
+    LM -> O [label="Intercept only"];
+    LM -> S [label="One\ncontinuous\npredictor"];
+    LM -> I [label="One\nbinary\npredictor"];
+    LM -> A [label="One\ncategorical\npredictor\n(3+ groups)"];
+    LM -> M [label="Multiple\npredictors"];
+
+// Separate linear and logistic regression
+    {
+        rank=same;
+        LM;
+        spacer [shape=point, width=0.1, style=invis, label=""];
+        LOG;
+    }
+
+    LM -> spacer -> LOG [
+        style=invis,
+        weight=100
+    ];
+    // Keep all five linear-model specializations at the same level
+    { rank=same; O; S; I; A; M; }
+}
+```
+
+## Today we continue with the GLM
+
+```{dot}
+strict digraph GLM {
+    graph [
+        rankdir=TB,
+        bgcolor="transparent",
+        nodesep=0.35,
+        ranksep=0.85,
+        ordering=out
+    ];
+
+    node [
+        shape=box,
+        style="rounded,filled",
+        fillcolor="#f1f5f9",
+        color="#64748b",
+        penwidth=1.5,
+        fontname="Helvetica",
+        fontsize=15,
+        margin="0.18,0.12"
+    ];
+
+    edge [
+        color="#64748b",
+        penwidth=1.5,
+        arrowsize=0.7,
+        fontname="Helvetica",
+        fontsize=11
+    ];
+
+    GLM [label="General Linear Models"];
+    LM  [label="Linear model"];
+    LOG [label="Logistic regression"];
+
+    O [label="One-sample\nt-test"];
+    S [label="Simple\nlinear\nregression"];
+    I [label="Independent-samples\nt-test"];
+    A [label="One-way\nANOVA"];
+    M [label="Multiple\nregression"];
+
+    GLM -> LM  [label="  Identity\nlink"];
+    GLM -> LOG [label="Logit\nlink"];
+
+    // Keep all five linear-model specializations at the same level
+    { rank=same; O; S; I; A; M; }
+
+    LM -> O [label="Intercept only"];
+    LM -> S [label="One\ncontinuous\npredictor"];
+    LM -> I [label="One\nbinary\npredictor"];
+    LM -> A [label="One\ncategorical\npredictor\n(3+ groups)"];
+    LM -> M [label="Multiple\npredictors"];
+
+    // Highlight the GLM -> LM -> ANOVA branch
+    GLM [penwidth=4, color="#2563eb"];
+    LM  [penwidth=4, color="#2563eb"];
+    S   [penwidth=4, color="#2563eb"];
+
+    GLM -> LM [penwidth=4, color="#2563eb"];
+    LM  -> S  [penwidth=4, color="#2563eb"];
+
+
+// Separate linear and logistic regression
+    {
+        rank=same;
+        LM;
+        spacer [shape=point, width=0.1, style=invis, label=""];
+        LOG;
+    }
+
+    LM -> spacer -> LOG [
+        style=invis,
+        weight=100
+    ];
+}
+```
+
+# Recap Linear Regression
+
+## Recap
+$$
+\widehat{\mathrm{Grade}} = \mathrm{Intercept} + \mathrm{Slope}\times\text{Hours studied}
+$$
+
+. . .
+
+Or in general,
+
+$$
+\underbrace{y}_{\substack{\text{outcome variable}\\\text{dependent variable}}}
+=
+\underbrace{a}_{\text{intercept}}
++
+\underbrace{b}_{\text{slope}}
+\times
+\underbrace{x}_{\substack{\text{predictor variable}\\\text{independent variable}}}
+$$
+
+. . .
+
+- $a$, the intercept, where the line crosses the $y$-axis.
+  + $a$ is the predicted value when $x = 0$.
+- $b$, the slope, how steep the line increases or decreases
+  + $y$ increase by $b$ when $x$ increases by 1.
+
+## Recap
+
+$\hat{y}_i = a + b \times x_i$
+
+Symbol         | Interpretation
+-------------- | -----------------------------------------------------
+$y_i$          | Individual $i$'s score on dependent variable $y$
+$\hat{y}_i$    | Prediction for individual $i$'s score on dependent variable $y$
+$a$            | Coefficient, intercept of the regression line
+$b$            | Coefficient, slope of the regression line
+$x_i$          | Individual $i$'s score on independent variable $x$
+$\res_i$       | Difference between prediction and observation for individual $i$
+
+## Grades vs. Hours Studied
+
+![](figures/plot_1.svg){fig-align="center"}
+
+## Grades vs. Hours Studied
+
+We found $a = 2.9$ and $b = 0.8$.
+
+. . .
+
+So the general equation: $\hat{y} = a + b \times x$
+
+Becomes:
+
+$$
+\widehat{\mathrm{Grade}} = 2.9 + 0.8 \times \text{Hours studied}
+$$
+
+## Grades vs. Hours Studied
+
+The first six observations:
+
+| Grade| Hours|
+|-----:|-----:|
+|  8.08|  6.53|
+|  4.72|  3.35|
+|  8.78|  6.66|
+|  8.21|  6.54|
+|  6.47|  4.83|
+|  5.17|  0.92|
+
+## Grades vs. Hours Studied
+
+The predictions are
+
+$$
+\widehat{\mathrm{Grade}} = 2.9 + 0.8 \times \text{Hours studied}
+$$
+
+| Grade| Hours| $\widehat{\mathrm{Grade}}$ |
+|-----:|-----:|----:|
+|  8.08|  6.53| 8.12|
+|  4.72|  3.35| 5.58|
+|  8.78|  6.66| 8.23|
+|  8.21|  6.54| 8.14|
+|  6.47|  4.83| 6.76|
+|  5.17|  0.92| 3.64|
+
+## Grades vs. Hours Studied
+
+The residuals are
+
+$$
+\res = \mathrm{Grade} - \widehat{\mathrm{Grade}} = \mathrm{Grade} - (2.9 + 0.8 \times \text{Hours studied})$$
+
+| Grade| Hours| $\widehat{\mathrm{Grade}}$ | $\res$|
+|-----:|-----:|----:|-----:|
+|  8.08|  6.53| 8.12| -0.04|
+|  4.72|  3.35| 5.58| -0.86|
+|  8.78|  6.66| 8.23|  0.55|
+|  8.21|  6.54| 8.14|  0.07|
+|  6.47|  4.83| 6.76| -0.29|
+|  5.17|  0.92| 3.64|  1.54|
+
+## Grades vs. Hours Studied
+
+The sum of squared residuals are
+
+$$
+\sum_{i}^N\res_i^2 = (-0.04)^2 + (-0.86)^2  + 0.55^2 + \dots = 84.53
+$$
+
+| Grade| Hours| $\widehat{\mathrm{Grade}}$ | $\res$|
+|-----:|-----:|----:|-----:|
+|  8.08|  6.53| 8.12| -0.04|
+|  4.72|  3.35| 5.58| -0.86|
+|  8.78|  6.66| 8.23|  0.55|
+|  8.21|  6.54| 8.14|  0.07|
+|  6.47|  4.83| 6.76| -0.29|
+|  5.17|  0.92| 3.64|  1.54|
+
+::: footer
+
+The sum of squared residuals are computed on all 92 observations, not only those in the table
+
+:::
+
+## Other regression lines
+
+{{< include ../common_resources/components/regression.qmd >}}
+
+## Recap
+
+1. The OLS finds $a$ and $b$ that minimize the squared error.
+2. The mean is the best predictor when there's no further relevant information.
+3. If we have information about other variables that are associated with the outcome, these can improve your predictions.
+
+# Sums of Squares
+
+## Prediction error
+
+- The regression line is the line that gives the "least prediction error" on average
+- We find it using Ordinary Least Squares
+- Literally, this uses "sums of squares"
+    + e.g., $\res_1^2 + \res_2^2 +\dots + \res_N^2$
+
+## Ordinary Least Squares
+
+Why squares?
+
+. . .
+
+Why not minimize the errors directly?
+
+. . .
+
+Last week
+
+- Suppose: $\res_1 = y_1 - \hat{y}_1 = -5$ and $\res_2 = y_2 - \hat{y}_2 = 5$
+- Then the total error $\res_1 + \res_2 = 0$.
+
+## Ordinary Least Squares
+
+This is not a coincidence!
+
+. . .
+
+::: {.r-stack style="height: 45vh;"}
+
+![](figures/plot_4.svg){.fragment style="max-width: 70vw; max-height: 45vh; width: auto; height: auto; object-fit: contain;"}
+
+![](figures/pred_errorabovebelow.svg){.fragment style="max-width: 70vw; max-height: 45vh; width: auto; height: auto; object-fit: contain;"}
+
+:::
+
+. . .
+
+- Sum of the positive prediction errors: 36.25
+- Sum of the negative prediction errors: -36.25
+
+The OLS by _designed_ makes these equal
+
+## Solution
+
+Square the errors, so the negatives don't cancel against the positives.
+
+This means:
+
+- A sum of squared errors is always positive.
+- A sum of squared errors of zero means predictions are perfect.
+- Minimizing the squared errors means finding the regression line that makes the "best" predictions.
+
+## Goodness of fit
+
+The OLS gives us the "best" regression line for the outcome given the predictor.
+
+- But how well does it describe the data?
+- We can examine the sums of squared errors
+    + (+) lower is better
+    + (-) the scale is hard to interpret
+        * it changes with sample size
+
+. . .
+
+We fix the scale by compare the sum of squared errors to a baseline.
+
+## What should the baseline model be?
+
+. . .
+
+The null model:
+
+$$
+\hat{y}_i = a + \res_i
+$$
+
+- The intercept $a$, the only parameter is the mean of $y$.
+    + $a = \bar{y}$
+
+. . .
+
+Comparing to the null model tells us: "How much does this predictor add on top of the intercept?"
+
+## Total sum of squares
+
+What's the prediction error of the null model?
+
+. . .
+
+::: {.columns}
+
+::: {.column}
+
+$$
+\begin{align}
+\mathrm{TSS} &= \sum_{i=1}^N (y_i - \hat{y}_i)^2 \\
+             &= \sum_{i=1}^N (y_i - a)^2 \\
+             &= \sum_{i=1}^N (y_i - \bar{y})^2 \\
+\end{align}
+$$
+
+
+:::
+
+::: {.column}
+
+![](figures/plot_3.svg){fig-align="center"}
+
+:::
+
+:::
+
+
+# Explained Variance
+
+##
+
+<!-- Maybe an expanded version of the earlier demo? -->
+<!-- Incldue the various sums of squares -->
+
+
+## asd
+
+
+# Correlation
+
+## bsd
+
+# Data Example
+
+
+
+

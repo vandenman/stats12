@@ -123,7 +123,28 @@ ggqq <- ggplot(data.frame(residuals = rstandard(fit)),
   thm
 
 gg3 <- gghist + ggpp + ggqq
-ggsave(filename = "lecture8/figures/example_assumptions.svg", width = 21, height = 7, plot = gg3)
+w <- 7
+ggsave(filename = "lecture8/figures/example_assumptions.svg", width = 3*w, height = w, plot = gg3)
+
+n <- 150
+set.seed(42)
+df_good <- tibble::tibble(
+  x = runif(n, -5, 5),
+  y = scale(rnorm(n))
+)
+df_bad <- tibble::tibble(
+  x = runif(n, -5, 5),
+  y = scale(rnorm(n, 0, ((x + 5)^2 + .001)^(1/1.75)))
+)
+g1 <- ggplot(df_good, aes(x = x, y = y)) + geom_point(shape = 21, fill = "grey") + thm
+g2 <- ggplot(df_bad,  aes(x = x, y = y)) + geom_point(shape = 21, fill = "grey") + thm
+
+g12 <- (
+  (g1 + ggtitle("Homoscedastic")) +
+  (g2 + ggtitle("Heteroscedastic"))
+)
+g12
+ggsave("lecture8/figures/homoheteroscedastic.svg", width = 10, height = 5, plot = g12)
 
 par(mfrow=c(2,2))
 plot(z$bods,z$rwa, pch=16, cex=.7, col=rgb(0,0,0,.3),

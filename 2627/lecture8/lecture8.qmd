@@ -454,10 +454,6 @@ $x_i$          | Individual $i$'s score on independent variable $x$
 $\res_i$       | Difference between prediction and observation for individual $i$
 
 
-# Break {.unlisted}
-
-See you in ~10 minutes
-
 ## Introducing Uncertainty
 
 So far, everything was deterministic.
@@ -579,7 +575,7 @@ Almost always, $\sigma_\epsilon$ is unknown and estimated from the data, so stan
     + $-2$ because we estimate two parameters, slope and intercept
 
 $$
-t = \frac{\hat{\beta} - \beta_{\hypo_0}}{\SE_b}
+t = \frac{b - \beta_{\hypo_0}}{\SE_b}
 $$
 
 ::: footer
@@ -588,7 +584,11 @@ $c_\alpha$ and $c_\beta$ are constants that depend on $x$ that will be discussed
 
 :::
 
-## In SPSS
+# Break {.unlisted}
+
+See you in ~10 minutes
+
+# SPSS
 
 ## Testing coefficients SPSS
 
@@ -710,6 +710,22 @@ Residual plot. Is there a leftover pattern?
 
 :::
 
+## Homoscedasticity
+
+![](figures/homoheteroscedastic.svg){fig-align="center"}
+
+## Independence
+
+Usually, you can only reason about these.
+
+Examples:
+
+- Two people cheat on an exam and make the same mistakes.
+- Students in the same classs (same teacher, etc.)
+
+Dependent observations are more similar than independent ones
+
+- Therefore, they contain less unique information
 
 
 ## Normality of Residuals
@@ -727,7 +743,6 @@ Residual plot. Is there a leftover pattern?
 - Kolgomorov-Smirnov or Shapiro-Wilk test
 
 ![](figures/assumptions6.png){fig-align="center"}
-
 
 # Example: Disgust and Authoritarianism
 
