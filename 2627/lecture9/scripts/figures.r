@@ -89,6 +89,8 @@ errorcol_above <- "springgreen"
 errorcol_below <- "gold"
 y_linreg_errors_abovebelow <- geom_segment(x = Hours, xend = Hours, y = Grade, yend = preds, colour = c(errorcol_below, errorcol_above)[i3])
 
+col2hex2col::color_to_hex(c(errorcol_above, errorcol_below))
+
 sum(residuals[i1])
 sum(residuals[!i1])
 
@@ -165,7 +167,33 @@ ggsave(
   plot = 
     base + 
     y_linreg_errors_abovebelow +
-    y_linreg + points
+    y_linreg + points,
+  width = 25, height = 25, units = "cm"
+)
+
+fitted0 <- mean(studentdata$Grade)
+fitted1 <- preds
+
+
+tss <- sum((studentdata$Grade - mean(studentdata$Grade))^2)
+sse <- sum(residuals^2)
+rss <- sum((fitted0 - fitted1)^2)
+rss - (tss - sse)
+rss / tss
+
+
+y_ssr_errors <- geom_segment(x = Hours, xend = Hours, y = rep(fitted0, length(fitted1)),  yend = fitted1, colour = errorcol)
+
+ptss <- base + y_mean_errors + y_mean            + points + ggtitle(sprintf("TSS = %.2f", tss))
+psse <- base + y_linreg_errors + y_linreg        + points + ggtitle(sprintf("SSE = %.2f", sse))
+pssr <- base + y_ssr_errors + y_mean + y_linreg  + points + ggtitle(sprintf("RSS = %.2f", rss))
+pss <- (ptss + psse + pssr) + patchwork::plot_layout(axes = "collect")
+pss
+
+ggsave(
+  filename = file.path(out_dir, "three_ss.svg"), 
+  plot = pss,
+  width = 3*25, height = 25, units = "cm"
 )
 
 preds_ols <- tibble(
