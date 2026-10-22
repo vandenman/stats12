@@ -554,7 +554,7 @@ So RSS is bounded between 0 and TSS.
 
 ## How can we use the RSS?
 
-We convert RSS into a proportion, called R^2 (R-squared):
+We convert RSS into a proportion, called $R^2$ (R-squared):
 
 $$
 R^2 = \frac{RSS}{TSS}
@@ -571,7 +571,7 @@ $$
 
 $R^2 lies between 0 (nothing explained) and 1 (everything explained).
 
-## asd
+## Explain Variance
 
 
 # Correlation
