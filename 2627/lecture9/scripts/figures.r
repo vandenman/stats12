@@ -186,7 +186,7 @@ y_ssr_errors <- geom_segment(x = Hours, xend = Hours, y = rep(fitted0, length(fi
 
 ptss <- base + y_mean_errors + y_mean            + points + ggtitle(sprintf("TSS = %.2f", tss))
 psse <- base + y_linreg_errors + y_linreg        + points + ggtitle(sprintf("SSE = %.2f", sse))
-pssr <- base + y_ssr_errors + y_mean + y_linreg  + points + ggtitle(sprintf("RSS = %.2f", rss))
+pssr <- base + y_ssr_errors + y_mean + y_linreg  + points + ggtitle(sprintf("RSS = %.2f - %.2f = %.2f", tss, sse, rss))
 pss <- (ptss + psse + pssr) + patchwork::plot_layout(axes = "collect")
 pss
 
@@ -195,6 +195,106 @@ ggsave(
   plot = pss,
   width = 3*25, height = 25, units = "cm"
 )
+
+rhos <- c(.8, .45, .2, -.05, -.3, -.6)
+dfs <- NULL
+for (i in seq_along(rhos)) {
+  ss <- matrix(1, 2, 2)
+  ss[1, 2] <- ss[2, 1] <- rhos[i]
+  xx <- MASS::mvrnorm(50, c(0, 0), ss, empirical = TRUE)
+  df <- data.frame(x = xx[, 1], y = xx[, 2], r = rhos[i])
+  dfs <- rbind(dfs, df)
+}
+dfs$r <- factor(dfs$r, levels = rhos)
+cor_panel_plot <- ggplot(dfs, aes(x = x, y = y)) +
+  geom_smooth(method = "lm", color = regressioncol, se = FALSE) +
+  geom_point() +
+  facet_wrap(~r, nrow = 2, labeller = label_both) +
+  labs(x = NULL, y = NULL) +
+  scale_x_continuous(breaks = NULL, labels = NULL) +
+  scale_y_continuous(breaks = NULL, labels = NULL)
+
+m <- 0.4
+ggsave(
+  filename = file.path(out_dir, "correlations.svg"), 
+  plot = cor_panel_plot,
+  width = m*3*25, height = m*2*25, units = "cm"
+)
+
+
+# hh2 <- round(hh[,1:2], 2)
+# mus <- round(colMeans(hh2), 2)
+# knitr::kable(hh2, format = "pipe", digits = 2)
+# hh3 <- cbind(hh2, 
+#              "$(Grade - \\bar{Grade})$" = hh2[, 1] - mean(hh2[, 1]), 
+#              "$(Hours - \\bar{Hours})$" = hh2[, 2] - mean(hh2[, 2]))
+# knitr::kable(hh3, format = "pipe", digits = 2)
+# hh4 <- cbind(hh3,
+#              "$(Grade - \\bar{Grade})^2$" = hh3[, 3]^2,
+#              "$(Hours - \\bar{Hours})^2$" = hh3[, 4]^2)
+# knitr::kable(hh4, format = "pipe", digits = 2)
+# hh5 <- cbind(hh4,
+#              "$(Grade - \\bar{Grade})\\times(Hours - \\bar{Hours})$" = hh4[, 3] * hh4[, 4])
+# knitr::kable(hh4, format = "pipe", digits = 2)
+
+hh2 <- round(hh[,1:2], 2)
+colnames(hh2) <- c("$y$", "$x$")
+# mus <- round(colMeans(hh2), 2)
+mus <- round(colMeans(studentdata[, 1:2]), 1)
+knitr::kable(hh2, format = "pipe", digits = 2)
+hh3 <- cbind(hh2,
+             "$(y - \\bar{y})$" = hh2[, 1] - mus[1],
+             "$(x - \\bar{x})$" = hh2[, 2] - mus[2])
+knitr::kable(hh3, format = "pipe", digits = 2)
+hh4 <- cbind(hh3,
+             "$(y - \\bar{y})^2$" = hh3[, 3]^2,
+             "$(x - \\bar{x})^2$" = hh3[, 4]^2)
+knitr::kable(hh4, format = "pipe", digits = 2)
+hh5 <- cbind(hh4,
+             "$(y - \\bar{y})\\times(x - \\bar{x})$" = hh4[, 3] * hh4[, 4])
+knitr::kable(hh5, format = "html", digits = 2)
+
+
+cijfer.uren <- lm(Grade ~ Hours, studentdata)
+uren.cijfer <- lm(Hours ~ Grade, studentdata)
+round(coef(cijfer.uren), 1)
+round(coef(uren.cijfer), 1)
+
+round(with(studentdata, cor(Grade, Hours)), 2)
+round(with(studentdata, cov(Grade, Hours)), 2)
+
+studentdataZ <- studentdata |> mutate(
+  GradeZ = scale(Grade),
+  HoursZ = scale(Hours)
+)
+cijfer.urenZ <- lm(GradeZ ~ HoursZ, studentdataZ)
+
+
+n <- nrow(studentdata)
+with(studentdata, mean(scale(Grade) * scale(Hours)) * (n / (n - 1)))
+
+
+geom_segment()
+base + y_linreg + points
+
+
+cijfer.uren
+ggplot2::geom_errorbar()
+
+reg_recap <- base + y_linreg + points +
+  geom_segment(x = 1, y = 1, xend = -.35, yend = 2.5, arrow = arrow(length = unit(0.4,"cm"))) +
+  geom_text(x = 1, y = 1, label = "Intercept", hjust = 0, vjust = 1) +
+  geom_text(x = 7.5, y = 7, label = "Slope", hjust = 0.5, vjust = 1)
+# TODO: add braces!
+reg_recap
+
+ggsave(
+  filename = file.path(out_dir, "reg_recap.svg"), 
+  plot = reg_recap, width = 25, height = 25, units = "cm"
+)
+
+
+
 
 preds_ols <- tibble(
   r = seq(0, 5, .01),
