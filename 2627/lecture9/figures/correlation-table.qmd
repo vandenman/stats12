@@ -1,0 +1,40 @@
+<table>
+<thead><tr>
+<th style="text-align:right;"> $y$ </th>
+   <th style="text-align:right;"> $x$ </th>
+   <th style="text-align:right;" class="fragment" data-fragment-index="1"> $(y - \bar{y})$ </th>
+   <th style="text-align:right;" class="fragment" data-fragment-index="1"> $(x - \bar{x})$ </th>
+   <th style="text-align:right;" class="fragment" data-fragment-index="2"> $(y - \bar{y})^2$ </th>
+   <th style="text-align:right;" class="fragment" data-fragment-index="2"> $(x - \bar{x})^2$ </th>
+   <th style="text-align:right;" class="fragment" data-fragment-index="5"> $(y - \bar{y})\times(x - \bar{x})$ </th>
+  </tr></thead>
+<tbody>
+<tr>
+<td style="text-align:right;"> 7 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="1"> 1 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="1"> 2 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="2"> 1 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="2"> 4 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="5"> 2 </td>
+  </tr>
+<tr>
+<td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="1"> -2 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="1"> -1 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="2"> 4 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="2"> 1 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="5"> 2 </td>
+  </tr>
+<tr>
+<td style="text-align:right;"> 7 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="1"> 1 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="1"> -1 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="2"> 1 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="2"> 1 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="5"> -1 </td>
+  </tr>
+</tbody>
+</table>

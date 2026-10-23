@@ -19,6 +19,8 @@ format:
             <script src="../common_resources/components/regression.js"></script>
             <link rel="stylesheet" href="../common_resources/components/variance-demo.css">
             <script src="../common_resources/components/variance-demo.js"></script>
+            <link rel="stylesheet" href="../common_resources/components/standardized-regression.css">
+            <script src="../common_resources/components/standardized-regression.js"></script>
 filters:
   - reveal-auto-agenda
 auto-agenda:
@@ -28,6 +30,27 @@ auto-agenda:
 ---
 
 # Recap Linear Regression
+
+
+## Grades vs. Hours Studied
+
+![](figures/reg_recap_1.svg){fig-align="center"}
+
+## Grades vs. Hours Studied
+
+![](figures/reg_recap_2.svg){fig-align="center"}
+
+## Grades vs. Hours Studied
+
+![](figures/reg_recap_3.svg){fig-align="center"}
+
+## Grades vs. Hours Studied
+
+![](figures/reg_recap_4.svg){fig-align="center"}
+
+## Grades vs. Hours Studied
+
+![](figures/reg_recap_5.svg){fig-align="center"}
 
 ## Recap
 
@@ -50,7 +73,7 @@ $$
 
 . . .
 
-Or in general,
+In general,
 
 $$
 \underbrace{y}_{\substack{\text{outcome variable}\\\text{dependent variable}}}
@@ -59,34 +82,19 @@ $$
 +
 \underbrace{b}_{\text{slope}}
 \times
-\underbrace{x}_{\substack{\text{predictor variable}\\\text{independent variable}}}
+\underbrace{x}_{\substack{\text{predictor variable}\\\text{independent variable}}} +
+\underbrace{\res}_{\substack{\text{residual}}}
 $$
 
 . . .
 
-- $a$, the intercept, where the line crosses the $y$-axis.
-  + $a$ is the predicted value when $x = 0$.
-- $b$, the slope, how steep the line increases or decreases
-  + $y$ increase by $b$ when $x$ increases by 1.
-
-## Grades vs. Hours Studied
-
-![](figures/plot_1.svg){fig-align="center"}
-
-## Grades vs. Hours Studied
-
-![](figures/reg_recap.svg){fig-align="center"}
-
-<!--
-TODO: put here the grades figure that repeats each of these thing!
-Add annotations to the plot about intercept and slope!
-TODO; figure is incomplete braces are missing!
-also the font is hideous?
- -->
+- $a$, the intercept, is the predicted value when $x = 0$.
+- $b$, the slope, describes how steep the line increases or decreases.
+  + $\hat{y}$ increases by $b$ when $x$ increases by 1.
 
 ## Recap
 
-$\hat{y}_i = a + b \times x_i$
+$\hat{y}_i = a + b \times x_i, \qquad \res_i = y_i - \hat{y}_i$
 
 Symbol         | Interpretation
 -------------- | -----------------------------------------------------
@@ -95,11 +103,7 @@ $\hat{y}_i$    | Prediction for individual $i$'s score on dependent variable $y$
 $a$            | Coefficient, intercept of the regression line
 $b$            | Coefficient, slope of the regression line
 $x_i$          | Individual $i$'s score on independent variable $x$
-$\res_i$       | Difference between prediction and observation for individual $i$
-
-## Grades vs. Hours Studied
-
-![](figures/plot_1.svg){fig-align="center"}
+$\res_i$       | Observed minus predicted outcome for individual $i$
 
 ## Grades vs. Hours Studied
 
@@ -107,9 +111,7 @@ We found $a = 2.9$ and $b = 0.8$.
 
 . . .
 
-So the general equation: $\hat{y} = a + b \times x$
-
-Becomes:
+So our equation becomes:
 
 $$
 \widehat{\mathrm{Grade}} = 2.9 + 0.8 \times \text{Hours studied}
@@ -117,89 +119,102 @@ $$
 
 ## Grades vs. Hours Studied
 
-The first six observations:
+::::: {.r-stack}
 
-| Grade| Hours|
-|-----:|-----:|
-|  8.08|  6.53|
-|  4.72|  3.35|
-|  8.78|  6.66|
-|  8.21|  6.54|
-|  6.47|  4.83|
-|  5.17|  0.92|
+::: {.fragment .fade-out fragment-index=1}
+The first three observations:
+:::
 
-## Grades vs. Hours Studied
-
+:::: {.fragment .fade-in fragment-index=1}
+::: {.fragment .fade-out fragment-index=3}
 The predictions are
 
 $$
 \widehat{\mathrm{Grade}} = 2.9 + 0.8 \times \text{Hours studied}
 $$
+:::
+::::
 
-| Grade| Hours| $\widehat{\mathrm{Grade}}$ |
-|-----:|-----:|----:|
-|  8.08|  6.53| 8.12|
-|  4.72|  3.35| 5.58|
-|  8.78|  6.66| 8.23|
-|  8.21|  6.54| 8.14|
-|  6.47|  4.83| 6.76|
-|  5.17|  0.92| 3.64|
-
-## Grades vs. Hours Studied
-
+:::: {.fragment .fade-in fragment-index=3}
+::: {.fragment .fade-out fragment-index=5}
 The errors are
 
 $$
-\res = \mathrm{Grade} - \widehat{\mathrm{Grade}} = \mathrm{Grade} - (2.9 + 0.8 \times \text{Hours studied})$$
-
-| Grade| Hours| $\widehat{\mathrm{Grade}}$ | $\res$|
-|-----:|-----:|----:|-----:|
-|  8.08|  6.53| 8.12| -0.04|
-|  4.72|  3.35| 5.58| -0.86|
-|  8.78|  6.66| 8.23|  0.55|
-|  8.21|  6.54| 8.14|  0.07|
-|  6.47|  4.83| 6.76| -0.29|
-|  5.17|  0.92| 3.64|  1.54|
-
-## Grades vs. Hours Studied
-
-The Sum of Squared Errors (SSE) is
-
+\res = \mathrm{Grade} - \widehat{\mathrm{Grade}}
 $$
-\mathrm{SSE} = \sum_{i}^N\res_i^2 = (-0.04)^2 + (-0.86)^2  + 0.55^2 + \dots = 84.53
-$$
-
-| Grade| Hours| $\widehat{\mathrm{Grade}}$ | $\res$|
-|-----:|-----:|----:|-----:|
-|  8.08|  6.53| 8.12| -0.04|
-|  4.72|  3.35| 5.58| -0.86|
-|  8.78|  6.66| 8.23|  0.55|
-|  8.21|  6.54| 8.14|  0.07|
-|  6.47|  4.83| 6.76| -0.29|
-|  5.17|  0.92| 3.64|  1.54|
-
-::: footer
-
-The sum of squared residuals are computed on all 92 observations, not only those in the table
-
 :::
+::::
+
+::: {.fragment .fade-in fragment-index=5}
+The Sum of Squared Errors (SSE) for these observations is:
+
+$$
+\mathrm{SSE} = \sum_{i=1}^3 \res_i^2
+= 0.8^2 + 0.3^2 + (-0.6)^2 = 1.09
+$$
+:::
+
+:::::
+
+<table>
+<thead><tr>
+<th style="text-align:right;"> $\mathrm{Grade}$ </th>
+   <th style="text-align:right;"> $\mathrm{Hours}$ </th>
+   <th style="text-align:right;" class="fragment" data-fragment-index="2"> $\widehat{\mathrm{Grade}}$ </th>
+   <th style="text-align:right;" class="fragment" data-fragment-index="4"> $\res$ </th>
+  </tr></thead>
+<tbody>
+<tr>
+<td style="text-align:right;"> 6.9 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="2"> 6.1 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="4"> 0.8 </td>
+  </tr>
+<tr>
+<td style="text-align:right;"> 7.2 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="2"> 6.9 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="4"> 0.3 </td>
+  </tr>
+<tr>
+<td style="text-align:right;"> 7.1 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="2"> 7.7 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="4"> -0.6 </td>
+  </tr>
+</tbody>
+</table>
 
 ## Other regression lines
 
+
 {{< include ../common_resources/components/regression.qmd >}}
+
+::: {.notes}
+
+Before moving the sliders, ask: "If I make the slope much steeper, what do you predict will happen to the sum of squared errors?"
+
+:::
 
 ## Recap
 
-1. The OLS finds $a$ and $b$ that minimize the squared error.
+1. The Ordinary Least Squares finds $a$ and $b$ that minimize the SSE.
 2. The mean is the best predictor when there's no further relevant information.
-3. If we have information about other variables that are associated with the outcome, these can improve your predictions.
+3. If we have information about other variables that are associated with the outcome, these can improve the predictions.
+
+. . .
+
+Goals for today:
+
+- How much better are the predictions than simply using the mean?
+- How does this relate to correlation?
+<!-- something else? -->
 
 # Sums of Squares
 
 ## Prediction error
 
-- The regression line gives the "least prediction error" on average
-- We find it using Ordinary Least Squares
+- OLS finds the straight line with the smallest sum of squared residuals in this sample.
 - Literally, this uses "sums of squares"
     + e.g., $\res_1^2 + \res_2^2 +\dots + \res_N^2$
 
@@ -227,11 +242,19 @@ Last week
 
 This is not a coincidence!
 
-::: {.fragment fragment-index=4}
+<ul>
+  <li class="fragment fade-in" data-fragment-index="4">
+  Sum of the positive prediction errors: [36.25]{style="color: #00FF7F;"}
+  </li>
+  <li class="fragment fade-in" data-fragment-index="5">
+  Sum of the negative prediction errors: [-36.25]{style="color: #FFD700;"}
+  </li>
+  <li class="fragment fade-in" data-fragment-index="6">
+   Sum of all prediction errors: [36.25]{style="color: #00FF7F;"}+[-36.25]{style="color: #FFD700;"} = 0
+  </li>
+</ul>
 
-- Sum of the positive prediction errors: [36.25]{style="color: #00FF7F;"}
-- Sum of the negative prediction errors: [-36.25]{style="color: #FFD700;"}
-- Sum of all prediction errors: [36.25]{style="color: #00FF7F;"}+[-36.25]{style="color: #FFD700;"} = 0
+::: {.fragment fragment-index=7}
 
 The OLS by _design_ makes these equal
 
@@ -264,7 +287,7 @@ Square the errors, so the negatives don't cancel against the positives.
 
 This means:
 
-- A Sum of Squared Errors (SSE) is always positive.
+- A Sum of Squared Errors (SSE) is always zero or positive.
 - A Sum of Squared Errors (SSE) of zero means predictions are perfect.
 - Minimizing SSE means finding the regression line that makes the "best" predictions.
 
@@ -281,7 +304,7 @@ The OLS gives us the "best" regression line for the outcome given the predictor.
 
 . . .
 
-We fix the scale by compare the sum of squared errors to a baseline.
+We fix the scale by comparing the sum of squared errors to a baseline.
 
 ## What should the baseline model be?
 
@@ -319,6 +342,9 @@ $$
 \end{align}
 $$
 
+. . .
+
+This is the same equation as for the SSE, except we use the predictions from the null model.
 
 :::
 
@@ -349,24 +375,29 @@ So TSS is the _variance_ of $y$ times $N - 1$
 
 ## Regression Sum of Squares
 
-How much variation has the regression explained?
+How much did our predictions improve?
 
 This is the reduction in the sum of squared errors, relative to the null model:
 
 $$
-\underbrace{\text{RSS}}_{\substack{\text{Regression Sum of Squares}}} =
-\underbrace{\text{TSS}}_{\substack{\text{Total Sum of Squares}}} -
-\underbrace{\text{SSE}}_{\substack{\text{Sum of Squared Errors}}}
+\underbrace{\RSS}_{\substack{\text{Regression Sum of Squares}}} =
+\underbrace{\TSS}_{\substack{\text{Total Sum of Squares}}} -
+\underbrace{\SSE}_{\substack{\text{Sum of Squared Errors}}}
 $$
 
-<!-- This is identical to the difference between individual predctions and the mean:
+. . .
+
+We found $\TSS = 255.82$ and $\SSE = 84.18$.
 
 $$
-\underbrace{\sum_{i=1}^N(\hat{y}_i - \bar{y})^2}_{\substack{\text{RSS}}} =
-\underbrace{\sum_{i=1}^N(y_i - \bar{y})^2}_{\substack{\text{TSS}}} -
-\underbrace{\sum_{i=1}^N(y_i - \hat{y}_i)^2}_{\substack{\text{SSE}}}
+RSS = 255.82 - 84.18 = 171.64
 $$
- -->
+
+<!--
+TODO: the bridge here is not clear yet!
+The formulas are just out of place
+the story should immediately go to the Explain variance!
+-->
 
 ## Three sums of squares
 
@@ -376,20 +407,26 @@ $$
 
 ![](figures/three_ss.svg){fig-align="center"}
 
+::: {.notes}
+
+The RSS bars connect the mean-only prediction to the regression prediction. Square these distances and add them.
+
+:::
+
 ## Three sums of squares
 
-Name | Formula                                 | Also
------|-----------------------------------------|---------------
-SSE  | $\sum_{i=1}^N{(y_i - \hat{y}_i)^2}$     | SST - RSS
-SST  | $\sum_{i=1}^N{(y_i - \bar{y})^2}$       | RSS + SSE
-RSS  | $\sum_{i=1}^N{(\hat{y}_i - \bar{y})^2}$ | SST - SSE
+Name | Formula                                    | Also
+-----|--------------------------------------------|---------------
+$\SSE$  | $\sum_{i=1}^N{(y_i - \hat{y}_i)^2}$     | $\TSS - \RSS$
+$\TSS$  | $\sum_{i=1}^N{(y_i - \bar{y})^2}$       | $\RSS + \SSE$
+$\RSS$  | $\sum_{i=1}^N{(\hat{y}_i - \bar{y})^2}$ | $\TSS - \SSE$
 
 
 # Explained Variance
 
 ## How can we use the RSS?
 
-The RSS is has the same problems as SSE:
+The RSS has the same problems as SSE:
 
 - it changes with sample size
 - it depends on the units
@@ -398,7 +435,7 @@ The RSS is has the same problems as SSE:
 
 However,
 
-- Suppose the predictors explains nothing on top of the mean
+- Suppose the predictor explains nothing on top of the mean
     + then $\SSE = \TSS$, so $\RSS = \TSS - \SSE = 0$.
 - Suppose the predictor explains the data perfectly
     + then $\SSE = 0$, so $\RSS = \TSS - \SSE = \TSS$.
@@ -417,7 +454,7 @@ $$
 
 . . .
 
-- Suppose the predictors explains nothing on top of the mean
+- Suppose the predictor explains nothing on top of the mean
     + then $\SSE = \TSS$, so $\RSS = \TSS - \SSE = 0$.
     + $R^2 = 0 / \TSS = 0$.
 - Suppose the predictor explains the data perfectly
@@ -430,7 +467,7 @@ $R^2$ lies between 0 (nothing explained) and 1 (everything explained).
 
 ## Explained Variance
 
-$R^2$ is also called _explained variance_.
+$R^2$ is also called the _proportion of explained variance_.
 
 . . .
 
@@ -465,23 +502,43 @@ So $R^2$ is the proportion of the variance in $y$ that is explained by the regre
 
 For the Grades example, we had
 
-- $\SSE = 255.82$
-- $\SSE = 171.64$
+- $\TSS = 255.82$
+- $\RSS = 171.64$
 
 So $R^2 = \frac{171.64}{255.82} = 0.67$
 
+. . .
+
+In this sample, hours studied explains 67% of the variance in the grades.
+
 ## Explained Variance: Demo
+
+::: {.notes}
+
+- Confirm the TSS to variance relation
+
+Q: "If I increase the mean of y, while keeping its variance and R-squared the same, which sums of squares will change?"
+
+Wait!
+
+Q: "If I increase R-squared while keeping the variance of y the same, what happens to TSS, SSE, and RSS?"
+
+:::
 
 {{< include ../common_resources/components/variance-demo.qmd >}}
 
 ## Conclusions:
 
-- The mean of $y$ does not influence TSS, SSE, or RSS.
+- Changing the mean of $y$ does not change TSS, SSE, or RSS.
 - An explained variance ($R^2$) of 0 means the slope of the regression is zero $(b = 0)$.
 - An explained variance ($R^2$) above 0 doesn't tell us much about the slope of the regression
     * other than that the slope is not zero.
 - An explained variance ($R^2$) of 1 tells us all observations lie exactly on the regression line.
 
+
+<!--
+Adding the same constant to every observation does not change TSS, SSE, RSS, or $R^2$.
+ -->
 
 
 <!-- # Wooclap -->
@@ -492,13 +549,13 @@ So $R^2 = \frac{171.64}{255.82} = 0.67$
 
 ## Correlation
 
-A standardized measure of the strength of linear association between two continuous variables
+A standardized measure of the direction and strength of a linear association between two continuous variables
 
 - Standardized: ranges from $[-1,\; 1]$
 - Sample correlation: $r$
 - Population correlation: $\rho$
 - $r = -1$: Perfect negative association
-- $r =  0$: No association
+- $r =  0$: No linear association
 - $r =  1$: Perfect positive association
 
 ## Correlation
@@ -529,94 +586,64 @@ $$
 
 ## Correlation: Computation Example {.small-slide}
 
-::: {.r-stack}
+::::: {.r-stack}
 
-::: {.fragment .fade-out fragment-index=3}
-- $\mathrm{Grade} = y$. $\;\overline{\mathrm{Grade}} = \bar{y} = 6.1$
-- $\mathrm{Hours} = x$. $\;\overline{\mathrm{Hours}} = \bar{x} = 4$
+::: {.fragment .fade-out fragment-index=0}
+Suppose we have three observations
 :::
 
+:::: {.fragment .fade-in fragment-index=0}
+::: {.fragment .fade-out fragment-index=3}
+- $\mathrm{Grade} = y$. $\;\bar{y} = (7 + 4 + 7)/3 = 6$
+- $\mathrm{Hours} = x$. $\;\bar{x} = (6 + 3 + 3)/3 = 4$
+:::
+::::
 
-::: {.fragment .fade-in fragment-index=3}
+
+:::: {.fragment .fade-in fragment-index=3}
+::: {.fragment .fade-out fragment-index=6}
 <ul>
-  <li>For $s_x^2$, sum $(x-\bar{x})^2$ and divide by $n-1$.</li>
-  <li class="fragment fade-in" data-fragment-index="5">
-    For $s_{xy}$, sum $(y-\bar{y})(x-\bar{x})$ and divide by $n-1$.
+  <li>For each variance, sum the squared deviations and divide by $n-1 = 2$.</li>
+  <li class="fragment fade-in" data-fragment-index="4">
+    $s_x^2 = (4 + 1 + 1)/2 = 3$, and $s_y^2 = (1 + 4 + 1)/2 = 3$.
   </li>
 </ul>
 :::
+::::
 
+:::: {.fragment .fade-in fragment-index=6}
+::: {.fragment .fade-out fragment-index=7}
+<ul>
+  <li>
+    For $s_{xy}$, sum the products and divide by $n-1 = 2$: $s_{xy} = (2 + 2 - 1)/2 = 1.5$.
+  </li>
+</ul>
+:::
+::::
+
+:::: {.fragment .fade-in fragment-index=7}
+::: {.fragment .fade-out fragment-index=8}
+With $s_x = s_y = \sqrt{3}$ and $s_{xy} = 1.5$, the correlation is
+
+$$
+r = \frac{s_{xy}}{s_x \times s_y}
+= \frac{1.5}{\sqrt{3}\times\sqrt{3}}
+= 0.50
+$$
+:::
+::::
+
+::: {.fragment .fade-in fragment-index=8}
+Using all 92 original observations, $s_x = 1.77$, $s_y = 1.68$, and $s_{xy} = 2.43$.
+
+$$
+r = \frac{s_{xy}}{s_x \times s_y} = 0.82
+$$
 :::
 
-<table>
- <thead>
-  <tr>
-   <th style="text-align:right;"> $y$ </th>
-   <th style="text-align:right;"> $x$ </th>
-   <th class="fragment" data-fragment-index="1" style="text-align:right;"> $(y - \bar{y})$ </th>
-   <th class="fragment" data-fragment-index="1" style="text-align:right;"> $(x - \bar{x})$ </th>
-   <th class="fragment" data-fragment-index="2" style="text-align:right;"> $(y - \bar{y})^2$ </th>
-   <th class="fragment" data-fragment-index="2" style="text-align:right;"> $(x - \bar{x})^2$ </th>
-   <th class="fragment" data-fragment-index="4" style="text-align:right;"> $(y - \bar{y})\times(x - \bar{x})$ </th>
-  </tr>
- </thead>
-<tbody>
-  <tr>
-   <td style="text-align:right;"> 8.08 </td>
-   <td style="text-align:right;"> 6.53 </td>
-   <td class="fragment" data-fragment-index="1" style="text-align:right;"> 1.98 </td>
-   <td class="fragment" data-fragment-index="1" style="text-align:right;"> 2.53 </td>
-   <td class="fragment" data-fragment-index="2" style="text-align:right;"> 3.92 </td>
-   <td class="fragment" data-fragment-index="2" style="text-align:right;"> 6.40 </td>
-   <td class="fragment" data-fragment-index="4" style="text-align:right;"> 5.01 </td>
-  </tr>
-  <tr>
-   <td style="text-align:right;"> 4.72 </td>
-   <td style="text-align:right;"> 3.35 </td>
-   <td class="fragment" data-fragment-index="1" style="text-align:right;"> -1.38 </td>
-   <td class="fragment" data-fragment-index="1" style="text-align:right;"> -0.65 </td>
-   <td class="fragment" data-fragment-index="2" style="text-align:right;"> 1.90 </td>
-   <td class="fragment" data-fragment-index="2" style="text-align:right;"> 0.42 </td>
-   <td class="fragment" data-fragment-index="4" style="text-align:right;"> 0.90 </td>
-  </tr>
-  <tr>
-   <td style="text-align:right;"> 8.78 </td>
-   <td style="text-align:right;"> 6.66 </td>
-   <td class="fragment" data-fragment-index="1" style="text-align:right;"> 2.68 </td>
-   <td class="fragment" data-fragment-index="1" style="text-align:right;"> 2.66 </td>
-   <td class="fragment" data-fragment-index="2" style="text-align:right;"> 7.18 </td>
-   <td class="fragment" data-fragment-index="2" style="text-align:right;"> 7.08 </td>
-   <td class="fragment" data-fragment-index="4" style="text-align:right;"> 7.13 </td>
-  </tr>
-  <tr>
-   <td style="text-align:right;"> 8.21 </td>
-   <td style="text-align:right;"> 6.54 </td>
-   <td class="fragment" data-fragment-index="1" style="text-align:right;"> 2.11 </td>
-   <td class="fragment" data-fragment-index="1" style="text-align:right;"> 2.54 </td>
-   <td class="fragment" data-fragment-index="2" style="text-align:right;"> 4.45 </td>
-   <td class="fragment" data-fragment-index="2" style="text-align:right;"> 6.45 </td>
-   <td class="fragment" data-fragment-index="4" style="text-align:right;"> 5.36 </td>
-  </tr>
-  <tr>
-   <td style="text-align:right;"> 6.47 </td>
-   <td style="text-align:right;"> 4.83 </td>
-   <td class="fragment" data-fragment-index="1" style="text-align:right;"> 0.37 </td>
-   <td class="fragment" data-fragment-index="1" style="text-align:right;"> 0.83 </td>
-   <td class="fragment" data-fragment-index="2" style="text-align:right;"> 0.14 </td>
-   <td class="fragment" data-fragment-index="2" style="text-align:right;"> 0.69 </td>
-   <td class="fragment" data-fragment-index="4" style="text-align:right;"> 0.31 </td>
-  </tr>
-  <tr>
-   <td style="text-align:right;"> 5.17 </td>
-   <td style="text-align:right;"> 0.92 </td>
-   <td class="fragment" data-fragment-index="1" style="text-align:right;"> -0.93 </td>
-   <td class="fragment" data-fragment-index="1" style="text-align:right;"> -3.08 </td>
-   <td class="fragment" data-fragment-index="2" style="text-align:right;"> 0.86 </td>
-   <td class="fragment" data-fragment-index="2" style="text-align:right;"> 9.49 </td>
-   <td class="fragment" data-fragment-index="4" style="text-align:right;"> 2.86 </td>
-  </tr>
-</tbody>
-</table>
+:::::
+
+{{< include figures/correlation-table.qmd >}}
 
 ## Correlation: Computation
 
@@ -652,41 +679,79 @@ $$
 }
 $$
 
+## Relation between correlation and regression
+
+
+$$
+\underbrace{b}_{\substack{\text{Slope}}} =
+\underbrace{r_{xy}}_{\substack{\text{Correlation between}\\\text{$x$ and $y$}}}
+\times
+\frac{
+\overbrace{s_{y}}^{\substack{\text{Standard deviation}\\\text{of $y$}}}
+}{
+\underbrace{s_{x}}_{\substack{\text{Standard deviation}\\\text{of $x$}}}
+}
+$$
+
 
 ## Correlation
 
-Correlation and regression coefficients are different ways to standardize covariance
+Correlation and regression slope both use covariance, but divide it by different quantities.
 
 * Correlation is standardized with respect to $x$ and $y$.
-    + Correlation of $x$ with $y$ is the same as correlation of $y$ with $x$.
     + Correlation coefficient has no unit.
-* Regression coefficient is standardized only with respect to $x$.
-    + the units are those of $y$: a 1-step increase in $x$ leads to $b$ steps increase in $\hat{y}$.
+    + Correlation of $x$ with $y$ is the same as correlation of $y$ with $x$.
+* Regression coefficient is unstandardized.
+    + the parameters have units.
     + it is asymmetric. The regression slope of $x$ on $y$ is different from $y$ on $x$.
+
+. . .
+
+- slope = grade points per hour studied
+- intercept = grade points.
 
 <!-- TODO: double check the unit thing -->
 <!--
 isn't it that the unit of b is 1 the unit of x times the unit of y divided by the square of the unit of x? so then it's the unit of y over the unit of x?
 -->
 
-## Regression is assymetric
+## Regression is asymmetric
 
-- The regression of Hours studies on Grade does not give the same results as the regression of Grade on Hours studied.
+- The regression of Hours studied on Grade does not give the same results as the regression of Grade on Hours studied.
     * unlike the correlation
 
 . . .
 
-For $\widehat{\mathrm{Grade}} = a + b\times\text{Hours studied}$ we found $a = 2.9$, $b = 0.8$.
+For $\widehat{\mathrm{Grade}} = a + b\times\text{Hours studied}$, we found $a = 2.9$, $b = 0.8$.
 
 . . .
 
-For $\widehat{\text{Hours studied}} = a + b\times\mathrm{Grade}$ we'd find $a = -1.2$, $b = 0.9$.
+For $\widehat{\text{Hours studied}} = a + b\times\mathrm{Grade}$, we'd find $a = -1.2$, $b = 0.9$.
 
 . . .
 
 In both cases, the correlation is $r = 0.82$.
 
-<!-- TODO: where and how do we connect this to R^2? -->
+## Correlation and explained variance
+
+We've seen that the regression of Grade on Hours had $R^2= 0.67$.
+
+What does this tell us about the correlation?
+
+. . .
+
+$$
+r^2 = R^2
+$$
+
+Therefore:
+
+$$
+\begin{align}
+r &= +\sqrt{R^2}, \qquad \text{if the slope is positive}\\
+r &= -\sqrt{R^2}, \qquad \text{if the slope is negative}
+\end{align}
+$$
 
 ## Correlation -  from Z-scores
 
@@ -714,16 +779,19 @@ So we can either:
 
 For regression we can do the same!
 
+::: {.notes}
+
+mention explicitly that the Z-scores have mean 0 and standard deviation 1.
+
+:::
 
 # Standardized Regression
 
 ## Standardized Regression Coefficients
 
-Correlation Standardized by dropping the units between both variables,
+Regression slopes depend on the units in which we measure $x$ and $y$.
 
-Standardized Regression Coefficients does the same
-
-<!-- TODO: Why do you want to do this? -->
+Can we express regression coefficients in a way that does not depend on measurement units?
 
 . . .
 
@@ -738,44 +806,63 @@ $$
 \hat{Z}_\mathrm{Grade} = a + b\times Z_{\text{Hours studied}}
 $$
 
-. . .
+
+## Standardized Regression Coefficients
 
 We obtain $a = 0$ and $b = 0.82$
 
 . . .
 
-This equals the correlation!
+The intercept is always 0.
 
-## Standardized Regression Coefficients
+. . .
+
+The slope equals the correlation we found before!
+
+. . .
 
 - In bivariate linear regression, the standardized regression slope equals the correlation coefficient.
-    + This is no longer true when there are more than two predictors.
-- The intercept is always 0.
+    + This is no longer true when there is more than one predictor.
+
+. . .
+
+Interpretation: A student whose study time is _one standard deviation higher_ has a predicted grade _0.82 standard deviations higher_.
+
+## Demo: Units and Standardized Regression
 
 
-## Demo:
+{{< include ../common_resources/components/standardized-regression.qmd >}}
 
-Fixed:
+::: {.notes}
 
-N = 50
+Q: "If I double the standard deviation of x while keeping the correlation and everything else the same, what happens to the original slope? What happens to the standardized slope?"
 
-knobs:
+Give students time to think and explain their predictions, then change SD x to check. Follow up: "Will R-squared change?"
 
-intercept
-slope
-Standardized intercept
-Standardized slope
+:::
+## What did the demo show?
 
-outputs:
+- Changing the means or measurement units can change the original regression coefficients.
+- These changes leave the correlation and $R^2$ unchanged.
+- After converting both variables to z-scores, the intercept is 0 and the slope equals $r$.
 
-right of the knobs:
-computed Correlation and R^2
+## Summary
 
-below the knobs: two-panel scatterplot with regression line. Left the unstandardized one, right the standardized one.
+- TSS: total variation in $y$ around its mean.
+- SSE: variation left unexplained by the regression.
+- RSS: variation explained by the regression: $\RSS = \TSS - \SSE$.
+- $R^2 = \RSS / \TSS$: the proportion of variance explained.
+- $r$: the direction and strength of the linear association.
 
-# Data Example
+For simple OLS regression with an intercept: $R^2 = r^2$, and the standardized slope equals $r$.
 
-## Data Example
+## Next Week
 
-This is getting a bit much!
+Testing and checking a regression model
+
+- Test regression coefficients using $t$-tests.
+- Test the regression model using the $F$-test in the ANOVA table.
+- Check linearity, normality of residuals, homoscedasticity, and independence.
+- Use SPSS examples to interpret and report the results.
+
 

@@ -34,6 +34,11 @@ $font-family-sans-serif: Arial, Helvetica, sans-serif;
 
 // Keep rules deliberately layout-neutral.
 
+// Preserve the capitalization written in table headers.
+.reveal table th {
+  text-transform: none;
+}
+
 .reveal a:hover {
   color: $tu-marine;
 }
@@ -113,4 +118,16 @@ $font-family-sans-serif: Arial, Helvetica, sans-serif;
   text-align: left;
   margin-left: 1em;
   margin-right: 0;
+}
+
+/* Keep stacked text aligned with normal slide content. */
+.reveal .r-stack > div {
+  margin: 0;
+  width: 100%;
+  text-align: left;
+}
+
+/* Preserve row shading on cells revealed as fragments. */
+.reveal table tbody tr:nth-child(even) > td {
+  background-color: $table-stripe-bg;
 }

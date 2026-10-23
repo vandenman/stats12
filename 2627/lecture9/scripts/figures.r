@@ -6,6 +6,30 @@ library(patchwork)
 out_dir <- "lecture9/figures"
 if (!dir.exists(out_dir)) dir.create(out_dir)
 
+fragment_kable <- function(obj, steps, digits = 2, ...) {
+  stopifnot(length(steps) == ncol(obj))
+  
+  html <- knitr::kable(
+    obj, format = "html", digits = digits,
+    row.names = FALSE, ...
+  )
+  doc <- xml2::read_html(as.character(html))
+  table <- xml2::xml_find_first(doc, "//table")
+  
+  for (j in which(!is.na(steps))) {
+    cells <- xml2::xml_find_all(
+      table,
+      sprintf("./thead/tr/th[%d] | ./tbody/tr/td[%d]", j, j)
+    )
+    xml2::xml_set_attr(cells, "class", "fragment")
+    xml2::xml_set_attr(
+      cells, "data-fragment-index", as.character(steps[j])
+    )
+  }
+  
+  knitr::asis_output(as.character(table))
+}
+
 theme_set(
   theme_bw(base_size = 32) +
     theme(geom = element_geom(pointshape = 21, pointsize = 3, fill = scales::alpha("grey", .85)))
@@ -16,6 +40,37 @@ Hours = abs(rnorm(92, 4, 2))
 Grade = abs(3 + (7/9)*Hours)+rnorm(92)
 Grade[Grade > 10] <- 10 - (Grade[Grade > 10] - 10)
 studentdata <- data.frame(Grade=Grade, Hours=Hours)
+
+hh <- head(studentdata[, 1:2])
+# intentionally rounded
+a <- 2.9
+b <- 0.8
+hh$yhat <- a + b * hh$Hours
+hh$resid <- hh$Grade - hh$yhat
+hh0 <- hh
+colnames(hh0) <- c("$\\mathrm{Grade}$", "$\\mathrm{Hours}$", "$\\widehat{\\mathrm{Grade}}$", "$\\res$")
+cat(fragment_kable(hh0, c(NA, NA, 2, 4)))
+
+# Selected observations; round inputs to simplify classroom arithmetic.
+hh <- studentdata[c(9, 26, 87), c("Grade", "Hours")]
+hh[] <- lapply(hh, round, digits = 1)
+
+a <- 2.9
+b <- 0.8
+
+hh$yhat <- a + b * hh$Hours
+hh$resid <- hh$Grade - hh$yhat
+
+hh0 <- hh
+colnames(hh0) <- c(
+  "$\\mathrm{Grade}$",
+  "$\\mathrm{Hours}$",
+  "$\\widehat{\\mathrm{Grade}}$",
+  "$\\res$"
+)
+
+cat(fragment_kable(hh0, c(NA, NA, 2, 4), digits = 1))
+
 
 studentdata <- studentdata |> 
   mutate(Special = case_when(
@@ -34,6 +89,10 @@ hh$yhat <- a + b * hh$Hours
 knitr::kable(hh, format = "pipe", digits = 2)
 hh$resid <- hh$Grade - hh$yhat
 knitr::kable(hh, format = "pipe", digits = 2)
+
+hh0 <- hh
+colnames(hh0) <- c("$\\mathrm{Grade}$", "$\\mathrm{Hours}$", "$\\widehat{\\mathrm{Grade}}$", "$\\res$")
+cat(fragment_kable(hh0, c(NA, NA, 2, 4)))
 
 studentdata$yhat  <- a + b * studentdata$Hours
 studentdata$resid <- studentdata$Grade - studentdata$yhat
@@ -146,7 +205,7 @@ base +
 save_figs <- function(..., width = 25, height = 25, units = "cm", .base) {
   for (i in seq_len(...length()))
     ggsave(...elt(i), file = sprintf(.base, i),
-           width = height, height = height, units = units)
+           width = width, height = height, units = units)
 }
 save_figs(
   base + points,
@@ -196,6 +255,8 @@ ggsave(
   width = 3*25, height = 25, units = "cm"
 )
 
+
+
 rhos <- c(.8, .45, .2, -.05, -.3, -.6)
 dfs <- NULL
 for (i in seq_along(rhos)) {
@@ -237,10 +298,11 @@ ggsave(
 #              "$(Grade - \\bar{Grade})\\times(Hours - \\bar{Hours})$" = hh4[, 3] * hh4[, 4])
 # knitr::kable(hh4, format = "pipe", digits = 2)
 
-hh2 <- round(hh[,1:2], 2)
+# Above/above, below/below, opposite signs; rounded for easy arithmetic.
+hh2 <- round(studentdata[c(87, 33, 16), 1:2])
 colnames(hh2) <- c("$y$", "$x$")
 # mus <- round(colMeans(hh2), 2)
-mus <- round(colMeans(studentdata[, 1:2]), 1)
+mus <- colMeans(hh2)
 knitr::kable(hh2, format = "pipe", digits = 2)
 hh3 <- cbind(hh2,
              "$(y - \\bar{y})$" = hh2[, 1] - mus[1],
@@ -253,6 +315,10 @@ knitr::kable(hh4, format = "pipe", digits = 2)
 hh5 <- cbind(hh4,
              "$(y - \\bar{y})\\times(x - \\bar{x})$" = hh4[, 3] * hh4[, 4])
 knitr::kable(hh5, format = "html", digits = 2)
+
+cat(fragment_kable(hh5, c(NA, NA, 1, 1, 2, 2, 5), digits = 1, escape = FALSE))
+writeLines(as.character(fragment_kable(hh5, c(NA, NA, 1, 1, 2, 2, 5), digits = 1, escape = FALSE)),
+           file.path(out_dir, "correlation-table.qmd"))
 
 
 cijfer.uren <- lm(Grade ~ Hours, studentdata)
@@ -281,12 +347,120 @@ base + y_linreg + points
 cijfer.uren
 ggplot2::geom_errorbar()
 
+x_start <- 7.0
+x_end   <- 8.0
+y_start <- predict(cijfer.uren, newdata = data.frame(Hours = x_start))
+y_end   <- predict(cijfer.uren, newdata = data.frame(Hours = x_end))
+slope   <- round(coef(cijfer.uren)[2], 1)
+
+intercept_color <- "dodgerblue4"
+intercept_color_txt <- intercept_color#paste0(intercept_color, 4)
+slope_color <- intercept_color#"orangered4"
+slope_color_txt <- slope_color#paste0(slope_color, 4)
+
+a <- 2
+b <- -2
+residual_var <- 2.5
+x <- runif(50, -2, 2)
+e <- rnorm(50, 0, 1)
+e <- scale(e) * sqrt(residual_var)
+
+# Make errors orthogonal to x and mean zero
+e <- residuals(lm(e ~ x))
+
+# Scale to desired residual variance
+e <- e * sqrt(residual_var / var(e))
+
+y <- a + b * x + e
+lm(y ~ x)
+
+fig <- ggplot(data.frame(x = x, y = y), aes(x = x, y = y)) + 
+  geom_abline(slope = b, intercept = a, color = regressioncol) + 
+  scale_y_continuous(breaks = seq(-6, 6, 2), limits = c(-6, 6)) +
+  geom_point()
+
+
+base <- ggplot(studentdata, aes(x = Hours, y = Grade)) + scales
+
+points <- geom_point()
+
+regressioncol <- "firebrick2"
+y_mean <- geom_hline(yintercept = mean(Grade), linewidth = 2, colour = regressioncol)
+
+
+yoffset <- 0.15
+
 reg_recap <- base + y_linreg + points +
-  geom_segment(x = 1, y = 1, xend = -.35, yend = 2.5, arrow = arrow(length = unit(0.4,"cm"))) +
-  geom_text(x = 1, y = 1, label = "Intercept", hjust = 0, vjust = 1) +
-  geom_text(x = 7.5, y = 7, label = "Slope", hjust = 0.5, vjust = 1)
-# TODO: add braces!
+  
+  geom_segment(x = 1, y = 6.5, xend = 2, yend = 4.5, arrow = arrow(length = unit(0.4,"cm")), color = intercept_color) +
+  annotate("text", x = 1, y = 6.75, label = expression(widehat(Grade) == a + b %*% Hours), hjust = 0.6, vjust = 0, color = intercept_color_txt) +
+  
+  geom_segment(x = 1, y = 1, xend = -.45, yend = 2.5, arrow = arrow(length = unit(0.4,"cm")), color = intercept_color) +
+  annotate("text", x = 1, y = 1, label = "Intercept = a = 2.9", hjust = 0, vjust = 1, color = intercept_color_txt) +
+  
+  geom_segment(x = 8.76, y = 7.6-yoffset, xend = 8.76, yend = 8.5-yoffset, arrow = arrow(length = unit(0.4,"cm")), color = slope_color) +
+  # Horizontal bracket segment (Delta X)
+  geom_segment(aes(x = x_start, y = y_start, xend = x_end, yend = y_start), color = slope_color, linetype = "dashed", linewidth = 0.8, color = slope_color) +
+    
+  # Vertical bracket segment (Delta Y)
+  geom_segment(aes(x = x_end, y = y_start, xend = x_end, yend = y_end), color = slope_color, linetype = "dashed", linewidth = 0.8, color = slope_color) +
+  
+  # Labels using plotmath for mathematical Greek letters (Delta Δ)
+  annotate("text", x = (x_start + x_end) / 2, y = y_start - 0.5, label = "Delta*Hours == 1", parse = TRUE, color = slope_color_txt) +
+  annotate("text", x = x_end + 0.15, y = (y_start + y_end) / 2 - yoffset, label = expression(Delta * widehat(Grade) == b* " = " * 0.8), 
+           parse = TRUE, color = slope_color_txt, hjust = 0) +
+
+  # geom_text(x = 1, y = 1,   label = "Intercept", hjust = 0, vjust = 1) +
+  annotate("text", x = 8.7, y = 7.5 - yoffset, label = "Slope",     hjust = 0.5, vjust = 1, color = slope_color_txt)
+
+
 reg_recap
+
+reg_recap1 <- base + y_linreg + points +
+  geom_segment(x = .5, y = 7.5, xend = 2, yend = 4.5, arrow = arrow(length = unit(0.4,"cm")), color = intercept_color) +
+  annotate("text", x = 1.25, y = 7.6, label = expression(widehat(Grade) == a + b ~ '\u00D7' ~ Hours), hjust = 0.6, vjust = 0, color = intercept_color_txt)# +
+
+reg_recap2 <- reg_recap1 +
+  geom_segment(x = 1, y = 1, xend = 0.05, yend = 2.8, arrow = arrow(length = unit(0.4,"cm")), color = intercept_color) +
+  annotate("text", x = 1, y = 1, label = "Intercept = a = 2.9", hjust = 0, vjust = 1, color = intercept_color_txt)
+  
+slope_x <- 9.45
+yoffset <- 0.35
+
+reg_recap3 <- reg_recap2 +
+  # Horizontal bracket segment (Delta X)
+  annotate("segment", x = x_start, y = y_start, xend = x_end, yend = y_start, linetype = "dashed", linewidth = 0.8, color = slope_color) +
+  
+  # Vertical bracket segment (Delta Y)
+  annotate("segment", x = x_end, y = y_start, xend = x_end, yend = y_end, linetype = "dashed", linewidth = 0.8, color = slope_color) +
+  
+  annotate("text", x = (x_start + x_end) / 2, y = y_start - 0.5, label = "Delta~~Hours == 1", parse = TRUE, color = slope_color_txt) +
+  annotate("text", x = x_end + 0.15, y = (y_start + y_end) / 2 - yoffset, label = expression(Delta ~~ widehat(Grade) == b * " = " * 0.8), 
+           parse = TRUE, color = slope_color_txt, hjust = 0) +
+
+  geom_segment(x = slope_x, y = 7.3-yoffset, xend = slope_x, yend = 8.25 - yoffset, arrow = arrow(length = unit(0.4,"cm")), color = slope_color) +  
+  annotate("text", x = slope_x, y = 7.2 - yoffset, label = "Slope",     hjust = 0.5, vjust = 1, color = slope_color_txt)
+
+reg_recap0 <- base + points
+reg_recap0a <- base + y_linreg + points
+
+save_figs(reg_recap0, reg_recap0a, reg_recap1, reg_recap2, reg_recap3,  .base = file.path(out_dir, "reg_recap_%d.svg"),
+          width = 50)
+
+
+expression(widehat(Grade) == a * + b * Hours)
+
+
+3
+
+ggplot(NULL) +
+  geom_point(aes(x = 0.5, y = 0)) +
+  annotate("text", x = 0.5, y = -0.2, label = expression(paste("x = ", frac(3, 2), " = 1.5"))) +
+  annotate("text", x = 0.5, y = 0.2,  label = "~x == ~frac(3, 2) == ~1.5", parse = T) +
+  annotate("text", x = 0.5, y = -0.4, label = expression({x == frac(3, 2)} == 1.5)) +
+  xlim(-1, 1) +
+  ylim(-1, 1)
+
 
 ggsave(
   filename = file.path(out_dir, "reg_recap.svg"), 
