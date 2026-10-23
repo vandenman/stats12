@@ -1,0 +1,45 @@
+```{=html}
+<div id="variance-demo" class="variance-demo">
+
+<div class="variance-panel">
+
+<div class="variance-controls">
+
+<label class="variance-control">
+<span>Mean of y</span>
+<input data-param="mean" type="range" min="3" max="7" step="0.1" value="6.1">
+<output data-value="mean"></output>
+</label>
+
+<label class="variance-control">
+<span>Variance of y</span>
+<input data-param="variance" type="range" min="0.5" max="4" step="0.1" value="1">
+<output data-value="variance"></output>
+</label>
+
+<label class="variance-control">
+<span>R²</span>
+<input data-param="r2" type="range" min="0" max="1" step="0.01" value="0.5">
+<output data-value="r2"></output>
+</label>
+
+</div>
+
+<div class="variance-results" aria-live="polite">
+
+<div><span>TSS</span><strong data-result="tss"></strong></div>
+<div><span>SSE</span><strong data-result="sse"></strong></div>
+<div><span>RSS</span><strong data-result="rss"></strong></div>
+
+</div>
+
+</div>
+
+<svg></svg>
+
+</div>
+
+<script>
+varianceDemo("#variance-demo");
+</script>
+```

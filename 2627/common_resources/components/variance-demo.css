@@ -1,0 +1,23 @@
+.variance-demo {
+  display: grid;
+  grid-template-columns: 27% minmax(0, 1fr);
+  gap: 0.8em;
+  align-items: center;
+  width: 100%;
+}
+
+.variance-panel { min-width: 0; }
+.variance-controls { display: grid; gap: 0.65em; }
+.variance-control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 2.7em;
+  gap: 0.1em 0.35em;
+  align-items: center;
+}
+.variance-control > span { grid-column: 1 / -1; }
+.variance-control input { width: 100%; min-width: 0; }
+.variance-control output { text-align: right; }
+.variance-results { margin-top: 0.9em; display: grid; gap: 0.2em; }
+.variance-results > div { display: flex; justify-content: space-between; gap: 0.4em; }
+.variance-results strong { font-variant-numeric: tabular-nums; }
+.variance-demo svg { display: block; width: 100%; height: auto; min-width: 0; }
