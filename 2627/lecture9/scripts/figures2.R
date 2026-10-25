@@ -66,5 +66,5 @@ grade_shift_example <- (grade_original + grade_shift_arrow + grade_shifted) +
   plot_layout(widths = c(1, 0.18, 1), axes = "collect")
 grade_shift_example
 
-ggsave(file.path(out_dir, "grades_plus_one.png"), grade_shift_example,
+ggsave("lecture9/figures/grades_plus_one.png", grade_shift_example,
        width = 45, height = 20, units = "cm")
