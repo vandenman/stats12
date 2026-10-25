@@ -1,0 +1,49 @@
+.standardized-regression-demo {
+  width: 100%;
+  font-size: 0.65em;
+}
+
+.standardized-regression-demo .standardized-controls {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.8em;
+}
+
+.standardized-controls .variance-control output {
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}
+
+.standardized-results {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5em;
+  margin-top: 0.65em;
+  padding: 0.4em 0;
+  border-top: 1px solid #ccd5de;
+  border-bottom: 1px solid #ccd5de;
+}
+
+.standardized-results .standardized-coefficients {
+  display: flex;
+  justify-content: center;
+  gap: 2em;
+}
+.standardized-coefficients > div,
+.standardized-results .standardized-shared-result {
+  display: grid;
+  gap: 0.1em;
+  text-align: center;
+}
+.standardized-results .standardized-shared-result {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.standardized-results strong { color: #003366; font-variant-numeric: tabular-nums; }
+.standardized-plots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5em; }
+.standardized-plots svg { display: block; width: 100%; height: auto; min-width: 0; }
+.standardized-regression-demo .standardized-note { margin: 0.3em 0 0; font-size: 0.85em; }
+.standardized-zero { stroke: #cbd2d9; stroke-width: 1; stroke-dasharray: 4 4; }

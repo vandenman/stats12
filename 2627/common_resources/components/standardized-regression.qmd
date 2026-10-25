@@ -1,0 +1,50 @@
+```{=html}
+<div id="standardized-regression-demo" class="standardized-regression-demo">
+  <div class="variance-controls standardized-controls">
+    <label class="variance-control">
+      <span class="math inline">\(\bar{x}\)</span>
+      <input data-param="meanX" type="range" min="-3" max="3" step="0.1" value="0">
+      <output data-value="meanX"></output>
+    </label>
+    <label class="variance-control">
+      <span class="math inline">\(\bar{y}\)</span>
+      <input data-param="meanY" type="range" min="-3" max="3" step="0.1" value="0">
+      <output data-value="meanY"></output>
+    </label>
+    <label class="variance-control">
+      <span class="math inline">\(s_x\)</span>
+      <input data-param="sdX" type="range" min="0.5" max="3" step="0.1" value="3">
+      <output data-value="sdX"></output>
+    </label>
+    <label class="variance-control">
+      <span class="math inline">\(s_y\)</span>
+      <input data-param="sdY" type="range" min="0.5" max="3" step="0.1" value="3">
+      <output data-value="sdY"></output>
+    </label>
+    <label class="variance-control">
+      <span>Correlation r</span>
+      <input data-param="r" type="range" min="-1" max="1" step="0.01" value="0.6">
+      <output data-value="r"></output>
+    </label>
+  </div>
+  <div class="standardized-results" aria-live="polite" aria-atomic="true">
+    <div class="standardized-coefficients">
+      <div><span>Intercept a</span><strong data-result="a"></strong></div>
+      <div><span>Slope b</span><strong data-result="b"></strong></div>
+    </div>
+    <div class="standardized-shared-result"><span>R² = r²</span><strong data-result="r2"></strong></div>
+    <div class="standardized-coefficients">
+      <div><span>Std. intercept</span><strong data-result="aStd"></strong></div>
+      <div><span>Std. slope</span><strong data-result="bStd"></strong></div>
+    </div>
+  </div>
+  <div class="standardized-plots">
+    <svg data-plot="original"></svg>
+    <svg data-plot="standardized"></svg>
+  </div>
+  <p class="standardized-note">Both panels show the same 50 observations</p>
+</div>
+<script>
+standardizedRegressionDemo("#standardized-regression-demo");
+</script>
+```
