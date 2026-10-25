@@ -324,9 +324,90 @@ $$
 
 Comparing to the null model tells us: "How much does this predictor add on top of the intercept?"
 
+## Prediction error of the null model
+
+::::: {.r-stack}
+
+::: {.fragment .fade-out fragment-index=1}
+The first three observations:
+:::
+
+:::: {.fragment .fade-in fragment-index=1}
+::: {.fragment .fade-out fragment-index=3}
+The predictions are
+
+$$
+\widehat{\mathrm{Grade}} = 6.1
+$$
+:::
+::::
+
+:::: {.fragment .fade-in fragment-index=3}
+::: {.fragment .fade-out fragment-index=5}
+The errors are
+
+$$
+\res = \mathrm{Grade} - \widehat{\mathrm{Grade}}
+$$
+:::
+::::
+
+::: {.fragment .fade-in fragment-index=5}
+::: {.fragment .fade-out fragment-index=6}
+The Sum of Squared Errors (SSE) for these observations is:
+
+$$
+\mathrm{SSE} = \sum_{i=1}^3 \res_i^2
+= 0.8^2 + 1.0^2 + 1.1^2 = 2.85
+$$
+:::
+:::
+
+::: {.fragment .fade-in fragment-index=6}
+For the null model, this is called the Total Sum of Squares (TSS):
+
+$$
+\TSS = \sum_{i=1}^3 \res_i^2
+= 0.8^2 + 1.0^2 + 1.1^2 = 2.85
+$$
+:::
+
+
+:::::
+
+<table>
+<thead><tr>
+<th style="text-align:right;"> $\mathrm{Grade}$ </th>
+   <th style="text-align:right;"> $\mathrm{Hours}$ </th>
+   <th style="text-align:right;" class="fragment" data-fragment-index="2"> $\widehat{\mathrm{Grade}}$ </th>
+   <th style="text-align:right;" class="fragment" data-fragment-index="4"> $\res$ </th>
+  </tr></thead>
+<tbody>
+<tr>
+<td style="text-align:right;"> 6.9 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="2"> 6.1 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="4"> 0.8 </td>
+  </tr>
+<tr>
+<td style="text-align:right;"> 7.2 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="2"> 6.1 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="4"> 1.1 </td>
+  </tr>
+<tr>
+<td style="text-align:right;"> 7.1 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="2"> 6.1 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="4"> 1.0 </td>
+  </tr>
+</tbody>
+</table>
+
+
 ## Total Sum of Squares
 
-What's the prediction error of the null model?
+What's the prediction error of the null model for all observations?
 
 . . .
 
@@ -373,12 +454,15 @@ So TSS is the _variance_ of $y$ times $N - 1$
  -->
 <!-- TODO: is this just a redundant fact for the story? -->
 
-## How much did our predictions improve? {.small-slide}
+## How much did our predictions improve?
 
-For all 92 students:
+::: {style="font-size: 90%;"}
+For all 92 observations:
 
 - Using only the mean: $\TSS = 255.82$.
 - Using study hours: $\SSE = 84.18$.
+
+:::
 
 . . .
 
@@ -445,7 +529,6 @@ What would $R^2$ be?
 ## Why call this explained variance? {.small-slide}
 
 The original error measures how much grades vary around their mean:
-
 $$
 \TSS = \sum_{i=1}^N (y_i - \bar{y})^2
 $$
@@ -455,12 +538,14 @@ $$
 This is also the sum used to calculate the variance:
 
 $$
-s_y^2 = \frac{\TSS}{N-1}
+s_y^2 = \frac{\sum_{i=1}^N (y_i - \bar{y})^2}{N-1} = \frac{\TSS}{N-1}
 $$
 
 . . .
 
+::: {style="font-size: 90%;"}
 Dividing both RSS and TSS by $N-1$ leaves their ratio unchanged.
+:::
 
 So $R^2$ is also the _proportion of variance explained_.
 
@@ -546,7 +631,7 @@ A standardized measure of the direction and strength of a linear association bet
 
 - Standardized: ranges from $[-1,\; 1]$
 - Sample correlation: $r$
-- Population correlation: $\rho$
+<!-- - Population correlation: $\rho$ -->
 - $r = -1$: Perfect negative association
 - $r =  0$: No linear association
 - $r =  1$: Perfect positive association
@@ -687,13 +772,13 @@ $$
 $$
 
 
-## Finding the intercept {.small-slide}
+## Finding the intercept
 
 The slope sets the steepness. How do we choose the height of the line?
 
-Students study **4 hours** on average, and their average grade is **6.1**.
+Students studied _4 hours_ on average. The average grade was _6.1_.
 
-With a slope of **0.8**, which intercept makes that work?
+We found the slope $b=0.8$. How do we find the intercept?
 
 . . .
 
@@ -893,15 +978,14 @@ Give students time to think and explain their predictions, then change SD x to c
 - $R^2 = \RSS / \TSS$: the proportion of variance explained.
 - $r$: the direction and strength of the linear association.
 
-For simple OLS regression with an intercept: $R^2 = r^2$, and the standardized slope equals $r$.
+For bivariate regression: $R^2 = r^2$, and the standardized slope equals $r$.
 
 ## Next Week
 
 Testing and checking a regression model
 
 - Test regression coefficients using $t$-tests.
-- Test the regression model using the $F$-test in the ANOVA table.
+- Test the regression model using the $F$-test.
 - Check linearity, normality of residuals, homoscedasticity, and independence.
-- Use SPSS examples to interpret and report the results.
 
 
