@@ -12,7 +12,7 @@ format:
         toc: false
         toc-depth: 1
         toc-title: "Today"
-        embed-resources: false
+        embed-resources: true
         include-in-header:
         - text: |
             <link rel="stylesheet" href="../common_resources/components/regression.css">
@@ -850,7 +850,7 @@ For $\widehat{\mathrm{Grade}} = a + b\times\text{Hours studied}$, we found $a = 
 
 . . .
 
-For $\widehat{\text{Hours studied}} = a + b\times\mathrm{Grade}$, we'd find $a = -1.2$, $b = 0.9$.
+For $\widehat{\text{Hours studied}} = a + b\times\mathrm{Grade}$, we'd find $a = -1.26$, $b = 0.86$.
 
 . . .
 
