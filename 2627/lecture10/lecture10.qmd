@@ -12,7 +12,7 @@ format:
         toc: false
         toc-depth: 1
         toc-title: "Today"
-        embed-resources: false
+        embed-resources: true
         include-in-header:
         - text: |
             <link rel="stylesheet" href="../common_resources/components/regression.css">
@@ -29,6 +29,16 @@ auto-agenda:
   clickable: true
 ---
 
+# Assignment 2
+
+## Assignment 2
+
+- Deadline moved to December 18th (23:59)
+  * further from the exam
+- Instructions slightly adjusted:
+  * See the pdf on canvas.
+  * Ignore the gitbook (it's mostly the same though).
+
 # Recap Linear Regression
 
 
@@ -44,6 +54,9 @@ $$
 \newcommand{\TSS}{\mathrm{TSS}}
 \newcommand{\SSE}{\mathrm{SSE}}
 \newcommand{\RSS}{\mathrm{RSS}}
+
+\newcommand{\MSE}{\mathrm{MSE}}
+\newcommand{\MSR}{\mathrm{MSR}}
 $$
 :::
 
@@ -90,34 +103,169 @@ Goals for today:
 <!-- something else? -->
 
 
-# Data Example I: Freshness and box office
+# Data Example I: Trustworthy Faces
 
-## Who is this?
+## How Trustworthy is this face?
 
-<!-- TODO: picture by Adam Sandler -->
+![](https://raw.githubusercontent.com/jcpeterson/omi/main/images/336.jpg){fig-align="center"}
 
-## Freshness and box office
 
-in 2015, someone collected data on 31 movies by Adam Sandler.
+## How Trustworthy is this face?
 
-They recorded:
+<!-- https://github.com/jcpeterson/omi/blob/main/images/638.jpg
+ -->
+<!-- ![trustworthy1](https://raw.githubusercontent.com/USER/REPO/main/images/figure.jpg){fig-align="center"} -->
+![](https://raw.githubusercontent.com/jcpeterson/omi/main/images/638.jpg){fig-align="center"}
 
-- Year: The year the movie played
-- Title: The Movie title
-- Freshness: Freshness ratings on [Rotten Tomatoes](https://www.rottentomatoes.com)
-  * ranges from 0 (rotten) to 1 (fresh).
-- Box Office ($M): Box office succes of the movies
-  * in millions of US dollars.
 
-What should we predict?
+## Trustworthy Faces
+
+These faces are part of The One Million Impressions (OMI) dataset, which contains over a million human judgments of over 1,000 synthetic face images along 34 attributes.
+
+. . .
+
+Participants judged faces on a scale from 0 to 100 on attributes such as
+
+::: {.columns}
+
+::: {.column}
+
+- trustworthy
+- attractive
+- dominant
+
+
+:::
+
+::: {.column}
+
+- smart
+- memorable
+- well-groomed
+
+
+:::
+
+:::
+
+The dataset contains mean judgements averaged across the 1,000,000 people.
+
 
 ::: footer
 
-TODO: url to data source
+Peterson, J. C., Uddenberg, S., Griffiths, T. L., Todorov, A., & Suchow, J. W. (2022). Deep models of superficial face judgments. Proceedings of the National Academy of Sciences (PNAS), 119(17), e2115228119. doi:10.1073/pnas.2115228119
+
+source: <https://github.com/jcpeterson/omi/>
+
+:::
+
+## Can you guess the scale?
+
+
+::: {.columns}
+
+::: {.column}
+
+![](https://raw.githubusercontent.com/jcpeterson/omi/main/images/752.jpg){fig-align="center" width="90%"}
+
+
+:::
+
+::: {.column}
+
+![](https://raw.githubusercontent.com/jcpeterson/omi/main/images/259.jpg){fig-align="center" width="90%"}
+
+
+:::
+
+:::
+
+```{=html}
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; text-align: center;">
+  <div>(A) happy</div>
+  <div>(B) well-groomed</div>
+  <div>(C) age</div>
+</div>
+```
+
+## Can you guess the scale?
+
+
+::: {.columns}
+
+::: {.column}
+
+![](https://raw.githubusercontent.com/jcpeterson/omi/main/images/1.jpg){fig-align="center" width="90%"}
+
+
+:::
+
+::: {.column}
+
+![](https://raw.githubusercontent.com/jcpeterson/omi/main/images/578.jpg){fig-align="center" width="90%"}
+
+
+:::
 
 :::
 
 
+```{=html}
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; text-align: center;">
+  <div>(A) happy</div>
+  <div>(B) smart</div>
+  <div>(C) dominant</div>
+</div>
+```
+
+## Can you guess the scale?
+
+
+::: {.columns}
+
+::: {.column}
+
+![](https://raw.githubusercontent.com/jcpeterson/omi/main/images/523.jpg){fig-align="center" width="90%"}
+
+
+:::
+
+::: {.column}
+
+![](https://raw.githubusercontent.com/jcpeterson/omi/main/images/305.jpg){fig-align="center" width="90%"}
+
+
+:::
+
+:::
+
+```{=html}
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; text-align: center;">
+  <div>(A) happy</div>
+  <div>(B) smart</div>
+  <div>(C) memorable</div>
+</div>
+```
+
+## Can we predict trustworthiness?
+
+<iframe
+  src="figures/faces_linked.svg"
+  data-external="1"
+  style="width: 80%; height: 450px; border: none;">
+</iframe>
+
+<!--
+
+Let's do the following thing!
+
+First we have a test for one example
+
+then we ask, "is the slope of this variable higher or lower than the slope of that variable?"
+
+then we can do the informed test for a slope <= whatever we found for the other variable
+
+ -->
 
 # $t$-test: Testing coefficients
 
@@ -133,6 +281,71 @@ Recall the general procedure:
 Let's do this for the intercept $a$, and then the slope $b$.
 
 ## Hypothesis testing
+
+Let $\alpha$ be the population parameter for $a$.
+
+To test the intercept we state: $\hypo_0 : \alpha = \alpha_{\hypo_0}$
+
+For now, let's assume $\hypo_0 : \alpha = 0$
+
+. . .
+
+What is the sampling distribution for $a$, given that $\hypo_0$ is true?
+
+
+
+## Sampling distribution: intercept.
+
+![](figures/sampling_dist_1.svg){fig-align="center"}
+
+## Sampling distribution: intercept.
+
+![](figures/sampling_dist_2.svg){fig-align="center"}
+
+## Sampling distribution: intercept.
+
+![](figures/sampling_dist_3.svg){fig-align="center"}
+
+
+## What impacts the sampling distribution?
+
+There is only one distributional assumption to linear regression:
+
+$$
+\res_p \sim \mathcal{N}(0, \sigma_{\res_p})
+$$
+
+## Sampling distribution: intercept.
+
+$$
+a\mid \hypo_0 \sim \dnorm{\alpha_{\hypo_0}}{\sigma_\epsilon^2\times c_\alpha}\quad
+$$
+
+- $\alpha_{\hypo_0}$ is the value we test against
+- $\sigma_\epsilon^2$ is the variance of the residuals
+- $c$ we left unknown last time
+
+<!-- TODO can we relate c to TSS and SSE? -->
+
+## Demo: Sampling distribution Intercept.
+
+knobs:
+
+- sample size
+- variance x
+- variance y
+- mean x
+- mean y
+- slope
+- intercept
+- H0 value for intercept
+
+output:
+
+normal distribution
+
+
+
 
 # $F$-test: Testing models
 
@@ -200,12 +413,15 @@ $$
 
 Therefore:
 $$
-\frac{R^2}{1 - R^2} = \frac{\RSS}{\SSE} = \frac{\text{Explained variance}}{\text{Unexplained variance}}
+\frac{R^2}{1 - R^2} = \frac{\RSS/\cancel{\TSS}}{\SSE/\cancel{\TSS}}= \frac{\RSS}{\SSE} = \frac{\text{Explained variance}}{\text{Unexplained variance}}
 $$
+
+<!-- TODO: make the above step by step with fragments -->
 
 ## Testing Explained Variance
 
-$\frac{R^2}{1 - R^2}$ is convenient, but:
+<!-- $\frac{R^2}{1 - R^2}$ is convenient, but: -->
+$R^2/(1 - R^2)$ is convenient, but:
 
 - even "random" predictors explain _some_ variation.
 - we need to account for the number of parameters being estimated.
@@ -214,35 +430,23 @@ $\frac{R^2}{1 - R^2}$ is convenient, but:
 
 $$
 F =
-\frac{\RSS}{\SSE / (N - 2)}
-=
 (N - 2)\times\frac{R^2}{1 - R^2}
 $$
 
 . . .
 
+Under the $\hypo_0$ the sampling distribution is:
 
-<!--
-
-TODO: figure out if this comes back during ANOVA
-in Caspar's slides. If it does, only introduce it there!
-
- -->
-
-<!--
-
-::: {style="font-size: 90%;"}
-
-In general:
 $$
 F =
-\frac{\RSS / (p - 1)}{\SSE / (N - p)}
-=
-\frac{N - p}{p - 1}\times\frac{R^2}{1 - R^2}
+(N - 2)\times\frac{R^2}{1 - R^2} \sim F(1, N - 2)
 $$
-:::
 
--->
+::: {style="font-size: 50%;"}
+
+Yes, the $F$-statistic and $F$-distribution are both abbreviated with $F$.
+
+:::
 
 
 ::: {.notes}
@@ -253,47 +457,108 @@ the no. parameters corresponds to the degrees of freedom
 
 :::
 
-## $F$-distribution
+## F distribution
 
-Let's see why this makes sense. Suppose $\hypo_0$ is true.
+The $F(df_1, df_2)$ distribution:
 
-Then what is the sampling distribution of
+![](figures/f_dist_1.svg){fig-align="center"}
 
-- $\RSS / (p - 1)$,
-- $\SSE / (N - p)$?
+## F distribution
+
+The $F(df_1, df_2)$ distribution:
+
+![](figures/f_dist_2.svg){fig-align="center"}
+
+## F distribution
+
+The $F(df_1, df_2)$ distribution:
+
+![](figures/f_dist_3.svg){fig-align="center"}
+
+
+## F distribution: Example
+
+
+<!--
+
+Here come slides with the actual distribution and the testing, etc.
+
+-->
+
+## F-test: alternative explanation
+
+<!-- TODO: maybe one more slide with the recall stuff because maybe they forgot... -->
+
+If $\hypo_0$ is true, then we know that:
+
+- $\TSS$ estimates $(N - 1)\times \sigma_y^2$
+- $\SSE$ estimates $(N - 2)\times\sigma_\res^2 \underbrace{= (N - 2) \times \sigma_y^2}_{\substack{\text{Under $\hypo_0$}}}$
 
 . . .
 
-Suppose that $\rho^2 = 0$.
+We've already seen this!
 
-Then in the population $\RSS = 0$, and $\SSE = \TSS$.
+## Explained Variance: Demo
+
+{{< include ../common_resources/components/variance-demo.qmd >}}
 
 
+::: {.notes}
 
+show that as R^2 goes to zero that RSS = 0, and that TSS and SSE become the same thing.
 
-<!-- Do not forget that F = t_b^2 -->
+:::
 
-## $F$-distribution
+## F-test: alternative explanation
 
-Recall that $R^2 = \frac{\RSS}{\TSS}$.
+If $\hypo_0$ is true, then we know that the expectations are:
 
-We use a very similar quantity:
+- $\TSS$ estimates $(N - 1)\times \sigma_y^2$
+- $\SSE$ estimates $(N - 2)\times\sigma_\res^2 \underbrace{= (N - 2) \times \sigma_y^2}_{\substack{\text{Under $\hypo_0$}}}$
+
+. . .
+
+If we do this for $\RSS = \TSS - \SSE$ we get
+
+$$
+\begin{align}
+\RSS &\text{ estimates } (N - 1)\times \sigma_y^2 - (N - 2) \times \sigma_y^2\\
+\RSS &\text{ estimates } \sigma_y^2
+\end{align}
+$$
+
+## F-test: alternative explanation
+
+We don't know $\sigma_y^2$, so we divide out the sample size and obtain the _mean squares_:
 
 - $\mathrm{MSR} = \RSS / (p - 1)$
 - $\mathrm{MSE} = \SSE / (N - p)$
-
-<!--
-TODO: can we do the same but use TSS
-for symmetry with the R^2 computation?
- -->
 
 - $N$ = the sample size
 - $p$ = the number of parameters in the model
   * for bivariate regression we only have $a$ and $b$ so $p = 2$.
 
+Their ratio is:
+
+$$
+F=\frac{\MSR}{\MSE} = \frac{(N - p)}{p - 1} \frac{R^2}{1 - R^2}
+$$
+
+* $df_1$: p-1
+* $df_2$: n-p
 
 
-## F-test
+## F-test: summary
+
+- The F-test is a ratio of explained variance over unexplained variance
+- The F-test is a ratio of explained variance over unexplained variance
+- other things from the example
+
+
+
+## F-test: alternative explanation
+
+<!-- this will be the final slide about the  -->
 
 The F-test is a ratio of two sources of variance:
 
@@ -305,8 +570,6 @@ p: parameters ($a$ and $b$), n: number of participants
 
 * $df_1$: p-1
 * $df_2$: n-p
-
-Both SS can only be positive, so the F-statistic is always positive, so we use a probability distribution with only positive values.
 
 
 # Data Example II: Sesame street and childrens
