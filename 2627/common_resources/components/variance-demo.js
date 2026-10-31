@@ -10,7 +10,8 @@
   }
 
   function varianceDemo(selector) {
-    const root = document.querySelector(selector);
+    // Accept an element so repeated includes each initialize their own demo.
+    const root = typeof selector === "string" ? document.querySelector(selector) : selector;
     if (!root) return;
 
     const random = randomGenerator(92027);

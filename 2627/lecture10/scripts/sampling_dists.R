@@ -50,7 +50,7 @@ for (i in seq_len(nsim)) {
 coefs <- tib |> group_by(panel) |> summarise(
   intercept = coef(lm(y ~ x))[1],
   slope = coef(lm(y ~ x))[2]
-) |> mutate(label = sprintf("a = %.3f", intercept))
+) |> mutate(label = sprintf("a = %.2f", intercept))
 
 base0 <- ggplot(tib, aes(x = x, y = y)) +
   # geom_smooth(method = "lm", se = FALSE) +
@@ -72,7 +72,8 @@ save_figs(base0, base1, base2,
 
 
 xx <- seq(0.01, 4, .01)
-yy <- df(xx, 1, 50)
+# yy <- df(xx, 1, 50)
+yy <- df(xx, 1, 1002)
 f_crit <- .5
 f_max <- max(xx)
 tib_line  <- tibble(x = xx, y = yy)
@@ -99,3 +100,32 @@ f_dist2 <- f_dist1 +
   annotate("text", x = xb*1.05, y = yb*1.05, label = "Area = p-value", hjust = 0, vjust = 0, color = area_col)
 
 save_figs(f_dist0, f_dist1, f_dist2, .base = file.path(out_dir, "f_dist_%d.svg"), width = 40)
+
+f_crit <- .5
+f_max <- max(xx)
+tib_line  <- tibble(x = xx, y = yy)
+tib_shade <- tib_line |> filter(x >= f_crit)
+# tib_shade <- bind_rows(tibble(x=f_crit, y = 0), tib_shade, tibble(x=f_max, y = 0))
+f_dist0 <- ggplot(tib_line, aes(x, y)) +
+  geom_line() +
+  labs(x = "F-statistic", y = "Density") +
+  theme_bw(base_size = 30)
+
+stat_col <- "darkgreen"
+f_dist1 <- f_dist0 +
+  geom_vline(xintercept = f_crit, linetype = "dashed", alpha = .7, color = stat_col) +
+  annotate("text", x = f_crit + .1, y = 3.05, label = "Test-statistic", hjust = 0, vjust = 0, color = stat_col)
+
+area_col <- "darkorchid4"
+xb <- 2.5
+yb <- 2
+xe <- 1.5
+ye <- df(xe, 1, 50) * 2
+f_dist2 <- f_dist1 +
+  geom_ribbon(data = tib_shade, aes(x = x, ymax = y, ymin = 0), fill = area_col, color = area_col, alpha = .8) +
+  geom_segment(x = xb, y = yb, xend = xe, yend = ye, arrow = arrow(length = unit(0.4,"cm")), color = area_col) +
+  annotate("text", x = xb*1.05, y = yb*1.05, label = "Area = p-value", hjust = 0, vjust = 0, color = area_col)
+
+save_figs(f_dist0, f_dist1, f_dist2, .base = file.path(out_dir, "f_dist_%d.svg"), width = 40)
+
+

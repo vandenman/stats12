@@ -1,5 +1,5 @@
 ```{=html}
-<div id="variance-demo" class="variance-demo">
+<div class="variance-demo">
 
 <div class="variance-panel">
 
@@ -40,6 +40,6 @@
 </div>
 
 <script>
-varianceDemo("#variance-demo");
+varianceDemo(document.currentScript.previousElementSibling);
 </script>
 ```
