@@ -7,6 +7,29 @@ library(magick)
 library(base64enc)
 library(fs)
 library(patchwork)
+fragment_kable <- function(obj, steps, digits = 2, ...) {
+  stopifnot(length(steps) == ncol(obj))
+  
+  html <- knitr::kable(
+    obj, format = "html", digits = digits,
+    row.names = FALSE, ...
+  )
+  doc <- xml2::read_html(as.character(html))
+  table <- xml2::xml_find_first(doc, "//table")
+  
+  for (j in which(!is.na(steps))) {
+    cells <- xml2::xml_find_all(
+      table,
+      sprintf("./thead/tr/th[%d] | ./tbody/tr/td[%d]", j, j)
+    )
+    xml2::xml_set_attr(cells, "class", "fragment")
+    xml2::xml_set_attr(
+      cells, "data-fragment-index", as.character(steps[j])
+    )
+  }
+  
+  knitr::asis_output(as.character(table))
+}
 
 out_dir <- "lecture10/figures"
 img_dir <- "~/github/education/omi/images"
@@ -127,6 +150,24 @@ wminmax(dat$outgoing)
 wminmax(dat$smart)
 wminmax(dat$memorable)
 
+# which.max(dat$`well-groomed`)
+# order(dat$`well-groomed`, decreasing = TRUE)[1]
+# dat[order(dat$`well-groomed`, decreasing = TRUE), "stimulus"]
+# dat[816, c("trustworthy", "well-groomed")]
+# dat[259, c("trustworthy", "well-groomed")]
+
+# plot(dat$gender, dat$attractive)
+# which.min(abs(dat$gender - 50))
+# dat[739, "stimulus"]
+
+# which(order(dat$`well-groomed`, decreasing = TRUE) == 745)
+# 
+# order(dat$`well-groomed`, decreasing = TRUE)[1:6]
+# plot(dat$`well-groomed`, dat$gender)
+# 
+# ddd <- dat |> filter(gender > 75)
+# head(ddd[order(ddd$`well-groomed`,decreasing = TRUE), "stimulus"], 10)
+
 t.test(dat$attractive, dat$g)
 
 keep <- c(
@@ -137,10 +178,31 @@ keep <- c(
 
 head(dat)
 
+fit <- lm(trustworthy ~ `well-groomed`, dat)
+sfit <- summary(fit)
+(sfit$coefficients["(Intercept)", "Estimate"] - 0) / sfit$coefficients["(Intercept)", "Std. Error"]
+
+sfit$coefficients["(Intercept)", "Std. Error"]^2
+SSE <- sum(fit$residuals^2)
+n <- length(fit$residuals)
+MSE_n <- SSE / (n * (n - 2))
+sfit$coefficients["(Intercept)", "Std. Error"]^2
+MSE_n + mean(dat$`well-groomed`)^2 * sfit$coefficients["`well-groomed`", "Std. Error"]^2
+
+tb <- data.frame(
+  Model = c("(Constant)", "well-groomed")
+)
+sfit$coefficients
+
+fit_happy <- lm(trustworthy ~ happy, dat)
+
+(sfit$coefficients[2, "Estimate"] - coef(fit_happy)[2]) / sfit$coefficients[2, "Std. Error"]
+(0.44 - 0.45) / (0.03)
+
 lm(trustworthy ~ attractive, dat)
 lm(trustworthy ~ `well-groomed`, dat)
 lm(trustworthy ~ memorable, dat)
-
+cor(dat$trustworthy, dat$`well-groomed`)
 lm(trustworthy ~ dominant, dat)
 lm(trustworthy ~ age, dat)
 lm(trustworthy ~ happy, dat)
@@ -239,6 +301,7 @@ imgs <- file.path(img_dir, paste0(
   ".jpg"))
 optimize_svg(src, width = 256, quality = 85)
 
+
 to_js <- function(x, y) {
   cat("points: [\n  ")
   n <- length(x)
@@ -288,11 +351,17 @@ pp3 <- ggplot(dat, aes(memorable, trustworthy)) +
 pp123 <- (pp1 + pp2 + pp3 + patchwork::plot_layout(axes = "collect")) & coord_cartesian(clip = "off")
 
 src <- file.path(out_dir, "scatter_side_by_side2.svg")
-ggsave(filename = src, pp123, width = 75, height = 25, units = "cm")
+width <- 25
+# 1 panel should be 50 x 25, so three 
+ggsave(filename = src, pp123, width = (50*3) / 3, height = (25*3) / 3, units = "cm")
 imgs <- file.path(img_dir, paste0(
   c(wminmax(dat$`well-groomed`), wminmax(dat$dominant), wminmax(dat$memorable)),
   ".jpg"))
 optimize_svg(src, width = 256, quality = 85)
+
+save_figs(pp1, pp2, pp3, width = 25/2, height = 25/2, units = "cm", .base = fs::path(out_dir, "scatter_indiv_%d.svg"))
+to_optimize <- list.files(out_dir, pattern = "scatter_indiv_.*.svg")
+sapply(to_optimize, \(src) optimize_svg(fs::path(out_dir, src), width = 256, quality = 85))
 
 
 ggplot(dat, aes(memorable, attractive)) +

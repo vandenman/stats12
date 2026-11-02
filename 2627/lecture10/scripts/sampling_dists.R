@@ -50,7 +50,14 @@ for (i in seq_len(nsim)) {
 coefs <- tib |> group_by(panel) |> summarise(
   intercept = coef(lm(y ~ x))[1],
   slope = coef(lm(y ~ x))[2]
-) |> mutate(label = sprintf("a = %.2f", intercept))
+) |> mutate(
+  label = sprintf("a = %.2f", intercept),
+  labelb = sprintf("b = %.2f", slope),
+  x0 = 0,
+  x1 = 1,
+  y0 = intercept + slope * 0,
+  y1 = intercept + slope * 1
+)
 
 base0 <- ggplot(tib, aes(x = x, y = y)) +
   # geom_smooth(method = "lm", se = FALSE) +
@@ -63,12 +70,36 @@ base2 <- base1 +
   geom_text(data = coefs, aes(x = I(.025), y = I(.94), label = label), hjust = 0) +
   geom_point(data = coefs, aes(x = 0, y = intercept), shape = 17, color = "gold", size = 8)
 base2
-
+base3 <- base1 + 
+  geom_text(data = coefs, aes(x = I(.025), y = I(.94), label = labelb), hjust = 0) +
+  geom_segment(data = coefs, aes(x = x0, y = y0, xend = x1), color = "gold") +
+  geom_segment(data = coefs, aes(x = x1, y = y0, yend = y1), color = "gold")
 w <- 12
-save_figs(base0, base1, base2, 
+save_figs(base0, base1, base2, base3,
           width = 4 * w, height = 2 * w,
           .base = file.path(out_dir, "sampling_dist_%d.svg"))
 
+stat_col <- "darkgreen"
+area_col <- "darkorchid4"
+tib_line_t <- tibble(
+  x = seq(-15, 15, .1),
+  y = dt(x, df = 1002)
+)
+t_crit <- qt(0.95, 1002)
+tib_shade_t <- tib_line_t |> filter(x >= t_crit)
+t_plt1 <- ggplot(tib_line_t, aes(x, y)) +
+  geom_line() +
+  labs(x = "t-statistic", y = "Density") +
+  geom_ribbon(data = tib_shade_t, aes(x = x, ymax = y, ymin = 0), fill = area_col, color = area_col, alpha = .8) +
+  geom_vline(xintercept = t_crit, linetype = "dashed", alpha = .7, color = stat_col) +
+  annotate("text", x = t_crit + .25, y = 0.30, label = "p = 0.05", hjust = 0, vjust = 0, color = stat_col) +
+  theme_bw(base_size = 30)
+
+t_plt2 <- t_plt1 +
+  geom_vline(xintercept = -11.32, linetype = "dashed", alpha = .7, color = stat_col) +
+  annotate("text", x = -11.32 - .25, y = 0.30, label = "What we found", hjust = .5, vjust = 0, color = stat_col)
+t_plt2
+save_figs(t_plt1, t_plt2, .base = file.path(out_dir, "t_dist_%d.svg"), width = 40)
 
 
 xx <- seq(0.01, 4, .01)
@@ -129,3 +160,8 @@ f_dist2 <- f_dist1 +
 save_figs(f_dist0, f_dist1, f_dist2, .base = file.path(out_dir, "f_dist_%d.svg"), width = 40)
 
 
+(9 + 5) / 2
+grades <- c(9, 5)
+weights <- c(.4, .6)
+mean(grades)
+sum(grades * weights)

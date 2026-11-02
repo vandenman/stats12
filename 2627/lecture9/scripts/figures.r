@@ -8,14 +8,14 @@ if (!dir.exists(out_dir)) dir.create(out_dir)
 
 fragment_kable <- function(obj, steps, digits = 2, ...) {
   stopifnot(length(steps) == ncol(obj))
-  
+
   html <- knitr::kable(
     obj, format = "html", digits = digits,
     row.names = FALSE, ...
   )
   doc <- xml2::read_html(as.character(html))
   table <- xml2::xml_find_first(doc, "//table")
-  
+
   for (j in which(!is.na(steps))) {
     cells <- xml2::xml_find_all(
       table,
@@ -26,7 +26,7 @@ fragment_kable <- function(obj, steps, digits = 2, ...) {
       cells, "data-fragment-index", as.character(steps[j])
     )
   }
-  
+
   knitr::asis_output(as.character(table))
 }
 
@@ -72,7 +72,7 @@ colnames(hh0) <- c(
 cat(fragment_kable(hh0, c(NA, NA, 2, 4), digits = 1))
 
 
-studentdata <- studentdata |> 
+studentdata <- studentdata |>
   mutate(Special = case_when(
     Grade > 8.7 & Hours < 4.3 ~ "high",
     Grade < 7.0 & Grade > 6.5 & Hours < 4.1 & Hours > 3.9   ~ "low",
@@ -121,7 +121,7 @@ to_js(studentdata)
 head(studentdata)
 
 scales <- list(
-  scale_x_continuous(limits = c(0, 10), breaks = seq(0, 10, by = 1)), 
+  scale_x_continuous(limits = c(0, 10), breaks = seq(0, 10, by = 1)),
   scale_y_continuous(limits = c(0, 10), breaks = seq(0, 10, by = 1))
 )
 
@@ -186,11 +186,11 @@ lines2 <- geom_line(data = tibble(
 
 # base + points
 # base + y_mean + points
-# base + y_mean_errors + y_mean + points 
+# base + y_mean_errors + y_mean + points
 # base + y_linreg + points
 # base + y_linreg_errors + y_linreg + points
 
-base + 
+base +
   y_linreg_errors_abovebelow +
   y_linreg + points
 
@@ -222,9 +222,9 @@ ggsave(file.path(out_dir, "pred_error.svg"), plot = (base + y_linreg + lines1 + 
 )
 
 ggsave(
-  filename = file.path(out_dir, "pred_errorabovebelow.svg"), 
-  plot = 
-    base + 
+  filename = file.path(out_dir, "pred_errorabovebelow.svg"),
+  plot =
+    base +
     y_linreg_errors_abovebelow +
     y_linreg + points,
   width = 25, height = 25, units = "cm"
@@ -250,7 +250,7 @@ pss <- (ptss + psse + pssr) + patchwork::plot_layout(axes = "collect")
 pss
 
 ggsave(
-  filename = file.path(out_dir, "three_ss.svg"), 
+  filename = file.path(out_dir, "three_ss.svg"),
   plot = pss,
   width = 3*25, height = 25, units = "cm"
 )
@@ -277,7 +277,7 @@ cor_panel_plot <- ggplot(dfs, aes(x = x, y = y)) +
 
 m <- 0.4
 ggsave(
-  filename = file.path(out_dir, "correlations.svg"), 
+  filename = file.path(out_dir, "correlations.svg"),
   plot = cor_panel_plot,
   width = m*3*25, height = m*2*25, units = "cm"
 )
@@ -286,8 +286,8 @@ ggsave(
 # hh2 <- round(hh[,1:2], 2)
 # mus <- round(colMeans(hh2), 2)
 # knitr::kable(hh2, format = "pipe", digits = 2)
-# hh3 <- cbind(hh2, 
-#              "$(Grade - \\bar{Grade})$" = hh2[, 1] - mean(hh2[, 1]), 
+# hh3 <- cbind(hh2,
+#              "$(Grade - \\bar{Grade})$" = hh2[, 1] - mean(hh2[, 1]),
 #              "$(Hours - \\bar{Hours})$" = hh2[, 2] - mean(hh2[, 2]))
 # knitr::kable(hh3, format = "pipe", digits = 2)
 # hh4 <- cbind(hh3,
@@ -374,8 +374,8 @@ e <- e * sqrt(residual_var / var(e))
 y <- a + b * x + e
 lm(y ~ x)
 
-fig <- ggplot(data.frame(x = x, y = y), aes(x = x, y = y)) + 
-  geom_abline(slope = b, intercept = a, color = regressioncol) + 
+fig <- ggplot(data.frame(x = x, y = y), aes(x = x, y = y)) +
+  geom_abline(slope = b, intercept = a, color = regressioncol) +
   scale_y_continuous(breaks = seq(-6, 6, 2), limits = c(-6, 6)) +
   geom_point()
 
@@ -391,23 +391,23 @@ y_mean <- geom_hline(yintercept = mean(Grade), linewidth = 2, colour = regressio
 yoffset <- 0.15
 
 reg_recap <- base + y_linreg + points +
-  
+
   geom_segment(x = 1, y = 6.5, xend = 2, yend = 4.5, arrow = arrow(length = unit(0.4,"cm")), color = intercept_color) +
   annotate("text", x = 1, y = 6.75, label = expression(widehat(Grade) == a + b %*% Hours), hjust = 0.6, vjust = 0, color = intercept_color_txt) +
-  
+
   geom_segment(x = 1, y = 1, xend = -.45, yend = 2.5, arrow = arrow(length = unit(0.4,"cm")), color = intercept_color) +
   annotate("text", x = 1, y = 1, label = "Intercept = a = 2.9", hjust = 0, vjust = 1, color = intercept_color_txt) +
-  
+
   geom_segment(x = 8.76, y = 7.6-yoffset, xend = 8.76, yend = 8.5-yoffset, arrow = arrow(length = unit(0.4,"cm")), color = slope_color) +
   # Horizontal bracket segment (Delta X)
   geom_segment(aes(x = x_start, y = y_start, xend = x_end, yend = y_start), color = slope_color, linetype = "dashed", linewidth = 0.8, color = slope_color) +
-    
+
   # Vertical bracket segment (Delta Y)
   geom_segment(aes(x = x_end, y = y_start, xend = x_end, yend = y_end), color = slope_color, linetype = "dashed", linewidth = 0.8, color = slope_color) +
-  
+
   # Labels using plotmath for mathematical Greek letters (Delta Δ)
   annotate("text", x = (x_start + x_end) / 2, y = y_start - 0.5, label = "Delta*Hours == 1", parse = TRUE, color = slope_color_txt) +
-  annotate("text", x = x_end + 0.15, y = (y_start + y_end) / 2 - yoffset, label = expression(Delta * widehat(Grade) == b* " = " * 0.8), 
+  annotate("text", x = x_end + 0.15, y = (y_start + y_end) / 2 - yoffset, label = expression(Delta * widehat(Grade) == b* " = " * 0.8),
            parse = TRUE, color = slope_color_txt, hjust = 0) +
 
   # geom_text(x = 1, y = 1,   label = "Intercept", hjust = 0, vjust = 1) +
@@ -423,22 +423,22 @@ reg_recap1 <- base + y_linreg + points +
 reg_recap2 <- reg_recap1 +
   geom_segment(x = 1, y = 1, xend = 0.05, yend = 2.8, arrow = arrow(length = unit(0.4,"cm")), color = intercept_color) +
   annotate("text", x = 1, y = 1, label = "Intercept = a = 2.9", hjust = 0, vjust = 1, color = intercept_color_txt)
-  
+
 slope_x <- 9.45
 yoffset <- 0.35
 
 reg_recap3 <- reg_recap2 +
   # Horizontal bracket segment (Delta X)
   annotate("segment", x = x_start, y = y_start, xend = x_end, yend = y_start, linetype = "dashed", linewidth = 0.8, color = slope_color) +
-  
+
   # Vertical bracket segment (Delta Y)
   annotate("segment", x = x_end, y = y_start, xend = x_end, yend = y_end, linetype = "dashed", linewidth = 0.8, color = slope_color) +
-  
+
   annotate("text", x = (x_start + x_end) / 2, y = y_start - 0.5, label = "Delta~~Hours == 1", parse = TRUE, color = slope_color_txt) +
-  annotate("text", x = x_end + 0.15, y = (y_start + y_end) / 2 - yoffset, label = expression(Delta ~~ widehat(Grade) == b * " = " * 0.8), 
+  annotate("text", x = x_end + 0.15, y = (y_start + y_end) / 2 - yoffset, label = expression(Delta ~~ widehat(Grade) == b * " = " * 0.8),
            parse = TRUE, color = slope_color_txt, hjust = 0) +
 
-  geom_segment(x = slope_x, y = 7.3-yoffset, xend = slope_x, yend = 8.25 - yoffset, arrow = arrow(length = unit(0.4,"cm")), color = slope_color) +  
+  geom_segment(x = slope_x, y = 7.3-yoffset, xend = slope_x, yend = 8.25 - yoffset, arrow = arrow(length = unit(0.4,"cm")), color = slope_color) +
   annotate("text", x = slope_x, y = 7.2 - yoffset, label = "Slope",     hjust = 0.5, vjust = 1, color = slope_color_txt)
 
 reg_recap0 <- base + points
@@ -463,7 +463,7 @@ ggplot(NULL) +
 
 
 ggsave(
-  filename = file.path(out_dir, "reg_recap.svg"), 
+  filename = file.path(out_dir, "reg_recap.svg"),
   plot = reg_recap, width = 25, height = 25, units = "cm"
 )
 
@@ -473,13 +473,13 @@ ggsave(
 preds_ols <- tibble(
   r = seq(0, 5, .01),
   r_ols = r^2,
-  r_abs = abs(r) 
+  r_abs = abs(r)
 ) |> tidyr::pivot_longer(cols = c(r_ols, r_abs))
 
 plt <- ggplot(preds_ols, aes(x = r, y = value, color = name)) +
   geom_line() +
   labs(x = "Residual", y = NULL, color = NULL) +
-  scale_color_manual(values = c("firebrick2", "springgreen"), 
+  scale_color_manual(values = c("firebrick2", "springgreen"),
                      labels = c("r_ols" = "Squared Error",
                                 "r_abs" = "Absolute Error")) +
   theme(legend.position = "inside",
@@ -503,9 +503,9 @@ tib <- tibble(
 crit <- qt(0.975, df = df)
 tib_crit <- tib |> filter(x > crit)
 
-ggplot() + 
+ggplot() +
   geom_ribbon(data = tib_crit, aes(x = x, ymax = y, ymin = 0)) +
-  geom_line(data = tib, aes(x = x, y = y))+ 
+  geom_line(data = tib, aes(x = x, y = y))+
   scale_y_continuous("Density", breaks = c(0, .2, .4), labels = NULL) +
   scale_x_continuous("t", breaks = c(-5, 0, 5))
 
@@ -514,7 +514,7 @@ ggplot() +
 #   title: "SPSS Style Tables"
 # format: html
 # ---
-#   
+#
 #   ```{r}
 # #| label: setup
 # #| message: false
