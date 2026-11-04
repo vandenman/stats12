@@ -245,7 +245,7 @@ source: <https://github.com/jcpeterson/omi/>
 
 ```{=html}
 <div style="display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; text-align: center;">
-  <div>(A) happy</div>
+  <div>(A) attractive</div>
   <div>(B) smart</div>
   <div>(C) memorable</div>
 </div>
@@ -363,10 +363,10 @@ $$
 
 . . .
 
-More data (larger $N$) and less error (smaller $\sigma_{\res_p}$) generally give more precise estimates.
+More data (larger $N$) and less error (smaller $\sigma_{\rep}$) generally give more precise estimates.
 
 
-## Sampling distribution: intercept.
+## Sampling distribution: intercept
 
 
 $$
@@ -378,7 +378,7 @@ $$
 - $c_\alpha$ depends on the predictor values
 - $\SE_a = \sigma_\epsilon^2\times c_\alpha$, the standard error
 
-## Sampling distribution: intercept.
+## Sampling distribution: intercept
 
 $$
 \hat{a} = \bar{y} - \hat{b}\times \bar{x}
