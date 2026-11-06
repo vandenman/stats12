@@ -309,11 +309,6 @@ Today:
 
 ## Assumptions
 
-<!-- SUGGESTION: Replace the generic "data are normally distributed" with
-"errors around the population regression line are normally distributed".
-Also separate representativeness (generalization) from model assumptions.
-The new slides develop both distinctions; existing wording retained. -->
-
 - Almost all models make assumptions. Assume that...
   * the data are normally distributed
   * the sample is representative for the population
@@ -327,13 +322,10 @@ The new slides develop both distinctions; existing wording retained. -->
     + The type-I error is inflated
   * Inferences may not be justified
 
-<!-- SUGGESTION: Type-I error can be higher or lower than intended; it is
-not necessarily inflated under every violation. Existing wording retained. -->
-
 . . .
 
 - To complicate things, sometimes assumptions are violated, but the consequences are minor.
-
+  * Example: Z vs. $t$-test when the sample size is larger
 
 ## Trustworthy Faces (continued)
 
@@ -459,6 +451,8 @@ retained as requested. -->
   * Study time vs. exam performance
 - Threshold effect
   * Swimming lessons vs. distance swum
+- Heterogeneous sample
+  * XXX
 
 ## Linearity
 
@@ -476,32 +470,26 @@ retained as requested. -->
 
 ![](figures/Threshold.svg){fig-align="center"}
 
-## Faces
+## Faces: Cute vs. Trustworthy
 
 ![](figures/faces_linear2_1.svg){fig-align="center"}
 
 <!-- TODO: with faces? -->
 
-## Faces
+## Faces: Electable vs. Trustworthy
 
 ![](figures/faces_linear2_2.svg){fig-align="center"}
 
 <!-- TODO: with faces? but only this one-->
 
-## Faces
-
+## Faces: Electable vs. Trustworthy
 ![](figures/faces_linear2_3.svg){fig-align="center"}
 
-<!-- SUGGESTION: Explain that the blue boundary and subsequent "Imagined
-groups" are illustrative, not identified populations. data_analyses.R
-constructs these groups using both electable and trustworthy; adding such
-groups cannot validate a model or establish their substantive reality. -->
-
-## Faces
+## Faces: Electable vs. Trustworthy
 
 ![](figures/faces_linear2_4.svg){fig-align="center"}
 
-## Faces
+## Faces: Electable vs. Trustworthy
 
 ![](figures/faces_linear2_5.svg){fig-align="center"}
 
@@ -510,15 +498,65 @@ groups cannot validate a model or establish their substantive reality. -->
 
 ## Errors and residuals
 
+:::: {.r-stack}
+
+::: {.fragment .fade-out fragment-index="1"}
+$$
+Y_i = \alpha + \beta x_i + \epsilon_i,
+\qquad \epsilon_i \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma_\epsilon^2)
+$$
+:::
+
+::: {.fragment .fade-in-then-out fragment-index="1"}
+$$
+Y_i = \textcolor{blue}{\alpha + \beta x_i} + \epsilon_i,
+\qquad \epsilon_i \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma_\epsilon^2)
+$$
+:::
+
+::: {.fragment .fade-in fragment-index="2"}
+$$
+Y_i = \alpha + \beta x_i + \textcolor{blue}{\epsilon_i},
+\qquad \textcolor{blue}{\epsilon_i \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma_\epsilon^2)}
+$$
+:::
+
+::::
+
+::: {.fragment fragment-index="1"}
+
+1. Linearity
+
+- The association between $x$ and $y$ is a straight line.
+
+<!-- SUGGESTION: More precisely, the population mean of Y at each x lies
+on a straight line; individual outcomes need not lie on the line. -->
+
+:::
+
+::: {.fragment fragment-index="2"}
+
+2. Assumptions about the errors
+
+- Normality: Errors follow a normal distribution.
+- Homoscedasticity: Errors have the same variance for all $x$.
+- Independence: Errors are independent of each other.
+
+:::
+
+
+## Errors and residuals
+
 In the population:
 
 $$
-Y_i = \alpha + \beta x_i + \epsilon_i
-\qquad\Rightarrow\qquad
+Y_i = \alpha + \beta\times x_i + \epsilon_i
+\qquad
+\text{so,}\qquad
 \epsilon_i = Y_i - (\alpha + \beta x_i)
 $$
 
-- The error is the distance from the **population line**.
+- The error is the distance from the _population line_.
 - We do not know that line, so we cannot observe its errors.
 
 ## From errors to residuals
@@ -526,177 +564,270 @@ $$
 In our sample:
 
 $$
+\hat{y}_i = a + b\times x_i + \res
+\qquad
+\text{so,}\qquad
 e_i = y_i - \hat y_i = y_i - (a + b x_i)
 $$
 
-- The residual is the distance from the **fitted line**.
+- The residual is the distance from the _fitted line_.
 - Residuals help us assess the assumptions about errors.
-
-::: {.notes}
-The errors and residuals are different quantities. Fitted OLS residuals are
-constrained by estimation: with an intercept their sum is zero, and they
-are not literally independent draws with identical variances. Use their
-patterns to assess the population error model, rather than claiming that
-the sample residuals themselves are iid.
-:::
 
 ## From the regression line to residuals
 
-![](figures/faces_to_residuals.svg){fig-align="center" width="100%"}
+![](figures/resid_1.svg){fig-align="center"}
+
+## From the regression line to residuals
+
+![](figures/resid_2.svg){fig-align="center"}
+
+## From the regression line to residuals
+
+![](figures/resid_3.svg){fig-align="center"}
+
+## From the regression line to residuals
+
+![](figures/resid_34.svg){fig-align="center"}
+
+<!-- TODO about the figures above:
+color changes from fig 1 to fig 2
+sizes are wrong, particular for the last
+point size should be larger for the highlighted points specifically
+colorblind palette
+-->
+
+## From the regression line to residuals
 
 - Keep each face's happy rating on the horizontal axis.
 - Replace its trustworthy rating with its residual.
-- The blue face is the same observation in both panels.
+- The colored points were the same observation in each panels.
 
 ## What are we looking for?
 
-![](figures/faces_residual_patterns.svg){fig-align="center" width="100%"}
+We can do (almost) all assumption checks using the residuals
 
-1. **Centre:** Are residuals scattered around zero across $x$?
-2. **Spread:** Is the vertical spread roughly constant across $x$?
-
-. . .
-
-These are different questions. Look at both!
-
-::: {.notes}
-These are real OMI regressions, not three simulations with one isolated
-violation each. Typical is a relatively regular comparison; electable
-shows strong structure; smart shows changing spread. None is certified
-correct by looking less problematic than the others. Normality is not
-determined by the shape of the point cloud in this plot.
-:::
-
-## Checking linearity: look at the centre
-
-![](figures/faces_residual_centres.svg){fig-align="center" width="100%"}
-
-- Red: zero residual, where the fitted line predicts correctly.
-- Blue: a smooth description of the average residual across $x$.
+- If there is a systematic pattern, this suggests that the regression line misses part of the relationship.
 
 . . .
 
-A systematic curve suggests the straight line misses part of the relationship.
+- That is a check for linearity!
 
-::: {.notes}
-The smooth is a descriptive aid, not a significance test. Small wiggles,
-especially where few faces are observed, should not be overinterpreted.
-Even the cute example shows some curvature; compare its magnitude with
-the much stronger structure for electable.
-:::
+## Checking linearity from the residuals
 
-## Zero on average is not enough
+![](figures/dino_resid.svg){fig-align="center"}
 
-With an intercept, OLS residuals always average to zero.
+
+The dino is the nonlinear signal.
+
+
+## Checking linearity from the residuals
+
+![](figures/U-shaped_residuals.svg){fig-align="center"}
+
+## Checking linearity from the residuals
+
+![](figures/Plateau_residuals.svg){fig-align="center"}
+
+## Checking linearity from the residuals
+
+![](figures/Threshold_residuals.svg){fig-align="center"}
+
+## Faces: Cute vs. Trustworthy
+
+![](figures/cute_and_resid.svg){fig-align="center"}
+
+## Faces: Electable vs. Trustworthy
+
+![](figures/electable_and_resid.svg){fig-align="center"}
+
+<!-- TODO:
+
+continue below
+ -->
+
+## Residuals and Linearity
+
+- We can examine the residuals for any systematic pattern.
+  + If we find one, this can suggests that the regression line misses part of the relationship.
+    * the part that is nonlinear.
 
 . . .
 
-But a line can still:
-
-- predict too high for faces at one end of $x$;
-- predict too low for faces in the middle;
-- predict too high again at the other end.
+What about the other assumptions?
 
 . . .
 
-The assumption is about the **mean at each predictor value**, not just the overall mean.
+- Normality: Errors follow a normal distribution.
+- Homoscedasticity: Errors have the same variance for all $x$.
+- Independence: Errors are independent of each other.
 
+. . .
+
+We again examine the residuals!
 
 # Normality
 
-## Normal around which mean?
+## Normality
 
 $$
-Y_i\mid x_i \sim \mathcal N(\alpha + \beta x_i,\sigma_\epsilon^2)
+Y_i = \alpha + \beta x_i + \textcolor{blue}{\epsilon_i},
+\qquad \textcolor{blue}{\epsilon_i \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma_\epsilon^2)}
 $$
 
-![](figures/faces_normal_model.svg){fig-align="center" style="height: 260px; width: auto;"}
+Normality: Errors follow a normal distribution.
 
-At each $x$, the model assumes a normal distribution **around the population line**.
-
-::: {.notes}
-The blue bell shapes illustrate the assumed model using the fitted happy
-line and estimated error SD. They are not observed distributions at three
-exact happy ratings, and do not demonstrate that this assumption holds.
-The horizontal width of each bell represents relative density; its vertical
-position represents trustworthy ratings. The next figures assess the
-actual residuals, which show departures from this illustrative model.
-:::
-
-## What needs to be normal?
+. . .
 
 - The assumption concerns **errors around the population line**.
-- We examine the distribution of residuals as a diagnostic.
+- The outcome variable $y$ does not need to be normally distributed.
+- Only the prediction error is!
 
 . . .
 
-It does not require:
+We'll look at some examples and develop a new tool to examine deviations from normality: QQ-plots
 
-- a normally distributed predictor $x$;
-- a normally distributed outcome $y$ when all predictor values are pooled.
 
-. . .
+## Normality
 
-Normality, linearity, and equal variance are separate assumptions.
+![](figures/model_plot_normality_1.svg){fig-align="center"}
 
-## Faces: the predictor need not be normal
+At each value of the predictor $x_i$, mistakes are normally distributed.
 
-![](figures/faces_predictor_need_not_be_normal.svg){fig-align="center" width="100%"}
+## Normality
 
-The predictor has two peaks, while its residual Q-Q plot is fairly close to a straight line.
+![](figures/model_plot_normality_2.svg){fig-align="center"}
 
-::: {.notes}
-OMI gender is a continuous perceived-gender rating from 0 to 100, not a
-binary predictor and not a categorization of actual gender. This comparison
-illustrates that predictor normality is unnecessary. It does not establish
-that the complete regression model is appropriate: the existing diagnostic
-overview also shows structure in the residual centre for this predictor.
-:::
+By examining the residuals, the trend disappears.
+
+## Normality
+
+![](figures/model_plot_normality_3.svg){fig-align="center"}
+
+Now we can look at the residuals as a whole.
+
+## Normality
+
+![](figures/model_plot_normality_rotated.svg){fig-align="center"}
+
+## Normality
+
+![](figures/model_plot_normality_happy_vs_godly.svg){fig-align="center"}
+
+
+<!--
+
+W question:
+
+The assumption of normality means:
+
+A) y must be normally distributed
+B) x must be normally distributed
+C) the prediction error must be normally distributed
+D) all of the above
+
+ -->
 
 ## Residual histograms
 
-![](figures/faces_normal_histograms.svg){fig-align="center" width="100%"}
+The histogram of (the residuals of) Godly looks "more normal" than that of Happy.
 
-- Red: a normal curve with the residuals' mean and SD.
 - Godly: fairly symmetric and bell-shaped.
 - Happy: a longer right tail.
 
 . . .
 
-Histograms are useful, but their appearance depends on the bins.
+While histograms are useful, but their appearance depends on the bins.
+
+## Histograms depend on the bins
+
+![](figures/hist_bins.svg){fig-align="center"}
+
+## From histograms to QQ plots
+
+![](figures/hist_qq_sim_1.svg){fig-align="center"}
+
+## From histograms to QQ plots
+
+![](figures/hist_qq_sim_2.svg){fig-align="center"}
+
+## From histograms to QQ plots
+
+![](figures/hist_qq_sim_3.svg){fig-align="center"}
+
+## From histograms to QQ plots
+
+![](figures/hist_qq_sim_4.svg){fig-align="center"}
+
+## From histograms to QQ plots
+
+![](figures/hist_qq_sim_5.svg){fig-align="center"}
 
 ## How to read a normal Q-Q plot
 
-A Q-Q plot compares **ordered residuals** with the values expected from a normal distribution.
+<!-- A Q-Q plot compares _ordered residuals_ against a normal distribution. -->
+
+<!-- For example: -->
+
+- The sample residuals had mean 0 and standard deviation 8.86
+- A normal distribution would expect 97.5% of observations to fall below a value $1.96 \times 8.86=17.37$
+- In our sample, the top 97.5% of the residuals for happy fell were actually at 22.2
+  * we look at equally spaced percentages that we vary from almost 0% to almost 100%
+
+<!-- TODO: write the correct definition above -->
 
 . . .
 
-- Approximately normal: points follow an approximately straight line.
+- Approximately normal: points lie on a straight line.
 - Skewness or unusual tails: systematic departures from that line.
-- Some deviation is expected in a finite sample.
+- Some deviation is expected in a sample.
 
-. . .
 
-The reference line need not be horizontal or have slope 1.
+## QQ-plots for the Faces
 
-::: {.notes}
-The horizontal axis uses standard-normal quantiles, while the vertical
-axis uses residuals in the outcome's units. The line's slope reflects their
-scale. SPSS may instead display a normal P-P plot, which compares cumulative
-probabilities; approximate agreement also appears as a straight reference
-line. Students need to interpret these plots, not calculate quantiles.
+![](figures/model_plot_normality_qq_happy_vs_godly.svg){fig-align="center"}
+
+## Histograms and QQ-plots
+
+![](figures/model_plot_normality_hist_qq_happy_vs_godly.svg){fig-align="center"}
+
+## Faces: the predictor need not be normal
+
+
+::: {.columns}
+
+::: {.column}
+
+Let's consider a the regression
+
+$$
+\widehat{\mathrm{trustworthy}} = a + b \times \mathrm{gender}
+$$
+
+- gender was scored on a scale from 0 to 100.
+  + Like all other variables.
+
+
+Gender clearly has two peaks and is absolutely not normal.
+
+
 :::
 
-## Faces: normal Q-Q plots
+::: {.column}
 
-![](figures/faces_normal_qq.svg){fig-align="center" width="100%"}
+![](figures/gender_raw_normality.svg){fig-align="right"}
 
-- Godly: fairly close to the reference line.
-- Happy: clear departures, especially in the upper tail.
 
-. . .
+:::
 
-Describe the size and pattern of the departure, not just whether every point touches the line.
+:::
+
+<!--
+TODO: fragments
+first shows plot
+second shows conclusion
+ -->
+
+
 
 ## Normal-looking residuals are not enough
 
@@ -710,7 +841,7 @@ Describe the size and pattern of the departure, not just whether every point tou
 A normal-looking pooled residual distribution does not establish that the model is appropriate at each $x$.
 
 
-# Equal Error Variance
+# Constant Error Variance
 
 ## Homoscedasticity
 

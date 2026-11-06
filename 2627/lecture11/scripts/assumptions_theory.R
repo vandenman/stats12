@@ -3,6 +3,7 @@ library(ggplot2)
 library(fs)
 library(datasauRus)
 library(dplyr)
+library(patchwork)
 out_dir <- "lecture11/figures"
 save_figs <- function(..., width = 25, height = 25, units = "cm", .base) {
   if (...length() == 1L) {
@@ -22,6 +23,15 @@ plt_dino <- datasaurus_dozen |>
   theme_bw(base_size = 20)
 save_figs(plt_dino, .base = fs::path(out_dir, "dino", ext = "svg"))
 
+fit_dino <- lm(y ~ x, data = datasaurus_dozen |>  filter(dataset == "dino"))
+plt_dino_resid <- data.frame(x = fit_dino$model$x, y = residuals(fit_dino)) |> 
+  ggplot(mapping = aes(x, y)) +
+  geom_smooth(method = "lm", se = FALSE, color = "firebrick2") +
+  geom_point(shape = 21, fill = "grey70") +
+  theme_bw(base_size = 20)
+plt_dino_resid <- (plt_dino + ggtitle("Raw data") + plt_dino_resid + ggtitle("Residual plot")) + plot_layout(axes = "collect")
+
+save_figs(plt_dino_resid, width = 40, .base = fs::path(out_dir, "dino_resid", ext = "svg"))
 
 set.seed(42)
 n <- 100
@@ -79,6 +89,11 @@ dat <- do.call(
 dat$relation <- factor(dat$relation, levels = names(fun_list))
 dat_line <- dat[order(dat$relation, dat$x), ]
 
+dat <- dat |> group_by(relation) |> 
+  mutate(
+    residuals = residuals(lm(y ~ x))
+  )
+
 ggplot(dat, aes(x, y)) +
   geom_point(shape = 21, fill = "grey70", color = "grey40") +
   geom_line(data = dat_line, aes(y = mu), color = "dodgerblue3", linewidth = 1.2) +
@@ -105,7 +120,25 @@ figs <- sapply(seq_along(nms), \(i) {
     theme_bw(base_size = 28)
 })
 
+fig_resids <- sapply(seq_along(nms), \(i) {
+  
+  nm <- nms[i]
+  extraline <- if (nm == "Linear") {
+    NULL
+  } else {
+    geom_line(data = dat_line |> filter(relation == nm), aes(y = mu), color = "dodgerblue3", linewidth = 1.2)
+  }
+  figs[[i]] + (ggplot(dat |> filter(relation == nm), aes(x, y=residuals)) +
+    geom_point(shape = 21, fill = "grey70", color = "grey40") +
+    # extraline +
+    geom_smooth(method = "lm", se = FALSE, color = "firebrick2", linewidth = 1.2) +
+    facet_wrap(~relation) +
+    labs(x = xlabs[i], y = "Residuals") +
+    theme_bw(base_size = 28))
+})
+fig_resids[[1]]
+
 for (i in seq_along(names(fun_list)))
-  save_figs(figs[[i]], .base = fs::path(out_dir, names(fun_list)[i], ext = "svg"),
+  save_figs(fig_resids[[i]], .base = fs::path(out_dir, paste0(names(fun_list)[i], "_residuals"), ext = "svg"),
             width = 40)
 

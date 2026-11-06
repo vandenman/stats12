@@ -262,19 +262,21 @@ plot_resid <- function(fit) {
     geom_hline(yintercept = 0, colour = "red") +
     labs(x = all.vars(formula(fit))[2], y = "Residual", title = "Residuals vs. predictor")
 }
-plot_hist <- function(fit) {
+plot_hist <- function(fit, color = "red") {
   r <- residuals(fit)
   ggplot(data.frame(residual = r), aes(residual)) +
     geom_histogram(aes(y = after_stat(density)), bins = 30,
                    fill = "grey80", colour = "grey40") +
     stat_function(fun = dnorm, args = list(mean = mean(r), sd = sd(r)),
-                  colour = "red") +
+                  colour = color) +
     labs(x = "Residual", y = "Density", title = "Histogram")
 }
-plot_qq <- function(fit) {
-  ggplot(data.frame(residual = residuals(fit)), aes(sample = residual)) +
-    stat_qq(size = 0.7, alpha = 0.6) +
-    stat_qq_line(colour = "red") +
+plot_qq <- function(fit, color = "red") {
+  r <- residuals(fit)
+  dparams <- list(mean = mean(r), sd = sd(r))
+  ggplot(data.frame(residual = r), aes(sample = residual)) +
+    stat_qq_line(colour = color, dparams = dparams) +
+    stat_qq(size = 0.7, alpha = 0.6, dparams = dparams) +
     labs(x = "Theoretical quantile", y = "Residual quantile", title = "Q-Q plot")
 }
 plot_pp <- function(fit) {
@@ -398,10 +400,283 @@ ggplot(dat, aes(x = electable, y = trustworthy)) +
   ) +
   theme_bw(base_size = 20)
 
+## Interrim on residuals
+dat_temp <- dat |> 
+  mutate(resid_happy = residuals(all_fits$happy),
+         resid_cute  = residuals(all_fits$cute),
+         resid_electable  = residuals(all_fits$electable),
+         resid_gender  = residuals(all_fits$gender)
+         ) 
+
+ii <- c(
+  which.max(dat_temp$resid_happy),
+  which.max(-dat_temp$resid_happy),
+  which.min(abs(dat_temp$resid_happy)),
+  which.max(abs(dat_temp$resid_happy) * dat_temp$resid_happy > 0),
+  which.min(abs(dat_temp$resid_happy))
+)
+which(dat$happy < 15 & dat$happy > 10 & dat$trustworthy > 30 & dat$trustworthy < 40)
+
+i1 <- c(620, 175, 763)
+dat_temp$color <- "base"
+dat_temp$color[i1] <- as.character(seq_along(i1))
+fills <- c("base" = scales::alpha("black", .5))
+fills[1 + (seq_along(i1))] <- rainbow(length(i1), s = 0.4)
+names(fills)[1 + (seq_along(i1))] <- as.character(seq_along(i1))
+
+p0 <- ggplot(dat_temp, aes(x = happy, y = trustworthy,)) +
+  geom_point(shape = 21, fill = scales::alpha("black", .5)) + 
+  geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
+  scales +
+  theme_bw(base_size = 24) +
+  labs(x = "Happy", y = "Trustworthy")
+
+p1 <- ggplot(dat_temp, aes(x = happy, y = trustworthy, color = color, fill = color)) +
+  geom_point(shape = 21) + 
+  scale_color_manual(values = fills) +
+  scale_fill_manual(values = fills) +
+  geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
+  scales +
+  theme_bw(base_size = 24) + theme(legend.position = "none") +
+  labs(x = "Happy", y = "Trustworthy")
+
+datseg <- tibble(x = dat$happy[i1], y = dat_temp$trustworthy[i1], yend = predict(all_fits$happy, data.frame(happy = dat$happy[i1])),
+                 color = as.character(1:3))
+p2 <- p1 + geom_segment(data = datseg, mapping = aes(x = x, y = y, yend = yend, color = color)) +
+  scale_color_manual(values = fills) +
+  labs(x = "Happy", y = "Trustworthy")
+
+p3 <- ggplot(dat_temp, aes(x = happy, y = resid_happy, color = color, fill = color)) +
+  geom_point(shape = 21) + 
+  scale_color_manual(values = fills) +
+  scale_fill_manual(values = fills) +
+  geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
+  theme_bw(base_size = 24) + theme(legend.position = "none") +
+  labs(x = "Happy", y = "Residual")
+
+save_figs(p0, p1, p2, p3, width = 40, .base = fs::path(out_dir, "resid_%d.svg"))
+save_figs(
+  p2 + ggtitle("Distance from the fitted line") + p3 + ggtitle("Residual plot"), 
+  width = 40, .base = fs::path(out_dir, "resid_34.svg")
+)
+
+
+pr_cute <- ggplot(dat_temp, aes(x = cute, y = resid_cute)) +
+  geom_point(shape = 21, fill = scales::alpha("black", .5)) + 
+  geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
+  theme_bw(base_size = 24) + theme(legend.position = "none") +
+  scale_y_continuous(limits = c(-42, 22), breaks = seq(-40, 20, 20)) +
+  scale_x_continuous(limits = c(0, 90), breaks = seq(0, 80, 20)) +
+  labs(x = "Cute", y = "Residual")
+pr_electable <- ggplot(dat_temp, aes(x = electable, y = resid_electable)) +
+  geom_point(shape = 21, fill = scales::alpha("black", .5)) + 
+  geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
+  theme_bw(base_size = 24) + theme(legend.position = "none") +
+  scale_y_continuous(limits = c(-42, 22), breaks = seq(-40, 20, 20)) +
+  scale_x_continuous(limits = c(0, 90), breaks = seq(0, 80, 20)) +
+  labs(x = "Electable", y = "Residual")
+
+pr_cute_electable <- (pr_cute + pr_electable) + plot_layout(axes = "collect")
+save_figs(pr_cute_electable, .base = fs::path(out_dir, "resid_cute_electable.svg"))
+
+pr_cute <- ggplot(dat_temp, aes(x = cute, y = trustworthy)) +
+  geom_point(shape = 21, fill = scales::alpha("black", .5)) + 
+  geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
+  theme_bw(base_size = 24) + theme(legend.position = "none") +
+  scales +
+  labs(x = "Cute", y = "Trustworthy", title = "Raw data")
+pr_cute_resid <- ggplot(dat_temp, aes(x = cute, y = resid_cute)) +
+  geom_point(shape = 21, fill = scales::alpha("black", .5)) + 
+  geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
+  theme_bw(base_size = 24) + theme(legend.position = "none") +
+  scales[[1]] +
+  labs(x = "Cute", y = "Residual", title = "Residual plot")
+pr_cute_cute_resid <- (pr_cute + pr_cute_resid) + plot_layout(axes = "collect")
+
+pr_electable <- ggplot(dat_temp, aes(x = electable, y = trustworthy)) +
+  geom_point(shape = 21, fill = scales::alpha("black", .5)) + 
+  geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
+  theme_bw(base_size = 24) + theme(legend.position = "none") +
+  scales +
+  labs(x = "Electable", y = "Trustworthy", title = "Raw data")
+pr_electable_resid <- ggplot(dat_temp, aes(x = electable, y = resid_electable)) +
+  geom_point(shape = 21, fill = scales::alpha("black", .5)) + 
+  geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
+  theme_bw(base_size = 24) + theme(legend.position = "none") +
+  scales[[1]] +
+  labs(x = "Electable", y = "Residual", title = "Residual plot")
+pr_electable_electable_resid <- (pr_electable + pr_electable_resid) + plot_layout(axes = "collect")
+
+save_figs(pr_cute_cute_resid, width = 40, .base = fs::path(out_dir, "cute_and_resid.svg"))
+save_figs(pr_electable_electable_resid, width = 40, .base = fs::path(out_dir, "electable_and_resid.svg"))
+
+pr_electable <- ggplot(dat_temp, aes(x = electable, y = resid_electable)) +
+  geom_point(shape = 21, fill = scales::alpha("black", .5)) + 
+  geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
+  theme_bw(base_size = 24) + theme(legend.position = "none") +
+  scale_y_continuous(limits = c(-42, 22), breaks = seq(-40, 20, 20)) +
+  scale_x_continuous(limits = c(0, 90), breaks = seq(0, 80, 20)) +
+  labs(x = "Electable", y = "Residual")
+
 ## Assumption 2: Normal errors
+model_x <- c(15, 45, 75)
+model_bells <- do.call(rbind, lapply(model_x, function(x0) {
+  mu <- predict(all_fits$happy, newdata = data.frame(happy = x0))
+  y <- seq(mu - 2.8 * sigma(all_fits$happy), mu + 2.8 * sigma(all_fits$happy), length.out = 160)
+  data.frame(x0, y, x = x0 + 7 * dnorm(y, mu, sigma(all_fits$happy)) /
+               dnorm(mu, mu, sigma(all_fits$happy)))
+}))
+blue <- "dodgerblue"
+model_plot <- ggplot(dat, aes(x = happy, y = trustworthy)) +
+  geom_point(shape = 21, fill = scales::alpha("black", .5), alpha = .2) +
+  geom_abline(intercept = coef(all_fits$happy)[1], slope = coef(all_fits$happy)[2], colour = regressioncol, linewidth = 1) +
+  geom_segment(data = data.frame(x0 = model_x, mu = coef(all_fits$happy)[1] + coef(all_fits$happy)[2] * model_x),
+               aes(x = x0, xend = x0, y = mu - 2.8 * sigma(all_fits$happy),
+                   yend = mu + 2.8 * sigma(all_fits$happy)), inherit.aes = FALSE,
+               colour = blue, linetype = "dotted") +
+  geom_path(data = model_bells, aes(x, y, group = x0), inherit.aes = FALSE,
+            colour = blue, linewidth = 1.3) +
+  labs(x = "Happy", y = "Trustworthy") +
+  theme_bw(base_size = 24)
+model_plot
+
+model_bells2 <- do.call(rbind, lapply(model_x, function(x0) {
+  mu <- 0#predict(all_fits$happy, newdata = data.frame(happy = x0))
+  y <- seq(mu - 2.8 * sigma(all_fits$happy), mu + 2.8 * sigma(all_fits$happy), length.out = 160)
+  data.frame(x0, y, x = x0 + 7 * dnorm(y, mu, sigma(all_fits$happy)) /
+               dnorm(mu, mu, sigma(all_fits$happy)))
+}))
+model_plot_resid <- ggplot(dat_temp, aes(x = happy, y = resid_happy)) +
+  geom_point(shape = 21, fill = scales::alpha("black", .5), alpha = .2) +
+  geom_abline(intercept = 0, slope = 0, colour = regressioncol, linewidth = 1) +
+  geom_segment(data = data.frame(x0 = model_x, mu = 0),
+               aes(x = x0, xend = x0, y = 0 - 2.8 * sigma(all_fits$happy),
+                   yend = 0 + 2.8 * sigma(all_fits$happy)), inherit.aes = FALSE,
+               colour = blue, linetype = "dotted") +
+  geom_path(data = model_bells2, aes(x, y, group = x0), inherit.aes = FALSE,
+            colour = blue, linewidth = 1.3) +
+  labs(x = "Happy", y = "Residual") +
+  theme_bw(base_size = 24)
+model_plot_resid
+
+model_plot_resid_hist <- plot_hist(all_fits$happy, color = blue) + theme_bw(base_size = 24) + coord_flip() +
+  labs(x = NULL, y = NULL, title = NULL)
+model_plot_resid_hist_combined <- (model_plot_resid + model_plot_resid_hist) + plot_layout(widths = c(4, 1), axes = "collect")
+
+save_figs(model_plot, model_plot_resid, model_plot_resid_hist_combined,
+          width = 40, .base = fs::path(out_dir, "model_plot_normality_%d", ext = "svg"))
+
+model_plot_resid_hist2 <- plot_hist(all_fits$happy, color = blue) + theme_bw(base_size = 24) +
+  labs(x = "Residuals", y = "Density", title = "Residuals from Trustworthy = a + b x Happy")
+save_figs(model_plot_resid_hist2,
+          width = 40, .base = fs::path(out_dir, "model_plot_normality_rotated", ext = "svg"))
+
+model_plot_resid_hist2 <- plot_hist(all_fits$happy, color = blue) + theme_bw(base_size = 24) +
+  labs(x = "Residuals", y = "Density", title = "Residuals from\nTrustworthy = a + b x Happy")
+model_plot_resid_hist3 <- plot_hist(all_fits$godly, color = blue) + theme_bw(base_size = 24) +
+  labs(x = "Residuals", y = "Density", title = "Residuals from\nTrustworthy = a + b x Godly")
+save_figs(model_plot_resid_hist2 + model_plot_resid_hist3,
+          width = 40, .base = fs::path(out_dir, "model_plot_normality_happy_vs_godly", ext = "svg"))
+
+scales_qq <- list(
+  scale_x_continuous(limits = c(-38, 38), breaks = seq(-30, 30, 15)),
+  scale_y_continuous(limits = c(-38, 38), breaks = seq(-30, 30, 15))
+)
+model_plot_resid_qq2 <- plot_qq(all_fits$happy, color = blue) + theme_bw(base_size = 24) + scales_qq +
+  labs(title = "Q-Q plot for\nTrustworthy = a + b x Happy")
+model_plot_resid_qq3 <- plot_qq(all_fits$godly, color = blue) + theme_bw(base_size = 24) + scales_qq +
+  labs(title = "Q-Q plot for\nTrustworthy = a + b x Godly")
+save_figs((model_plot_resid_qq2 + model_plot_resid_qq3) + plot_layout(axes = "collect"),
+          width = 40, .base = fs::path(out_dir, "model_plot_normality_qq_happy_vs_godly", ext = "svg"))
+
+qnorm(97.5/100, mean(residuals(all_fits$happy)) ,sd(residuals(all_fits$happy)))
+qnorm(97.5/100) * sd(residuals(all_fits$happy))
+quantile(residuals(all_fits$happy), probs = 97.5/100)
+
+save_figs(
+  (
+    model_plot_resid_hist2 + ggtitle("Trustworthy = a + b x Happy") +
+    model_plot_resid_hist3 + ggtitle("Trustworthy = a + b x Godly")
+   ) / (
+     model_plot_resid_qq2 + ggtitle(NULL) +
+     model_plot_resid_qq3 + ggtitle(NULL)
+   ) + plot_layout(axes = "collect"),
+          width = 40, .base = fs::path(out_dir, "model_plot_normality_hist_qq_happy_vs_godly", ext = "svg"))
+
+gender_hist <- ggplot(dat, aes(gender)) +
+  geom_histogram(bins = 30, fill = "grey80", colour = "grey45") +
+  labs(x = "Perceived gender rating (0-100)", y = "Number of faces", title = "Histogram of the raw data") + theme_bw(base_size = 24)
+
+dparams <- list(mean = mean(dat$gender), sd = sd(dat$gender))
+gender_qq <- ggplot(dat, aes(sample = gender)) +
+  stat_qq_line(colour = blue, dparams = dparams) +
+  stat_qq(size = 0.7, alpha = 0.6, dparams = dparams) +
+  labs(x = "Theoretical quantile", y = "Residual quantile", title = "Q-Q plot of the raw data") +
+  theme_bw(base_size = 24)
+gender_hist / gender_qq
+
+save_figs(gender_hist / gender_qq,
+            width = 20, height = 21, .base = fs::path(out_dir, "gender_raw_normality", ext = "svg"))
+
+trust_gender_title <- sprintf(
+  "Trustworthy = %.2f + %.2f x Gender",
+  coef(all_fits$gender)[1], coef(all_fits$gender)[2]
+)
+scatter_gender <- ggplot(dat_temp, aes(x = gender, y = trustworthy)) +
+  geom_point(shape = 21, fill = scales::alpha("black", .5)) +
+  geom_smooth(method = "lm", colour = regressioncol, se = FALSE) +
+  labs(x = "Gender", y = "Trustworthy", title = trust_gender_title) +
+  theme_bw(base_size = 24)
+# TODO: panels for histogram and qq plot of residuals!
+
+
+## Example of non-normal y
+
+hist(dat$gender, breaks = 20)
+plot(lm(gender ~ trustworthy, dat))
+for (iv in ivs) {
+  for (dv in ivs) {
+    if (iv != dv) {
+      formula <- as.formula(paste0("`", iv, "`", "~", "`", dv, "`"))
+      fit <- lm(formula, dat)
+      
+      test_dv1 <- nortest::lillie.test(dat[[dv]])
+      test_dv2 <- shapiro.test(dat[[dv]])
+      test_resid1 <- nortest::lillie.test(residuals(fit))
+      test_resid2 <- shapiro.test(residuals(fit))
+      
+      check1 <- test_dv1$p.value < .01 || test_dv2$p.value < .01
+      check2 <- test_resid1$p.value >= .1 || test_resid1$p.value >= .1
+      if (check1 && check2) {
+        cat(paste0("`", iv, "`", "~", "`", dv, "`", "\n"))
+      }
+      
+    }
+  }
+}
+
+hist(dat$outgoing)
+qqnorm(dat$outgoing); qqline(dat$outgoing)
+fit_godly_cute <- lm(outgoing ~ happy, dat)
+with(dat, plot(outgoing, happy))
+plot_resid(fit_godly_cute)
+plot_qq(fit_godly_cute)
+
+# TODO:
+# could be a good wooclap question!
+# show the panels side by side
+# is the assumption of normality violated?
+
+hist(dat$godly)
+qqnorm(dat$godly); qqline(dat$godly)
+fit_godly_cute <- lm(godly ~ cute, dat)
+with(dat, plot(godly, cute))
+plot_resid(fit_godly_cute)
+plot_qq(fit_godly_cute)
+
 (
-  plot_hist(all_fits$godly) +
-  plot_hist(all_fits$happy)
+  plot_hist(all_fits$godly) + ggtitle("Godly") +
+  plot_hist(all_fits$happy) + ggtitle("Happy")
 ) + patchwork::plot_layout(axes = "collect") & theme_bw(base_size = 18)
 
 (
