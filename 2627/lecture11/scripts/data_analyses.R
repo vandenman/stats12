@@ -35,14 +35,17 @@ out_dir <- "lecture11/figures"
 img_dir <- "~/github/education/omi/images"
 if (!dir.exists(out_dir)) dir.create(out_dir)
 
-save_figs <- function(..., width = 25, height = 25, units = "cm", .base) {
+save_figs <- function(..., width = 25, height = 25, units = "cm", limitsize = TRUE, .base) {
+  dont_save <- getOption("dont_save", FALSE)
+  if (dont_save) return()
+  
   if (...length() == 1L) {
     ggsave(...elt(1), file = .base,
-           width = width, height = height, units = units)
+           width = width, height = height, units = units, limitsize = limitsize)
   } else
     for (i in seq_len(...length()))
       ggsave(...elt(i), file = sprintf(.base, i),
-             width = width, height = height, units = units)
+             width = width, height = height, units = units, limitsize = limitsize)
 }
 
 optimize_svg <- function(src, images = NULL,
@@ -50,6 +53,9 @@ optimize_svg <- function(src, images = NULL,
                          format = "jpeg",
                          width = 256,
                          quality = 85) {
+  
+  dont_save <- getOption("dont_save", FALSE)
+  if (dont_save) return()
   
   doc <- read_xml(src)
   nodes <- xml_find_all(doc, ".//*[local-name()='image']")
@@ -139,14 +145,16 @@ scales <- list(
 
 wminmax <- function(x) c(which.min(x), which.max(x))
 make_img_layer <- function(dat, variable_x, variable_y, size = 0.15,
-                           angle = -75 * pi / 180) {
-  ix12 <- wminmax(dat[[variable_x]])
+                           angle = -75 * pi / 180, arrow_length = 30,
+                           outward = c(-1, 1),
+                           ix12 = wminmax(dat[[variable_x]])) {
+  # ix12 <- wminmax(dat[[variable_x]])
   
   extrema_x <- dat[[variable_x]][ix12]
   extrema_y <- dat[[variable_y]][ix12]
   
   rho <- cor(dat[[variable_x]], dat[[variable_y]], use = "pairwise")
-  arrow_length <- 30
+  
   # Angles are in radians, ordered by minimum and maximum variable_x.
   if (!is.numeric(angle) || !length(angle) %in% c(1L, length(ix12)) ||
       any(!is.finite(angle))) {
@@ -154,7 +162,7 @@ make_img_layer <- function(dat, variable_x, variable_y, size = 0.15,
   }
   angle <- rep_len(angle, length(ix12))
   
-  outward <- c(-1, 1)
+  # outward <- c(-1, 1)
   x_img <- extrema_x + outward * arrow_length * cos(angle)
   y_img <- extrema_y + if (rho > 0) {
     -outward * arrow_length * sin(angle)
@@ -224,7 +232,7 @@ pp123 <- (pp1 + pp2 + pp3 + patchwork::plot_layout(axes = "collect")) & coord_ca
 src <- file.path(out_dir, "scatter_side_by_side2.svg")
 width <- 25
 # 1 panel should be 50 x 25, so three 
-ggsave(filename = src, pp123, width = (50*3) / 3, height = (25*3) / 3, units = "cm")
+save_figs(pp123, .base = src, width = (50*3) / 3, height = (25*3) / 3, units = "cm")
 imgs <- file.path(img_dir, paste0(
   c(wminmax(dat$`well-groomed`), wminmax(dat$dominant), wminmax(dat$memorable)),
   ".jpg"))
@@ -298,7 +306,7 @@ residual_panels <- unlist(lapply(names(all_fits), \(iv) {
 }), recursive = FALSE)
 residual_grid <- patchwork::wrap_plots(residual_panels, ncol = 4) &
   theme_bw(base_size = 9)
-ggsave(file.path(out_dir, "residual_diagnostics_33x4.pdf"), residual_grid,
+save_figs(residual_grid, .base = file.path(out_dir, "residual_diagnostics_33x4.pdf"),
        width = 12.8, height = 33 * 2.5, units = "in", limitsize = FALSE)
 
 oo <- order(unlist(shaps["statistic", ]))
@@ -341,12 +349,12 @@ scales <- list(
 )
 
 fig_linear_11 <- ggplot(dat, aes(x = cute, y = trustworthy)) +
-  geom_point(shape = 21, fill = scales::alpha("black", .5)) + 
+  geom_point(shape = 21, fill = "grey") + 
   geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
   scales +
   theme_bw(base_size = 24)
 fig_linear_12 <- ggplot(dat, aes(x = electable, y = trustworthy)) +
-  geom_point(shape = 21, fill = scales::alpha("black", .5)) + 
+  geom_point(shape = 21, fill = "grey") + 
   geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
   scales +
   theme_bw(base_size = 24)
@@ -356,7 +364,7 @@ dat_cluster_curve <- tibble(
   y = 65 + 20 * (x / 28)^10
 )
 fig_linear_13 <- ggplot(dat, aes(x = electable, y = trustworthy)) +
-  geom_point(shape = 21, fill = scales::alpha("black", .5)) + 
+  geom_point(shape = 21, fill = "grey") + 
   # geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
   geom_line(data = dat_cluster_curve, aes(x, y),
             inherit.aes = FALSE, linewidth = 1, colour = "dodgerblue") +
@@ -402,10 +410,12 @@ ggplot(dat, aes(x = electable, y = trustworthy)) +
 
 ## Interrim on residuals
 dat_temp <- dat |> 
-  mutate(resid_happy = residuals(all_fits$happy),
-         resid_cute  = residuals(all_fits$cute),
-         resid_electable  = residuals(all_fits$electable),
-         resid_gender  = residuals(all_fits$gender)
+  mutate(resid_happy     = residuals(all_fits$happy),
+         resid_cute      = residuals(all_fits$cute),
+         resid_electable = residuals(all_fits$electable),
+         resid_gender    = residuals(all_fits$gender),
+         resid_smart     = residuals(all_fits$smart),
+         resid_typical   = residuals(all_fits$typical)
          ) 
 
 ii <- c(
@@ -417,39 +427,48 @@ ii <- c(
 )
 which(dat$happy < 15 & dat$happy > 10 & dat$trustworthy > 30 & dat$trustworthy < 40)
 
+
 i1 <- c(620, 175, 763)
 dat_temp$color <- "base"
 dat_temp$color[i1] <- as.character(seq_along(i1))
-fills <- c("base" = scales::alpha("black", .5))
+# fills <- c("base" = scales::alpha("black", .5))
+thm <- theme_bw(base_size = 24)
+fills <- c("base" = "grey")
 fills[1 + (seq_along(i1))] <- rainbow(length(i1), s = 0.4)
-names(fills)[1 + (seq_along(i1))] <- as.character(seq_along(i1))
+colls <- fills; colls[1] <- "black"
 
-p0 <- ggplot(dat_temp, aes(x = happy, y = trustworthy,)) +
-  geom_point(shape = 21, fill = scales::alpha("black", .5)) + 
+names(fills)[1 + (seq_along(i1))] <- as.character(seq_along(i1))
+sizes <- setNames(c(thm$point$size*.75, rep(1.35 * thm$point$size, 3)), names(fills))
+
+the_scales <- list(scale_color_manual(values = colls), scale_fill_manual(values = fills), scale_size_manual(values = sizes))
+
+p0 <- ggplot(dat_temp, aes(x = happy, y = trustworthy)) +
+  geom_point(shape = 21, fill = "grey", size = sizes[1]) + 
   geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
-  scales +
+  scales + 
   theme_bw(base_size = 24) +
   labs(x = "Happy", y = "Trustworthy")
 
-p1 <- ggplot(dat_temp, aes(x = happy, y = trustworthy, color = color, fill = color)) +
+p1 <- ggplot(dat_temp, aes(x = happy, y = trustworthy, color = color, fill = color, size = color)) +
+  make_img_layer(dat, "happy", "trustworthy", angle = c(20, 150, 20) * pi / 180, ix12 = i1, outward = c(-1, 1, 1), arrow_length = 15) +
   geom_point(shape = 21) + 
-  scale_color_manual(values = fills) +
-  scale_fill_manual(values = fills) +
+  the_scales +
   geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
   scales +
   theme_bw(base_size = 24) + theme(legend.position = "none") +
   labs(x = "Happy", y = "Trustworthy")
+p0
+p1
 
 datseg <- tibble(x = dat$happy[i1], y = dat_temp$trustworthy[i1], yend = predict(all_fits$happy, data.frame(happy = dat$happy[i1])),
                  color = as.character(1:3))
-p2 <- p1 + geom_segment(data = datseg, mapping = aes(x = x, y = y, yend = yend, color = color)) +
-  scale_color_manual(values = fills) +
+p2 <- p1 + geom_segment(data = datseg, mapping = aes(x = x, y = y, yend = yend, color = color), linewidth = 1.5) +
   labs(x = "Happy", y = "Trustworthy")
 
-p3 <- ggplot(dat_temp, aes(x = happy, y = resid_happy, color = color, fill = color)) +
+p3 <- ggplot(dat_temp, aes(x = happy, y = resid_happy, color = color, fill = color, size = color)) +
+  make_img_layer(dat_temp, "happy", "resid_happy", angle = c(20, 150, 20) * pi / 180, ix12 = i1, outward = c(-1, 1, 1), arrow_length = 15) +
   geom_point(shape = 21) + 
-  scale_color_manual(values = fills) +
-  scale_fill_manual(values = fills) +
+  the_scales +
   geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
   theme_bw(base_size = 24) + theme(legend.position = "none") +
   labs(x = "Happy", y = "Residual")
@@ -459,7 +478,8 @@ save_figs(
   p2 + ggtitle("Distance from the fitted line") + p3 + ggtitle("Residual plot"), 
   width = 40, .base = fs::path(out_dir, "resid_34.svg")
 )
-
+srcs <- c(sprintf(fs::path(out_dir, "resid_%d.svg"), 1:4), fs::path(out_dir, "resid_34.svg"))
+sapply(srcs, optimize_svg)
 
 pr_cute <- ggplot(dat_temp, aes(x = cute, y = resid_cute)) +
   geom_point(shape = 21, fill = scales::alpha("black", .5)) + 
@@ -480,13 +500,13 @@ pr_cute_electable <- (pr_cute + pr_electable) + plot_layout(axes = "collect")
 save_figs(pr_cute_electable, .base = fs::path(out_dir, "resid_cute_electable.svg"))
 
 pr_cute <- ggplot(dat_temp, aes(x = cute, y = trustworthy)) +
-  geom_point(shape = 21, fill = scales::alpha("black", .5)) + 
+  geom_point(shape = 21, fill = "grey") + 
   geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
   theme_bw(base_size = 24) + theme(legend.position = "none") +
   scales +
   labs(x = "Cute", y = "Trustworthy", title = "Raw data")
 pr_cute_resid <- ggplot(dat_temp, aes(x = cute, y = resid_cute)) +
-  geom_point(shape = 21, fill = scales::alpha("black", .5)) + 
+  geom_point(shape = 21, fill = "grey") + 
   geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
   theme_bw(base_size = 24) + theme(legend.position = "none") +
   scales[[1]] +
@@ -494,13 +514,13 @@ pr_cute_resid <- ggplot(dat_temp, aes(x = cute, y = resid_cute)) +
 pr_cute_cute_resid <- (pr_cute + pr_cute_resid) + plot_layout(axes = "collect")
 
 pr_electable <- ggplot(dat_temp, aes(x = electable, y = trustworthy)) +
-  geom_point(shape = 21, fill = scales::alpha("black", .5)) + 
+  geom_point(shape = 21, fill = "grey") + 
   geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
   theme_bw(base_size = 24) + theme(legend.position = "none") +
   scales +
   labs(x = "Electable", y = "Trustworthy", title = "Raw data")
 pr_electable_resid <- ggplot(dat_temp, aes(x = electable, y = resid_electable)) +
-  geom_point(shape = 21, fill = scales::alpha("black", .5)) + 
+  geom_point(shape = 21, fill = "grey") + 
   geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
   theme_bw(base_size = 24) + theme(legend.position = "none") +
   scales[[1]] +
@@ -627,7 +647,184 @@ scatter_gender <- ggplot(dat_temp, aes(x = gender, y = trustworthy)) +
   geom_smooth(method = "lm", colour = regressioncol, se = FALSE) +
   labs(x = "Gender", y = "Trustworthy", title = trust_gender_title) +
   theme_bw(base_size = 24)
+
+scales <- list(
+  scale_x_continuous(breaks = seq(0, 100, 20), limits = c(0, 100), oob = scales::oob_keep),
+  scale_y_continuous(breaks = seq(0, 100, 20), limits = c(0, 100), oob = scales::oob_keep)
+)
+scatter_gender <- ggplot(dat_temp, aes(gender, trustworthy)) +
+  make_img_layer(dat, "gender", "trustworthy", angle = c(95, 95) * pi / 180) +
+  geom_point(shape = 21, fill = "grey") +
+  geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
+  scales +
+  labs(x = "Gender", y = "Trustworthy", title = trust_gender_title) +
+  theme_bw(base_size = 24)
+resid_gender <- ggplot(dat_temp, aes(gender, resid_gender)) +
+  make_img_layer(dat_temp, "gender", "resid_gender", angle = c(82, 82) * pi / 180, arrow_length = 20) +
+  geom_point(shape = 21, fill = "grey") +
+  geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
+  labs(x = "Gender", y = "Residuals", title = trust_gender_title) +
+  theme_bw(base_size = 24)
+
+
+gender_resid_hist <- plot_hist(all_fits$gender, color = blue) + theme_bw(base_size = 24) +
+  ggtitle("Histogram of the residuals")
+
+dparams <- list(mean = mean(dat_temp$resid_gender), sd = sd(dat_temp$resid_gender))
+gender_resid_qq <- ggplot(dat_temp, aes(sample = resid_gender)) +
+  stat_qq_line(colour = blue, dparams = dparams) +
+  stat_qq(size = 0.7, alpha = 0.6, dparams = dparams) +
+  labs(x = "Theoretical quantile", y = "Residual quantile", title = "Q-Q plot of the residuals") +
+  theme_bw(base_size = 24)
+
+scatter_gender
+resid_gender
+gender_resid_hist + plot_spacer()
+gender_resid_hist + gender_resid_qq
+
+src1 <- fs::path(out_dir, "trustworthy_vs_gender", ext = "svg")
+src2 <- fs::path(out_dir, "trustworthy_vs_gender_resid", ext = "svg")
+save_figs(scatter_gender, .base = src1, width = 40)
+optimize_svg(src1, width = 256, quality = 85)
+save_figs(resid_gender, .base = src2, width = 40)
+optimize_svg(src2, width = 256, quality = 85)
+save_figs(
+  gender_resid_hist + plot_spacer(),
+  gender_resid_hist + gender_resid_qq, .base = fs::path(out_dir, "trustworthy_vs_gender_resid_qq_%d", ext = "svg"), width = 40)
+
 # TODO: panels for histogram and qq plot of residuals!
+
+## Heteroscedastic
+
+i_typical <- findInterval(dat$typical, seq(0, 100, 10))
+range(i_typical)
+range(dat$typical)
+seq(0, 100, 10)[c(4, 10)]
+sapply(split(dat$typical, i_typical),range)
+sapply(split(residuals(all_fits$typical), i_typical), sd)
+
+i_smart <- findInterval(dat$smart, seq(0, 100, 10))
+range(i_smart)
+range(dat$typical)
+seq(0, 100, 10)[c(3, 10)]
+
+resid_tib <- bind_rows(
+  lapply(names(all_fits), \(nm) {
+    tibble(x = model.matrix(all_fits[[nm]])[, 2],
+           r = residuals(all_fits[[nm]]), nm = nm)
+  })
+)
+resid_tib_sd <- resid_tib |> 
+  mutate(i = findInterval(x, seq(0, 100, 10))) |> 
+  summarise(sd_r = sd(r), n = length(r), .by = c(nm, i))  
+
+resid_tib_sd <- resid_tib_sd |> 
+  mutate(
+    # label = sprintf("sd=%.2f\nn=%d", sd_r, n),
+    label = sprintf("sd=%.1f", sd_r),
+    x_coord = (seq(0, 100, 10)[i] + seq(0, 100, 10)[i+1]) / 2
+  )
+
+scales <- list(
+  scale_x_continuous(breaks = seq(20, 80, 20), limits = c(20, 90), oob = scales::oob_keep),
+  scale_y_continuous(breaks = seq(20, 80, 20), limits = c(20, 90), oob = scales::oob_keep)
+)
+y_scale <- scale_y_continuous(breaks = seq(-30, 30, 30), limits = c(-35, 30), oob = scales::oob_keep)
+trust_smart_title <- sprintf("Trustworthy = %.2f + %.2f x Smart", coef(all_fits$smart)[1], coef(all_fits$smart)[2])
+trust_typical_title <- sprintf("Trustworthy = %.2f + %.2f x Typical", coef(all_fits$typical)[1], coef(all_fits$typical)[2])
+scatter_smart <- ggplot(dat_temp, aes(smart, trustworthy)) +
+  make_img_layer(dat, "smart", "trustworthy", angle = c(80, 80) * pi / 180) +
+  geom_point(shape = 21, fill = "grey") +
+  geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
+  scales +
+  labs(x = "Smart", y = "Trustworthy", title = trust_smart_title) +
+  theme_bw(base_size = 24)
+scatter_typical <- ggplot(dat_temp, aes(typical, trustworthy)) +
+  make_img_layer(dat, "typical", "trustworthy", angle = c(80, 80) * pi / 180) +
+  geom_point(shape = 21, fill = "grey") +
+  geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
+  scales +
+  labs(x = "Typical", y = "Trustworthy", title = trust_typical_title) +
+  theme_bw(base_size = 24)
+resid_smart <- ggplot(dat_temp, aes(smart, resid_smart)) +
+  make_img_layer(dat_temp, "smart", "resid_smart", angle = c(82, 82) * pi / 180, arrow_length = 20) +
+  geom_point(shape = 21, fill = "grey") +
+  geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
+  labs(x = "Smart", y = "Residuals", title = trust_gender_title) +
+  y_scale +
+  theme_bw(base_size = 24)
+resid_typical <- ggplot(dat_temp, aes(typical, resid_typical)) +
+  make_img_layer(dat_temp, "typical", "resid_typical", angle = c(82, 82) * pi / 180, arrow_length = 20) +
+  geom_point(shape = 21, fill = "grey") +
+  geom_smooth(method = "lm", se = FALSE, colour = regressioncol) +
+  labs(x = "Typical", y = "Residuals", title = trust_gender_title) +
+  y_scale +
+  theme_bw(base_size = 24)
+
+scatter_smart_typical <- scatter_typical + scatter_smart + plot_layout(axes = "collect")
+resid_smart_typical   <- resid_typical + resid_smart + plot_layout(axes = "collect")
+save_figs(scatter_smart_typical, resid_smart_typical, width = 40, .base = fs::path(out_dir, "smart_typical_%d", ext = "svg"))
+sapply(sprintf(fs::path(out_dir, "smart_typical_%d", ext = "svg"), 1:2), optimize_svg)
+
+
+typical_resid_hist <- plot_hist(all_fits$typical, color = blue) + theme_bw(base_size = 24) + ggtitle("Typical - Histogram of residuals")
+smart_resid_hist <- plot_hist(all_fits$smart, color = blue) + theme_bw(base_size = 24)   + ggtitle("Smart - Histogram of residuals")
+
+dparams <- list(mean = mean(dat_temp$resid_typical), sd = sd(dat_temp$resid_typical))
+typical_resid_qq <- ggplot(dat_temp, aes(sample = resid_typical)) +
+  stat_qq_line(colour = blue, dparams = dparams) +
+  stat_qq(size = 0.7, alpha = 0.6, dparams = dparams) +
+  labs(x = "Theoretical quantile", y = "Residual quantile", title = "Typical - Q-Q plot") +
+  theme_bw(base_size = 24)
+
+dparams <- list(mean = mean(dat_temp$resid_smart), sd = sd(dat_temp$resid_smart))
+smart_resid_qq <- ggplot(dat_temp, aes(sample = resid_smart)) +
+  stat_qq_line(colour = blue, dparams = dparams) +
+  stat_qq(size = 0.7, alpha = 0.6, dparams = dparams) +
+  labs(x = "Theoretical quantile", y = "Residual quantile", title = "Smart - Q-Q plot") +
+  theme_bw(base_size = 24)
+
+combined <- (typical_resid_hist + smart_resid_hist) / (typical_resid_qq + smart_resid_qq)
+save_figs(combined, width = 55, .base = fs::path(out_dir, "smart_typical_hist_qq", ext = "svg"))
+
+scales <- list(
+  scale_x_continuous(breaks = seq(20, 90, 10), limits = c(20, 90)),
+  scale_y_continuous(breaks = seq(-30, 30, 30), limits = c(-36, 45))
+)
+p11 <- plot_resid(all_fits$typical) + scales + labs(x = "Typical", title = "Residual plot") + theme_bw(base_size = 24) +
+  scale_x_continuous(breaks = seq(30, 90, 10), limits = c(30, 90))
+p12 <- plot_resid(all_fits$smart)   + scales + labs(x = "Smart",   title = "Residual plot") + theme_bw(base_size = 24)
+
+p13 <- p11 + 
+  geom_vline(xintercept = seq(20, 90, 10), colour = blue, linetype = "dashed") +
+  geom_text(data = resid_tib_sd |> filter(nm == "typical"), 
+            mapping = aes(x = x_coord, y = 40, label = label))
+p23 <- p12 + 
+  geom_vline(xintercept = seq(20, 90, 10), colour = blue, linetype = "dashed") +
+  geom_text(data = resid_tib_sd |> filter(nm == "smart"), 
+            mapping = aes(x = x_coord, y = 40, label = label))
+
+p12a <- (p11 + p12) + plot_layout(axes = "collect") 
+
+p12b <- p12a & geom_vline(xintercept = seq(20, 90, 10), colour = blue, linetype = "dashed")
+p12c <- (p13 + p23) + plot_layout(axes = "collect") 
+
+# p12a
+# p12b
+# p12c
+# save_figs(p12a, p12b, p12c, width = 75, .base = fs::path(out_dir, "residual_variance_%d", ext = "svg"))
+
+nt <- labs(title = NULL)
+p122a <- ((p11 + nt) / (p12 + nt)) + plot_layout(axes = "collect") 
+
+p122b <- p122a & geom_vline(xintercept = seq(20, 90, 10), colour = blue, linetype = "dashed")
+p122c <- ((p13 + nt) / (p23 + nt)) + plot_layout(axes = "collect") 
+
+# p122a
+# p122b
+# p122c
+m <- 3/7
+save_figs(p122a, p122b, p122c, width = 75 * m, height = 45*m, .base = fs::path(out_dir, "residual_variance2_%d", ext = "svg"))
 
 
 ## Example of non-normal y
@@ -701,27 +898,6 @@ plot_qq(fit_godly_cute)
 ) + patchwork::plot_layout(axes = "collect") & theme_bw(base_size = 18)
 
 
-i_typical <- findInterval(dat$typical, seq(0, 100, 10))
-range(i_typical)
-range(dat$typical)
-seq(0, 100, 10)[c(4, 10)]
-sapply(split(dat$typical, i_typical),range)
-sapply(split(residuals(all_fits$typical), i_typical), sd)
-
-i_smart <- findInterval(dat$smart, seq(0, 100, 10))
-range(i_smart)
-range(dat$typical)
-seq(0, 100, 10)[c(3, 10)]
-
-resid_tib <- bind_rows(
-  lapply(names(all_fits), \(nm) {
-    tibble(x = model.matrix(all_fits[[nm]])[, 2],
-          r = residuals(all_fits[[nm]]), nm = nm)
-  })
-)
-resid_tib_sd <- resid_tib |> 
-  mutate(i = findInterval(x, seq(0, 100, 10))) |> 
-  summarise(sd_r = sd(r), n = length(r), .by = c(nm, i))  
 
 ggplot(resid_tib_sd |> filter(nm == "typical"), aes(x = i, y = sd_r, color = nm, group = nm)) +
   geom_line()

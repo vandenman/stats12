@@ -43,15 +43,14 @@ TODO:
 
 - recap should probably use the same data example as last time
 
-- show the happy and memorableness F-test results.
-  - reiterate that statistically significant doesn't imply pratical relevance.
 
+TODO:
 
+- move shapiro-wilk to normality?
+- homoscedastic situation should go slower
+- Wooclap! some questions are already there in the slide/ R code
 
-- gender: looks weird but actually no issues?
-- age: nonnormal AND heteroscedastic?
-
- -->
+-->
 
 ::: {.hidden}
 $$
@@ -67,6 +66,59 @@ $$
 \newcommand{\MSE}{\mathrm{MSE}}
 \newcommand{\MSR}{\mathrm{MSR}}
 $$
+:::
+
+
+## Trustworthy Faces
+
+Recall The One Million Impressions (OMI) dataset, which contains over a million human judgments of over 1,000 synthetic face images along 34 attributes.
+
+. . .
+
+Participants judged faces on a scale from 0 to 100 on attributes such as
+
+::: {.columns}
+
+::: {.column width = "33%"}
+
+- trustworthy
+- attractive
+
+
+:::
+
+::: {.column width = "33%"}
+
+- smart
+- memorable
+
+:::
+
+::: {.column width = "33%"}
+
+- dominant
+- well-groomed
+
+:::
+
+:::
+
+. . .
+
+Each observation is the average rating across many participants.
+
+. . .
+
+- We can do 33 regressions
+- Each may or may not violate the assumptions.
+
+
+::: footer
+
+Peterson, J. C., Uddenberg, S., Griffiths, T. L., Todorov, A., & Suchow, J. W. (2022). Deep models of superficial face judgments. Proceedings of the National Academy of Sciences (PNAS), 119(17), e2115228119. doi:10.1073/pnas.2115228119
+
+source: <https://github.com/jcpeterson/omi/>
+
 :::
 
 ## Trustworthiness vs. Happiness
@@ -110,9 +162,9 @@ For the slope everything worked out the same, but with $b$ instead of $a$.
 
 ## Comparing two models
 
-Before we compared individually $a$ and $b$ against 0 or specific values.
+Rather than individually comparing $a$ and $b$ against 0 or specific values,
 
-Now we'll examine a test to compare two models:
+we can also compare two models:
 
 :::: {.r-stack}
 
@@ -327,62 +379,6 @@ Today:
 - To complicate things, sometimes assumptions are violated, but the consequences are minor.
   * Example: Z vs. $t$-test when the sample size is larger
 
-## Trustworthy Faces (continued)
-
-Recall The One Million Impressions (OMI) dataset, which contains over a million human judgments of over 1,000 synthetic face images along 34 attributes.
-
-. . .
-
-Participants judged faces on a scale from 0 to 100 on attributes such as
-
-::: {.columns}
-
-::: {.column width = "33%"}
-
-- trustworthy
-- attractive
-
-
-:::
-
-::: {.column width = "33%"}
-
-- smart
-- memorable
-
-:::
-
-::: {.column width = "33%"}
-
-- dominant
-- well-groomed
-
-:::
-
-:::
-
-. . .
-
-Each observation is the average rating across many participants.
-
-<!-- SUGGESTION: Averaging participant ratings does not itself establish
-independence between face-level observations. Shared raters or related
-stimuli may matter. The independence section returns to this question. -->
-
-. . .
-
-- We can do 33 regressions
-- Each may or may not violate the assumptions.
-
-
-::: footer
-
-Peterson, J. C., Uddenberg, S., Griffiths, T. L., Todorov, A., & Suchow, J. W. (2022). Deep models of superficial face judgments. Proceedings of the National Academy of Sciences (PNAS), 119(17), e2115228119. doi:10.1073/pnas.2115228119
-
-source: <https://github.com/jcpeterson/omi/>
-
-:::
-
 
 ## Linear Regression Assumptions
 
@@ -414,23 +410,19 @@ $$
 ::: {.fragment fragment-index="1"}
 
 1. Linearity
-
-- The association between $x$ and $y$ is a straight line.
-
-<!-- SUGGESTION: More precisely, the population mean of Y at each x lies
-on a straight line; individual outcomes need not lie on the line. -->
+   - The association between $x$ and $y$ is a straight line.
 
 :::
 
 ::: {.fragment fragment-index="2"}
 
 2. Assumptions about the errors
-
-- Normality: Errors follow a normal distribution.
-- Homoscedasticity: Errors have the same variance for all $x$.
-- Independence: Errors are independent of each other.
+   - Normality: Errors follow a normal distribution.
+   - Homoscedasticity: Errors have the same variance for all $x$.
+   - Independence: Errors are independent of each other.
 
 :::
+
 
 ## Linearity
 
@@ -494,7 +486,7 @@ retained as requested. -->
 ![](figures/faces_linear2_5.svg){fig-align="center"}
 
 
-# Testing Assumptions
+# Residuals
 
 ## Errors and residuals
 
@@ -523,27 +515,6 @@ $$
 
 ::::
 
-::: {.fragment fragment-index="1"}
-
-1. Linearity
-
-- The association between $x$ and $y$ is a straight line.
-
-<!-- SUGGESTION: More precisely, the population mean of Y at each x lies
-on a straight line; individual outcomes need not lie on the line. -->
-
-:::
-
-::: {.fragment fragment-index="2"}
-
-2. Assumptions about the errors
-
-- Normality: Errors follow a normal distribution.
-- Homoscedasticity: Errors have the same variance for all $x$.
-- Independence: Errors are independent of each other.
-
-:::
-
 
 ## Errors and residuals
 
@@ -564,7 +535,7 @@ $$
 In our sample:
 
 $$
-\hat{y}_i = a + b\times x_i + \res
+\hat{y}_i = a + b\times x_i
 \qquad
 \text{so,}\qquad
 e_i = y_i - \hat y_i = y_i - (a + b x_i)
@@ -575,26 +546,19 @@ $$
 
 ## From the regression line to residuals
 
-![](figures/resid_1.svg){fig-align="center"}
+![](figures/resid_1optimized.svg){fig-align="center"}
 
 ## From the regression line to residuals
 
-![](figures/resid_2.svg){fig-align="center"}
+![](figures/resid_2optimized.svg){fig-align="center"}
 
 ## From the regression line to residuals
 
-![](figures/resid_3.svg){fig-align="center"}
+![](figures/resid_3optimized.svg){fig-align="center"}
 
 ## From the regression line to residuals
 
-![](figures/resid_34.svg){fig-align="center"}
-
-<!-- TODO about the figures above:
-color changes from fig 1 to fig 2
-sizes are wrong, particular for the last
-point size should be larger for the highlighted points specifically
-colorblind palette
--->
+![](figures/resid_34optimized.svg){fig-align="center"}
 
 ## From the regression line to residuals
 
@@ -827,81 +791,70 @@ first shows plot
 second shows conclusion
  -->
 
+## Faces: the predictor need not be normal
 
+![](figures/trustworthy_vs_genderoptimized.svg){fig-align="center"}
 
-## Normal-looking residuals are not enough
+## Faces: the predictor need not be normal
 
-![](figures/faces_normal_is_not_enough.svg){fig-align="center" width="100%"}
+![](figures/trustworthy_vs_gender_residoptimized.svg){fig-align="center"}
 
-- The Q-Q plot looks fairly normal.
-- The residuals still have a systematic pattern across godly ratings.
+## Faces: the predictor need not be normal
 
-. . .
+![](figures/trustworthy_vs_gender_resid_qq_1.svg){fig-align="center"}
 
-A normal-looking pooled residual distribution does not establish that the model is appropriate at each $x$.
+## Faces: the predictor need not be normal
 
+![](figures/trustworthy_vs_gender_resid_qq_2.svg){fig-align="center"}
 
 # Constant Error Variance
 
 ## Homoscedasticity
 
-The model uses **one error variance** for all predictor values:
+The model uses **one error variance** for all predictor values.
 
-$$
-\operatorname{Var}(\epsilon_i\mid x_i) = \sigma_\epsilon^2.
-$$
+At every $x_i$, we expect a similar spread of the residuals.
 
 - Homoscedasticity: the same error variance across $x$.
 - Heteroscedasticity: error variance changes across $x$.
 
-. . .
+The residuals can look normal overall, but still heteroscedastic.
 
-This concerns **spread around the mean**, not whether the mean changes.
+## Typical and Smart - Regression
 
-## Faces: look at the spread
+![](figures/smart_typical_1optimized.svg){fig-align="center"}
 
-![](figures/faces_residual_spread.svg){fig-align="center" width="100%"}
+## Typical and Smart - Residuals
+
+![](figures/smart_typical_2optimized.svg){fig-align="center"}
+
+## Typical and Smart - Normality
+
+![](figures/smart_typical_hist_qq.svg){fig-align="center"}
+
+<!-- TODO: first the regressions! -->
+<!-- Then residuals -->
+<!-- Then qq plots -->
+<!-- Then residuals + variances -->
+
+## Examine the residuals' spread
+
+![](figures/residual_variance2_1.svg){fig-align="center"}
+
+## Examine the residuals' spread
+
+![](figures/residual_variance2_2.svg){fig-align="center"}
+
+## Examine the residuals' spread
+
+![](figures/residual_variance2_3.svg){fig-align="center"}
+
+## Examine the residuals' spread
 
 - Typical: spread is relatively similar across much of the predictor range.
 - Smart: residuals tend to be more spread out at lower ratings.
 
-. . .
-
-A funnel can widen or narrow. Both suggest unequal error variance.
-
-## Comparing spread across the predictor
-
-![](figures/faces_spread_by_quartile.svg){fig-align="center" width="100%"}
-
-- Each quartile contains 251 faces, ordered by the predictor.
-- Compare residual SDs and the heights of the boxes.
-
-::: {.notes}
-Quartiles here are only a descriptive way of showing spread along each
-continuous predictor. We are not replacing the predictors with categories
-or defining groups for a hypothesis test. The two panels share a residual
-scale. Sample SDs need not be identical under constant population variance.
-Also consider curvature: a misspecified mean can affect apparent spread.
-:::
-
-## Why unequal variance matters
-
-Recall:
-
-$$
-t = \frac{b-\beta_{\hypo_0}}{\SE_b}
-\qquad\text{and}\qquad
-\MSE = \frac{\SSE}{N-2}.
-$$
-
-The usual standard errors use a **common error variance**, estimated by MSE.
-
-. . .
-
-- If spread changes, the usual standard errors can be inaccurate.
-- The usual $t$- and $F$-tests can then give misleading $p$-values.
-- A useful fitted line does not guarantee a trustworthy significance test.
-
+In general, the residuals can widen or narrow. Both suggest unequal error variance.
 
 # Independence
 
@@ -914,37 +867,15 @@ Study | Potential dependence
 One measurement from each independently sampled person | No dependence built into the design
 Two measurements from each person | Measurements share a person
 Students from the same classroom | Students share a classroom
-Both partners in each couple | Partners share a relationship
 
 . . .
 
-Start with **how the data were collected**.
-
-## Twenty people or ten couples?
-
-Imagine 20 people, organized into 10 couples whose scores are very similar.
-
-. . .
-
-- There are 20 rows, but less independent information than from 20 independently sampled people.
-- Treating every row as independent can underestimate uncertainty.
-- Standard errors can be too small and significance too easy to obtain.
-
-. . .
-
-A normal histogram or Q-Q plot cannot establish independence.
-
-::: {.notes}
-The example concerns positive within-couple dependence. Do not present
-the effective sample size as exactly ten unless partners' relevant errors
-are perfectly correlated. If there is meaningful time order, a residual
-plot against time can reveal some dependence; absence of a visible pattern
-does not establish independence, and arbitrary row order is uninformative.
-:::
+- This is all about how the data were collected.
+- We usually cannot assess this using statistics, but have to reason about the design
 
 ## Independence in the faces data
 
-Our regression has **one row per face**, not one row per individual rating.
+Each regression has one row per face, not one row per individual rating.
 
 . . .
 
@@ -958,32 +889,13 @@ Questions to ask:
 
 Averaging many ratings does not by itself establish independence between faces.
 
-::: {.notes}
-These are study-design questions, not claims that a particular dependence
-has been established in OMI. Determining its importance requires information
-about stimulus generation, rater assignment, aggregation, and the analysis
-target. We cannot settle independence using the attribute-means CSV alone.
-:::
-
-## Generalizing and explaining
-
-These are additional questions:
-
-- **Representativeness:** To which population can the findings generalize?
-  * Synthetic faces do not automatically represent every real face or setting.
-- **Causality:** Does a relationship justify a causal explanation?
-  * A positive association between happy and trustworthy ratings does not by itself establish causation.
-
-. . .
-
-Satisfying regression assumptions does not answer these questions for us.
-
-
 # Interpreting Assumption Checks
 
 ## Can we prove an assumption?
 
-Assumptions concern the **population**. Diagnostics use a **sample**.
+No.
+
+Assumptions concern the population. We examine sample diagnostics.
 
 . . .
 
@@ -991,12 +903,12 @@ Assumptions concern the **population**. Diagnostics use a **sample**.
 - A formal test can provide evidence against an assumption.
 - Neither can prove that an assumption holds exactly.
 
-. . .
-
-Ask: **Is there a departure large enough to matter for this analysis?**
 
 ## Shapiro-Wilk: testing normality
 
+<!--
+TODO: should we move this to normality?
+ -->
 $$
 \begin{aligned}
 \hypo_0 &: \text{the distribution is normal},\\
@@ -1004,7 +916,7 @@ $$
 \end{aligned}
 $$
 
-Software reports a statistic $W$ and a $p$-value.
+SPSS gives you a test-statistic $W$ and a $p$-value.
 
 . . .
 
@@ -1012,19 +924,21 @@ Software reports a statistic $W$ and a $p$-value.
 - Large $p$: insufficient evidence against normality.
   * This does **not** establish that the distribution is normal.
 
-::: {.notes}
-Here we apply the conventional Shapiro-Wilk diagnostic to fitted residuals.
-Its standard reference calculation assumes independent observations;
-estimated residuals are constrained by fitting, so interpret the reported
-p-value as a diagnostic rather than an exact certification of the error
-model. We do not derive W or introduce a separate reference table.
+. . .
+
+::: {style="font-size: 80%;"}
+You know by know:
+
+- what a test statistic is
+- what a p-value is
+- and therefore how to interpret the Shapiro Wilk test.
 :::
 
 ## Faces: Shapiro-Wilk results
 
 {{< include figures/faces_normality_table.qmd >}}
 
-Each row describes residuals from a **separate** regression predicting trustworthy ratings.
+Each row describes residuals from a separate regression predicting trustworthy ratings.
 
 . . .
 
@@ -1040,212 +954,26 @@ certified by their normality-test results.
 
 ## Sample size changes what a test detects
 
-- **Small sample:** an important departure can go undetected.
-- **Large sample:** a minor departure can be statistically significant.
+- Small sample: an important departure can go undetected.
+- Large sample: a minor departure can be statistically significant.
 
 . . .
 
-In our faces data, $N=1{,}004$.
+Often, the Q-Q plots can be more informative than the statistical tests.
 
-- Consider the plotted departure as well as the $p$-value.
-- Statistical evidence of nonnormality does not measure how much a regression conclusion is affected.
+In the faces data, with $N=1,004$, many shapiro wilk tests were significant.
 
-. . .
+But the Q-Q plots look fine.
 
-An assumption test and a test of the slope answer different questions.
+## When Assumptions Are Doubtful
 
-## A diagnostic is not an automatic switch
+Ideal world: fit a different model that doesn't make the assumption
 
-Use the study design, plots, and scientific context together.
+This course: report it properly.
 
-. . .
+## Next weeks
 
-- Plan the analysis and any reasonable alternatives where possible.
-- Investigate clear problems, including recording or coding errors.
-- Explain and report changes prompted by diagnostics.
-- When useful, check whether conclusions change under a justified alternative.
+- Independent samples t-test (next week)
+  * Here we do have a solution when homoscedasticity is violated
+- ANOVA (both weeks after that)
 
-. . .
-
-Repeatedly changing the analysis until the desired result appears can make reported $p$-values misleading.
-
-
-# When Assumptions Are Doubtful
-
-## Fitting a line and testing a hypothesis
-
-OLS can find the line with the smallest SSE **without normal errors**.
-
-. . .
-
-But the familiar small-sample $t$- and $F$-distributions require the normal-error model and its other assumptions.
-
-. . .
-
-- Some departures mainly affect uncertainty and significance tests.
-- Others mean the straight line misses an important part of the relationship.
-- The consequences depend on the departure and the question we ask.
-
-::: {.notes}
-Under a correctly specified conditional mean, unequal error variance does
-not itself bias the OLS slope, although the usual variance estimator is
-incorrect. Error normality is not required for unbiased OLS coefficients.
-Exact classical inference uses independent normal errors of common variance.
-We do not derive these results or robust standard errors in this lecture.
-:::
-
-## Does a larger sample solve the problem?
-
-Larger independent samples can make tests less sensitive to some departures from normality.
-
-. . .
-
-But larger $N$ does not automatically fix:
-
-- a systematically wrong mean relationship;
-- unequal error variances;
-- dependence between observations;
-- a few observations that dominate the fitted line.
-
-. . .
-
-There is no universal sample-size cutoff that makes every problem disappear.
-
-## Unusual observations: investigate first
-
-A face can have an unusual residual or an extreme predictor rating.
-
-. . .
-
-- Check whether its values were recorded correctly.
-- Ask whether it belongs to the population of interest.
-- Examine whether it strongly changes the fitted relationship.
-
-. . .
-
-An unusual observation is not automatically an error. Do not remove it just to obtain normal residuals or a significant result.
-
-::: {.notes}
-An extreme predictor value is a potential high-leverage observation; a
-large residual is an outcome outlier relative to the model. Neither alone
-guarantees high influence. Students need the conceptual distinction here,
-not Cook's-distance thresholds or a new set of calculations.
-:::
-
-## Possible responses
-
-Concern | Possible response
---- | ---
-Curved mean relationship | Use a scientifically justified different shape
-Strongly nonnormal errors | Consider a more suitable outcome model or inference method
-Unequal variances | Use an inference method that allows unequal variances
-Dependent observations | Use a method that accounts for the dependence
-
-. . .
-
-Later: **Welch's t-test** compares two means while allowing unequal variances.
-
-::: {.notes}
-This is a conceptual preview, not instruction in methods not yet taught.
-Welch's test adjusts the standard error and degrees of freedom; it does not
-repair dependence, an inappropriate outcome, or every small-sample
-nonnormality problem. Transforming variables changes the scale and often
-the substantive question, so it needs justification. Nonparametric methods
-also have assumptions and can target a different population quantity.
-:::
-
-
-# Connecting to the Next Lectures
-
-## From predicting a value to predicting a mean
-
-Today: the prediction depends on a continuous predictor.
-
-$$
-\hat y_i = a + b x_i
-$$
-
-. . .
-
-Soon: a prediction can be the **mean for the observation's group**.
-
-- Two independent groups: independent-samples $t$-test.
-- Two or more independent groups: one-way ANOVA.
-
-. . .
-
-The same questions about errors will return.
-
-## The assumptions carry over
-
-Assumption | Regression | Group comparisons
---- | --- | ---
-Mean structure | Straight population line | A mean for each group
-Normality | Errors around the line | Outcomes around each group's mean
-Equal variance | Same error variance across $x$ | Same variance in each group
-Independence | Independent observational units | Independent observations within and between groups
-
-::: {.notes}
-For two groups, a line through two means imposes no extra restriction on
-their mean pattern. One-way ANOVA estimates a separate mean for every
-category; a single numeric code for three categories would impose a
-different, restrictive mean structure. The pooled two-sample t-test and
-ordinary one-way ANOVA share the equal-variance assumption; Welch versions
-relax it. Leave dummy coding and the test calculations to later lectures.
-:::
-
-## Normal within groups, not necessarily overall
-
-![](figures/normal_within_groups.svg){fig-align="center" width="100%"}
-
-Different group means can produce a nonnormal **pooled** outcome distribution.
-
-. . .
-
-For group comparisons, examine variation **within each group**.
-
-::: {.notes}
-These are illustrative population distributions with means 25, 50, and
-75 and SD 5, combined with equal weights. They are not groups discovered
-in OMI. Subtracting each group's own mean would give the same normal error
-distribution in all three groups. Pooling residuals alone can still hide
-different group distributions; examine the groups as well.
-:::
-
-## Your turn: diagnose a faces regression
-
-![](figures/faces_diagnosis_exercise.svg){fig-align="center" width="100%"}
-
-1. Does the residual centre suggest a straight mean relationship?
-2. What does the Q-Q plot suggest about normality?
-3. What further information would you need to assess independence?
-
-::: {.notes}
-The residual smooth bends, suggesting the straight age relationship misses
-structure. The Q-Q plot also departs from the reference line. Normality
-should be reconsidered after addressing a misspecified mean rather than
-treated as an entirely separate defect with a mechanical remedy. The plots
-cannot establish independence; that requires the design and rating process.
-Several concerns can coexist in real data.
-:::
-
-## What should you be able to do?
-
-- Explain which population feature each assumption concerns.
-- Read residual plots, histograms, and Q-Q plots.
-- Interpret a normality test without treating it as proof.
-- Use the study design to assess independence.
-- Explain why a concern matters for the fitted relationship or its tests.
-- Recognize these same assumptions in the next lectures.
-
-::: {.notes}
-Figure generation: start R in 2627 and run
-source("lecture11/scripts/diagnostic_figures.R"). The script accepts an OMI
-attribute-means CSV path as its first Rscript argument or via
-OMI_ATTRIBUTE_MEANS. Slides use saved SVGs and a generated table, so rendering
-does not require access to the external OMI checkout.
-
-Background for instructors:
-https://www.itl.nist.gov/div898/handbook/pri/section2/pri24.htm
-https://www.itl.nist.gov/div898/handbook/eda/section3/eda353.htm
-:::
