@@ -33,25 +33,6 @@ auto-agenda:
 # Recap
 
 
-<!--
-
-TODO:
-
-- derivation of a and b for OLS
-- recap should now contain t-test and F-test
-  - probably skip standardized regressions
-
-- recap should probably use the same data example as last time
-
-
-TODO:
-
-- move shapiro-wilk to normality?
-- homoscedastic situation should go slower
-- Wooclap! some questions are already there in the slide/ R code
-
--->
-
 ::: {.hidden}
 $$
 \newcommand{\hypo}{\mathcal{H}}
@@ -107,18 +88,10 @@ Participants judged faces on a scale from 0 to 100 on attributes such as
 
 Each observation is the average rating across many participants.
 
-. . .
-
-- We can do 33 regressions
-- Each may or may not violate the assumptions.
 
 
 ::: footer
-
-Peterson, J. C., Uddenberg, S., Griffiths, T. L., Todorov, A., & Suchow, J. W. (2022). Deep models of superficial face judgments. Proceedings of the National Academy of Sciences (PNAS), 119(17), e2115228119. doi:10.1073/pnas.2115228119
-
-source: <https://github.com/jcpeterson/omi/>
-
+Peterson, J. C., Uddenberg, S., Griffiths, T. L., Todorov, A., & Suchow, J. W. (2022). Deep models of superficial face judgments. Proceedings of the National Academy of Sciences (PNAS), 119(17), e2115228119. doi:10.1073/pnas.2115228119 source: <https://github.com/jcpeterson/omi/>
 :::
 
 ## Trustworthiness vs. Happiness
@@ -139,16 +112,7 @@ source: <https://github.com/jcpeterson/omi/>
 
 ## Testing Coefficients
 
-<!-- SUGGESTION: If revising this recap later, distinguish the population
-sampling SD from its sample estimate SE_a, and use a consistent variance or
-SD convention in the normal-distribution notation. The t statistic below
-uses an estimated SE. Original slide retained. -->
-
-$$
-a\mid \hypo_0 \sim \dnorm{\alpha_{\hypo_0}}{\SE_a}\quad
-$$
-
-- Compute
+Compute
 $$
 t = \frac{a - \alpha_{\hypo_0}}{\SE_a} \qquad \text{with}\;df = N - 2
 $$
@@ -337,16 +301,10 @@ Statistically significant, but practically of limited value: Memorableness ratin
 
 ## Recap
 
-<!-- SUGGESTION: Point 4 could distinguish coefficient hypotheses from the
-overall model hypothesis. Neither test alone establishes useful prediction.
-The existing recap is retained in full. -->
-
 1. The Ordinary Least Squares finds $a$ and $b$ that minimize the SSE.
-2. But SSE on it's own doesn't tell us how good the predictions are.
-3. Explained variance tells us how much of the variance is explained by the regression line.
-4. The tests for $a$, $b$, and the $F$-test provide statistical tests for this.
-
-<!-- TODO: rewrite point 4 above -->
+2. But SSE on its own doesn't tell us how good the predictions are.
+3. $R^2$ tells us how much variance is explained by the regression line.
+4. We test $a$ and $b$ using $t$-tests and compare models using the $F$-test.
 
 . . .
 
@@ -386,21 +344,21 @@ Today:
 
 ::: {.fragment .fade-out fragment-index="1"}
 $$
-Y_i = \alpha + \beta x_i + \epsilon_i,
+Y_i = \alpha + \beta\times x_i + \epsilon_i,
 \qquad \epsilon_i \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma_\epsilon^2)
 $$
 :::
 
 ::: {.fragment .fade-in-then-out fragment-index="1"}
 $$
-Y_i = \textcolor{blue}{\alpha + \beta x_i} + \epsilon_i,
+Y_i = \textcolor{blue}{\alpha + \beta\times x_i} + \epsilon_i,
 \qquad \epsilon_i \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma_\epsilon^2)
 $$
 :::
 
 ::: {.fragment .fade-in fragment-index="2"}
 $$
-Y_i = \alpha + \beta x_i + \textcolor{blue}{\epsilon_i},
+Y_i = \alpha + \beta\times x_i + \textcolor{blue}{\epsilon_i},
 \qquad \textcolor{blue}{\epsilon_i \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma_\epsilon^2)}
 $$
 :::
@@ -430,10 +388,7 @@ $$
 
 ## Linearity
 
-but what causes deviations from normality?
-
-<!-- SUGGESTION: "normality" here should read "linearity". Existing text
-retained as requested. -->
+but why might a relationship not be linear?
 
 . . .
 
@@ -444,7 +399,6 @@ retained as requested. -->
 - Threshold effect
   * Swimming lessons vs. distance swum
 - Heterogeneous sample
-  * XXX
 
 ## Linearity
 
@@ -466,13 +420,9 @@ retained as requested. -->
 
 ![](figures/faces_linear2_1.svg){fig-align="center"}
 
-<!-- TODO: with faces? -->
-
 ## Faces: Electable vs. Trustworthy
 
 ![](figures/faces_linear2_2.svg){fig-align="center"}
-
-<!-- TODO: with faces? but only this one-->
 
 ## Faces: Electable vs. Trustworthy
 ![](figures/faces_linear2_3.svg){fig-align="center"}
@@ -494,21 +444,21 @@ retained as requested. -->
 
 ::: {.fragment .fade-out fragment-index="1"}
 $$
-Y_i = \alpha + \beta x_i + \epsilon_i,
+Y_i = \alpha + \beta\times x_i + \epsilon_i,
 \qquad \epsilon_i \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma_\epsilon^2)
 $$
 :::
 
 ::: {.fragment .fade-in-then-out fragment-index="1"}
 $$
-Y_i = \textcolor{blue}{\alpha + \beta x_i} + \epsilon_i,
+Y_i = \textcolor{blue}{\alpha + \beta\times x_i} + \epsilon_i,
 \qquad \epsilon_i \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma_\epsilon^2)
 $$
 :::
 
 ::: {.fragment .fade-in fragment-index="2"}
 $$
-Y_i = \alpha + \beta x_i + \textcolor{blue}{\epsilon_i},
+Y_i = \alpha + \beta\times x_i + \textcolor{blue}{\epsilon_i},
 \qquad \textcolor{blue}{\epsilon_i \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma_\epsilon^2)}
 $$
 :::
@@ -524,7 +474,7 @@ $$
 Y_i = \alpha + \beta\times x_i + \epsilon_i
 \qquad
 \text{so,}\qquad
-\epsilon_i = Y_i - (\alpha + \beta x_i)
+\epsilon_i = Y_i - (\alpha + \beta \times x_i)
 $$
 
 - The error is the distance from the _population line_.
@@ -538,7 +488,7 @@ $$
 \hat{y}_i = a + b\times x_i
 \qquad
 \text{so,}\qquad
-e_i = y_i - \hat y_i = y_i - (a + b x_i)
+e_i = y_i - \hat y_i = y_i - (a + b \times x_i)
 $$
 
 - The residual is the distance from the _fitted line_.
@@ -604,37 +554,48 @@ The dino is the nonlinear signal.
 
 ![](figures/electable_and_resid.svg){fig-align="center"}
 
-<!-- TODO:
-
-continue below
- -->
 
 ## Residuals and Linearity
 
 - We can examine the residuals for any systematic pattern.
-  + If we find one, this can suggests that the regression line misses part of the relationship.
+  + If we find one, this can suggest that the regression line misses part of the relationship.
     * the part that is nonlinear.
 
 . . .
 
-What about the other assumptions?
+Sometimes there is not a pattern, but just one or a few outlying observations.
 
-. . .
+These are called _outliers_.
 
-- Normality: Errors follow a normal distribution.
-- Homoscedasticity: Errors have the same variance for all $x$.
-- Independence: Errors are independent of each other.
+- Outliers can have a large impact on the regression line.
+- But not every outlier strongly influences the regression.
+- We investigate what happens when we leave out an observation.
 
-. . .
+## Outliers
 
-We again examine the residuals!
+![](figures/cook_1.svg){fig-align="center"}
+
+
+## Detecting outliers: Cook's distance
+
+Cook's distance measures how much our fitted regression changes when we leave out one observation.
+
+![](figures/cook_2.svg){fig-align="center"}
+
+
+## Detecting outliers: Cook's distance
+
+- Larger Cook's distance means a more influential observation.
+- Larger Cook's distances deserve closer inspection.
+- Do not automatically remove them!
+
 
 # Normality
 
 ## Normality
 
 $$
-Y_i = \alpha + \beta x_i + \textcolor{blue}{\epsilon_i},
+Y_i = \alpha + \beta\times x_i + \textcolor{blue}{\epsilon_i},
 \qquad \textcolor{blue}{\epsilon_i \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma_\epsilon^2)}
 $$
 
@@ -677,20 +638,6 @@ Now we can look at the residuals as a whole.
 
 ![](figures/model_plot_normality_happy_vs_godly.svg){fig-align="center"}
 
-
-<!--
-
-W question:
-
-The assumption of normality means:
-
-A) y must be normally distributed
-B) x must be normally distributed
-C) the prediction error must be normally distributed
-D) all of the above
-
- -->
-
 ## Residual histograms
 
 The histogram of (the residuals of) Godly looks "more normal" than that of Happy.
@@ -728,16 +675,10 @@ While histograms are useful, but their appearance depends on the bins.
 
 ## How to read a normal Q-Q plot
 
-<!-- A Q-Q plot compares _ordered residuals_ against a normal distribution. -->
+A Q-Q plot compares:
 
-<!-- For example: -->
-
-- The sample residuals had mean 0 and standard deviation 8.86
-- A normal distribution would expect 97.5% of observations to fall below a value $1.96 \times 8.86=17.37$
-- In our sample, the top 97.5% of the residuals for happy fell were actually at 22.2
-  * we look at equally spaced percentages that we vary from almost 0% to almost 100%
-
-<!-- TODO: write the correct definition above -->
+- The percentiles of our residuals.
+- The percentiles we would expect from a normal distribution.
 
 . . .
 
@@ -745,6 +686,14 @@ While histograms are useful, but their appearance depends on the bins.
 - Skewness or unusual tails: systematic departures from that line.
 - Some deviation is expected in a sample.
 
+::: {.notes}
+
+- The sample residuals had mean 0 and standard deviation 8.86
+- A normal distribution would expect 97.5% of observations to fall below a value $1.96 \times 8.86=17.37$
+- In our sample, the top 97.5% of the residuals for happy fell were actually at 22.2
+  * we look at equally spaced percentages that we vary from almost 0% to almost 100%
+
+:::
 
 ## QQ-plots for the Faces
 
@@ -761,7 +710,7 @@ While histograms are useful, but their appearance depends on the bins.
 
 ::: {.column}
 
-Let's consider a the regression
+Let's consider the regression
 
 $$
 \widehat{\mathrm{trustworthy}} = a + b \times \mathrm{gender}
@@ -785,12 +734,6 @@ Gender clearly has two peaks and is absolutely not normal.
 
 :::
 
-<!--
-TODO: fragments
-first shows plot
-second shows conclusion
- -->
-
 ## Faces: the predictor need not be normal
 
 ![](figures/trustworthy_vs_genderoptimized.svg){fig-align="center"}
@@ -806,6 +749,11 @@ second shows conclusion
 ## Faces: the predictor need not be normal
 
 ![](figures/trustworthy_vs_gender_resid_qq_2.svg){fig-align="center"}
+
+## Faces: the predictor need not be normal
+
+- The independent variable Gender is absolutely not normally distributed
+- But the residuals look fine in the Q-Q plot
 
 # Constant Error Variance
 
@@ -832,11 +780,6 @@ The residuals can look normal overall, but still heteroscedastic.
 
 ![](figures/smart_typical_hist_qq.svg){fig-align="center"}
 
-<!-- TODO: first the regressions! -->
-<!-- Then residuals -->
-<!-- Then qq plots -->
-<!-- Then residuals + variances -->
-
 ## Examine the residuals' spread
 
 ![](figures/residual_variance2_1.svg){fig-align="center"}
@@ -856,7 +799,100 @@ The residuals can look normal overall, but still heteroscedastic.
 
 In general, the residuals can widen or narrow. Both suggest unequal error variance.
 
+. . .
+
+Why does it matter?
+
+- The usual standard errors assume constant error variance.
+- If this assumption is violated, significance tests may be misleading.
+
+## Zooming out
+
+We've examined three assumptions using plots.
+
+But can we also use statistical tests?
+
+. . .
+
+Well, for normality we can use the Shapiro–Wilk test!
+
+## Shapiro-Wilk: testing normality
+
+
+$$
+\begin{aligned}
+\hypo_0 &: \text{the distribution is normal}\\
+\hypo_1 &: \text{the distribution is not normal}
+\end{aligned}
+$$
+
+SPSS gives you a test-statistic $W$ and a $p$-value.
+
+. . .
+
+- If $p< .05$, there is evidence against normality.
+
+. . .
+
+You know by now:
+
+- what a test statistic is
+- what a $p$-value is
+- and therefore how to interpret the Shapiro Wilk test.
+
+## Faces: Shapiro-Wilk results
+
+{{< include figures/faces_normality_table.qmd >}}
+
+Each row is a test on the _residuals_ of the regression predicting trustworthiness with that variable.
+
+. . .
+
+Let's compare these results with the Q-Q plots.
+
+## Faces: Shapiro-Wilk vs. Q-Q plots
+
+![](figures/qq_plots_combined.svg){fig-align="center"}
+
+
+## Sample size changes what a test detects
+
+- Small sample: an important departure can go undetected.
+- Large sample: a minor departure can be statistically significant.
+
+. . .
+
+Often, the Q-Q plots can be more informative than the statistical tests.
+
+In the faces data, with $N=1,004$, many shapiro wilk tests are significant.
+
+But many Q-Q plots look fine.
+
+. . .
+
+There is a parallel with the "significant" $R=0.01$ here.
+
+. . .
+
+Just because an assumption is violated according to a significance test, does not mean it actually is a problem.
+
+. . .
+
+The type and severity of the violation matter.
+
+
 # Independence
+
+## Independence
+
+$$
+Y_i = \alpha + \beta\times x_i + \textcolor{blue}{\epsilon_i},
+\qquad \textcolor{blue}{\epsilon_i \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma_\epsilon^2)}
+$$
+
+Independence: Prediction errors of different observations are unrelated.
+
+
 
 ## What does one row represent?
 
@@ -879,7 +915,7 @@ Each regression has one row per face, not one row per individual rating.
 
 . . .
 
-Questions to ask:
+We could wonder:
 
 - Are the same or closely related face stimuli included more than once?
 - Did participants rate multiple faces, potentially introducing shared rating tendencies?
@@ -887,11 +923,23 @@ Questions to ask:
 
 . . .
 
-Averaging many ratings does not by itself establish independence between faces.
+Just because we average many ratings does not mean the ratings of the faces become independent.
 
-# Interpreting Assumption Checks
+# Conclusions
+
+## We've learned
+
+| Assumption | How do we check it? |
+|---|---|
+| Linearity | Look for patterns in the residual plot |
+| Outliers | Cook's distance |
+| Normality | Examine the Q-Q plot |
+| Homoscedasticity | Examine the spread of residuals |
+| Independence | Consider how the data were collected |
 
 ## Can we prove an assumption?
+
+. . .
 
 No.
 
@@ -903,69 +951,13 @@ Assumptions concern the population. We examine sample diagnostics.
 - A formal test can provide evidence against an assumption.
 - Neither can prove that an assumption holds exactly.
 
-
-## Shapiro-Wilk: testing normality
-
-<!--
-TODO: should we move this to normality?
- -->
-$$
-\begin{aligned}
-\hypo_0 &: \text{the distribution is normal},\\
-\hypo_1 &: \text{the distribution is not normal}.
-\end{aligned}
-$$
-
-SPSS gives you a test-statistic $W$ and a $p$-value.
-
 . . .
 
-- Small $p$: evidence against normality.
-- Large $p$: insufficient evidence against normality.
-  * This does **not** establish that the distribution is normal.
+In large samples, the degree of the violations matters much more than a significance test.
 
-. . .
+Large sample sizes mean small deviations are quickly significant
 
-::: {style="font-size: 80%;"}
-You know by know:
-
-- what a test statistic is
-- what a p-value is
-- and therefore how to interpret the Shapiro Wilk test.
-:::
-
-## Faces: Shapiro-Wilk results
-
-{{< include figures/faces_normality_table.qmd >}}
-
-Each row describes residuals from a separate regression predicting trustworthy ratings.
-
-. . .
-
-Compare these results with the histograms and Q-Q plots.
-
-::: {.notes}
-Values are generated from the local OMI data by diagnostic_figures.R.
-Godly is the roughly normal comparison, not a model endorsed by all
-diagnostics. The earlier residual plot shows why passing a normality
-diagnostic alone is insufficient. The spread comparisons are also not
-certified by their normality-test results.
-:::
-
-## Sample size changes what a test detects
-
-- Small sample: an important departure can go undetected.
-- Large sample: a minor departure can be statistically significant.
-
-. . .
-
-Often, the Q-Q plots can be more informative than the statistical tests.
-
-In the faces data, with $N=1,004$, many shapiro wilk tests were significant.
-
-But the Q-Q plots look fine.
-
-## When Assumptions Are Doubtful
+## When assumptions are violated
 
 Ideal world: fit a different model that doesn't make the assumption
 
