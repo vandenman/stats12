@@ -1,0 +1,1010 @@
+---
+title: "Binary Predictors /  $t$-tests"
+subtitle: "Lecture 12 - LAS"
+author: "Don van den Bergh"
+date: 2026-11-16
+date-format: "DD-MM-YYYY"
+format:
+    dtslides-revealjs:
+        theme: [../common_resources/css/tilburg-university.scss]
+        logo: ../common_resources/logos/logo_tu_small.svg
+        slide-number: c/t
+        toc: false
+        toc-depth: 1
+        toc-title: "Today"
+        embed-resources: false
+        include-in-header:
+        - text: |
+            <link rel="stylesheet" href="../common_resources/components/regression.css">
+            <script src="../common_resources/components/regression.js"></script>
+            <link rel="stylesheet" href="../common_resources/components/variance-demo.css">
+            <script src="../common_resources/components/variance-demo.js"></script>
+            <link rel="stylesheet" href="../common_resources/components/standardized-regression.css">
+            <script src="../common_resources/components/standardized-regression.js"></script>
+filters:
+  - reveal-auto-agenda
+auto-agenda:
+  bullets: none
+  heading: "Today"
+  clickable: true
+---
+
+
+# Recap
+
+<!--
+
+Recap:
+
+let's do the recap with the gender example, which wasn't binary before.
+
+then we can wonder, what if the predictor was binary?
+
+what happens?
+
+can we still test these slope and intercept?
+what do these even mean?
+do the assumptions change?
+
+When do we have binary predictors?
+
+- treatment and control (use both disease and teaching method as examples)
+- A/ B testing in websites
+- ???
+
+- Measurement level is nominal or ordinal
+  - at most two observed categories
+  - say (but not write), when we have three categories, we examine ANOVA
+
+- here introduce the anorexia data
+
+How do we do regression with binary predictors?
+- Dummy coding:
+- can't multiply treatment by 3
+
+
+- (near end of the lecture, or the motivation for the week after?)
+- actually, there are three treatment groups
+- individual comparisons leads to a multiple testing problems
+- so we need another approach (ANOVA)
+
+
+ -->
+
+
+::: {.hidden}
+$$
+\newcommand{\hypo}{\mathcal{H}}
+\newcommand{\SE}{\mathrm{SE}}
+\newcommand{\dnorm}[2]{\mathcal{N}\left(#1, #2\right)}
+\newcommand{\res}{e}
+\newcommand{\rep}{\epsilon}
+\newcommand{\TSS}{\mathrm{TSS}}
+\newcommand{\SSE}{\mathrm{SSE}}
+\newcommand{\RSS}{\mathrm{RSS}}
+
+\newcommand{\MSE}{\mathrm{MSE}}
+\newcommand{\MSR}{\mathrm{MSR}}
+$$
+:::
+
+
+## Trustworthy Faces
+
+Recall The One Million Impressions (OMI) dataset, which contains over a million human judgments of over 1,000 synthetic face images along 34 attributes.
+
+. . .
+
+Participants judged faces on a scale from 0 to 100 on attributes such as
+
+::: {.columns}
+
+::: {.column width = "33%"}
+
+- trustworthy
+- attractive
+
+
+:::
+
+::: {.column width = "33%"}
+
+- smart
+- memorable
+
+:::
+
+::: {.column width = "33%"}
+
+- dominant
+- well-groomed
+
+:::
+
+:::
+
+. . .
+
+Each observation is the average rating across many participants.
+
+
+
+::: footer
+Peterson, J. C., Uddenberg, S., Griffiths, T. L., Todorov, A., & Suchow, J. W. (2022). Deep models of superficial face judgments. Proceedings of the National Academy of Sciences (PNAS), 119(17), e2115228119. doi:10.1073/pnas.2115228119 source: <https://github.com/jcpeterson/omi/>
+:::
+
+## Trustworthiness vs. Happiness
+
+![](figures/reg_recap_1optimized.svg){fig-align="center"}
+
+## Trustworthiness vs. Happiness
+
+![](figures/reg_recap_2optimized.svg){fig-align="center"}
+
+## Trustworthiness vs. Happiness
+
+![](figures/reg_recap_3optimized.svg){fig-align="center"}
+
+## Trustworthiness vs. Happiness
+
+![](figures/reg_recap_4optimized.svg){fig-align="center"}
+
+## Testing Coefficients
+
+Compute
+$$
+t = \frac{a - \alpha_{\hypo_0}}{\SE_a} \qquad \text{with}\;df = N - 2
+$$
+
+- Examine the $t$-table
+  * use the appropriate tail of the distribution depending on the hypothesis test conducted.
+
+. . .
+
+For the slope everything worked out the same, but with $b$ instead of $a$.
+
+## Comparing two models
+
+Rather than individually comparing $a$ and $b$ against 0 or specific values,
+
+we can also compare two models:
+
+:::: {.r-stack}
+
+::: {.fragment .fade-out fragment-index="2"}
+$$
+\begin{align}
+\hypo_0:& \text{ the null model},       &&y_i = a \phantom{+ b\times x_i }\;\,+\res_i\\
+\hypo_1:& \text{ the regression model}, &&y_i = a + b\times x_i +\res_i
+\end{align}
+$$
+:::
+
+::: {.fragment .fade-in fragment-index="2"}
+$$
+\begin{align}
+\hypo_0:& \text{ the null model},       &&y_i = a + 0\times x_i +\res_i\\
+\hypo_1:& \text{ the regression model}, &&y_i = a + b\times x_i +\res_i
+\end{align}
+$$
+:::
+
+::::
+
+::: {.fragment fragment-index="1"}
+1. $\hypo_0: \beta = 0$ vs $\hypo_1: \beta \neq 0$.
+:::
+
+::: {.fragment fragment-index="3"}
+2. $\hypo_0: \rho^2 = 0$ vs $\hypo_1: \rho^2 > 0$.
+
+Here, $\rho^2$ is the _population_ value for $R^2$
+:::
+
+## Comparing two models
+
+{{< include ../common_resources/components/variance-demo.qmd >}}
+
+## F-test
+
+:::: {.r-stack}
+
+::: {.fragment .fade-out fragment-index="1"}
+$$
+F = (N-2)\times\frac{R^2}{1-R^2}
+\phantom{
+  = (N-2)\times
+  \frac{\text{Explained variance}}{\text{Unexplained variance}}
+}
+$$
+:::
+
+::: {.fragment .fade-in fragment-index="1"}
+$$
+F = (N-2)\times\frac{R^2}{1-R^2}
+  = (N-2)\times
+  \frac{\text{Explained variance}}{\text{Unexplained variance}}
+$$
+:::
+
+::::
+
+::: {.fragment fragment-index="2"}
+
+If $\hypo_0$ is true, the $F$-value is $F$-distributed:
+
+$$
+F \sim F(1, N - 2)
+$$
+
+:::
+
+
+## F-distribution
+
+![](figures/f_dist_1.svg){fig-align="center"}
+
+## F-distribution
+
+![](figures/f_dist_2.svg){fig-align="center"}
+
+## F-distribution
+
+![](figures/f_dist_3.svg){fig-align="center"}
+
+## F-test: happy predicting trustworthy
+
+
+::: {.columns}
+
+::: {.column width = "55%"}
+
+$N= 1,004$, $R^2 = 0.49$.
+
+. . .
+
+$$
+\hypo_0: \rho^2 = 0,
+\qquad \hypo_1: \rho^2 > 0
+$$
+
+. . .
+
+$$
+F = (N - 2)\times\frac{R^2}{1 - R^2}
+= 955.86
+$$
+
+
+. . .
+
+$F(1, 1002) = 955.86$, $p < .001$.
+
+. . .
+
+We reject $\hypo_0$. Happy ratings explain about 49% of the sample variation in trustworthiness.
+
+:::
+
+::: {.column width = "45%"}
+
+![](figures/scatter_indiv_2optimized.svg){ fig-align="right"}
+
+:::
+
+:::
+
+
+## F-test: memorable predicting trustworthy
+
+::: {.columns}
+
+::: {.column width = "55%"}
+
+$N= 1,004$, $R^2 = 0.01$.
+
+. . .
+
+$$
+\hypo_0: \rho^2 = 0,
+\qquad \hypo_1: \rho^2 > 0
+$$
+
+. . .
+
+$$
+F = (N - 2)\times\frac{R^2}{1 - R^2}
+= 9.50
+$$
+
+. . .
+
+$F(1, 1002) = 9.50$, $p < .01$.
+
+. . .
+
+Statistically significant, but practically of limited value: Memorableness ratings explain only 1% of the sample variation in trustworthiness.
+
+:::
+
+::: {.column width = "45%"}
+
+![](figures/scatter_indiv_3optimized.svg){ fig-align="right"}
+
+:::
+
+:::
+
+
+
+
+## Recap
+
+1. The Ordinary Least Squares finds $a$ and $b$ that minimize the SSE.
+2. But SSE on its own doesn't tell us how good the predictions are.
+3. $R^2$ tells us how much variance is explained by the regression line.
+4. We test $a$ and $b$ using $t$-tests and compare models using the $F$-test.
+
+. . .
+
+Today:
+
+- Linear regression, and these significance tests make assumptions.
+- What are these assumptions?
+- How do check if they are violated?
+
+
+# Assumptions
+
+## Assumptions
+
+- Almost all models make assumptions. Assume that...
+  * the data are normally distributed
+  * the sample is representative for the population
+  * observations are independent of each other
+
+. . .
+
+- If assumptions are violated things can go wrong:
+  * The model could misrepresents the data
+  * Tests are misleading
+    + The type-I error is inflated
+  * Inferences may not be justified
+
+. . .
+
+- To complicate things, sometimes assumptions are violated, but the consequences are minor.
+  * Example: Z vs. $t$-test when the sample size is larger
+
+
+## Linear Regression Assumptions
+
+:::: {.r-stack}
+
+::: {.fragment .fade-out fragment-index="1"}
+$$
+Y_i = \alpha + \beta\times x_i + \epsilon_i,
+\qquad \epsilon_i \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma_\epsilon^2)
+$$
+:::
+
+::: {.fragment .fade-in-then-out fragment-index="1"}
+$$
+Y_i = \textcolor{blue}{\alpha + \beta\times x_i} + \epsilon_i,
+\qquad \epsilon_i \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma_\epsilon^2)
+$$
+:::
+
+::: {.fragment .fade-in fragment-index="2"}
+$$
+Y_i = \alpha + \beta\times x_i + \textcolor{blue}{\epsilon_i},
+\qquad \textcolor{blue}{\epsilon_i \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma_\epsilon^2)}
+$$
+:::
+
+::::
+
+::: {.fragment fragment-index="1"}
+
+1. Linearity
+   - The association between $x$ and $y$ is a straight line.
+
+:::
+
+::: {.fragment fragment-index="2"}
+
+2. Assumptions about the errors
+   - Normality: Errors follow a normal distribution.
+   - Homoscedasticity: Errors have the same variance for all $x$.
+   - Independence: Errors are independent of each other.
+
+:::
+
+
+## Linearity
+
+![](figures/dino.svg){fig-align="center"}
+
+## Linearity
+
+but why might a relationship not be linear?
+
+. . .
+
+- Too much of a good thing/ U-shaped
+  * Dopamine vs working memory performance
+- Diminishing returns/ plateau
+  * Study time vs. exam performance
+- Threshold effect
+  * Swimming lessons vs. distance swum
+- Heterogeneous sample
+
+## Linearity
+
+![](figures/Linear.svg){fig-align="center"}
+
+## U-shaped
+
+![](figures/U-shaped.svg){fig-align="center"}
+
+## Diminishing returns/ plateau
+
+![](figures/Plateau.svg){fig-align="center"}
+
+## Threshold effect
+
+![](figures/Threshold.svg){fig-align="center"}
+
+## Faces: Cute vs. Trustworthy
+
+![](figures/faces_linear2_1.svg){fig-align="center"}
+
+## Faces: Electable vs. Trustworthy
+
+![](figures/faces_linear2_2.svg){fig-align="center"}
+
+## Faces: Electable vs. Trustworthy
+![](figures/faces_linear2_3.svg){fig-align="center"}
+
+## Faces: Electable vs. Trustworthy
+
+![](figures/faces_linear2_4.svg){fig-align="center"}
+
+## Faces: Electable vs. Trustworthy
+
+![](figures/faces_linear2_5.svg){fig-align="center"}
+
+
+# Residuals
+
+## Errors and residuals
+
+:::: {.r-stack}
+
+::: {.fragment .fade-out fragment-index="1"}
+$$
+Y_i = \alpha + \beta\times x_i + \epsilon_i,
+\qquad \epsilon_i \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma_\epsilon^2)
+$$
+:::
+
+::: {.fragment .fade-in-then-out fragment-index="1"}
+$$
+Y_i = \textcolor{blue}{\alpha + \beta\times x_i} + \epsilon_i,
+\qquad \epsilon_i \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma_\epsilon^2)
+$$
+:::
+
+::: {.fragment .fade-in fragment-index="2"}
+$$
+Y_i = \alpha + \beta\times x_i + \textcolor{blue}{\epsilon_i},
+\qquad \textcolor{blue}{\epsilon_i \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma_\epsilon^2)}
+$$
+:::
+
+::::
+
+
+## Errors and residuals
+
+In the population:
+
+$$
+Y_i = \alpha + \beta\times x_i + \epsilon_i
+\qquad
+\text{so,}\qquad
+\epsilon_i = Y_i - (\alpha + \beta \times x_i)
+$$
+
+- The error is the distance from the _population line_.
+- We do not know that line, so we cannot observe its errors.
+
+## From errors to residuals
+
+In our sample:
+
+$$
+\hat{y}_i = a + b\times x_i
+\qquad
+\text{so,}\qquad
+e_i = y_i - \hat y_i = y_i - (a + b \times x_i)
+$$
+
+- The residual is the distance from the _fitted line_.
+- Residuals help us assess the assumptions about errors.
+
+## From the regression line to residuals
+
+![](figures/resid_1optimized.svg){fig-align="center"}
+
+## From the regression line to residuals
+
+![](figures/resid_2optimized.svg){fig-align="center"}
+
+## From the regression line to residuals
+
+![](figures/resid_3optimized.svg){fig-align="center"}
+
+## From the regression line to residuals
+
+![](figures/resid_34optimized.svg){fig-align="center"}
+
+## From the regression line to residuals
+
+- Keep each face's happy rating on the horizontal axis.
+- Replace its trustworthy rating with its residual.
+- The colored points were the same observation in each panels.
+
+## What are we looking for?
+
+We can do (almost) all assumption checks using the residuals
+
+- If there is a systematic pattern, this suggests that the regression line misses part of the relationship.
+
+. . .
+
+- That is a check for linearity!
+
+## Checking linearity from the residuals
+
+![](figures/dino_resid.svg){fig-align="center"}
+
+
+The dino is the nonlinear signal.
+
+
+## Checking linearity from the residuals
+
+![](figures/U-shaped_residuals.svg){fig-align="center"}
+
+## Checking linearity from the residuals
+
+![](figures/Plateau_residuals.svg){fig-align="center"}
+
+## Checking linearity from the residuals
+
+![](figures/Threshold_residuals.svg){fig-align="center"}
+
+## Faces: Cute vs. Trustworthy
+
+![](figures/cute_and_resid.svg){fig-align="center"}
+
+## Faces: Electable vs. Trustworthy
+
+![](figures/electable_and_resid.svg){fig-align="center"}
+
+
+## Residuals and Linearity
+
+- We can examine the residuals for any systematic pattern.
+  + If we find one, this can suggest that the regression line misses part of the relationship.
+    * the part that is nonlinear.
+
+. . .
+
+Sometimes there is not a pattern, but just one or a few outlying observations.
+
+These are called _outliers_.
+
+- Outliers can have a large impact on the regression line.
+- But not every outlier strongly influences the regression.
+- We investigate what happens when we leave out an observation.
+
+## Outliers
+
+![](figures/cook_1.svg){fig-align="center"}
+
+
+## Detecting outliers: Cook's distance
+
+Cook's distance measures how much our fitted regression changes when we leave out one observation.
+
+![](figures/cook_2.svg){fig-align="center"}
+
+
+## Detecting outliers: Cook's distance
+
+- Larger Cook's distance means a more influential observation.
+- Larger Cook's distances deserve closer inspection.
+- Do not automatically remove them!
+
+
+# Normality
+
+## Normality
+
+$$
+Y_i = \alpha + \beta\times x_i + \textcolor{blue}{\epsilon_i},
+\qquad \textcolor{blue}{\epsilon_i \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma_\epsilon^2)}
+$$
+
+Normality: Errors follow a normal distribution.
+
+. . .
+
+- The assumption concerns **errors around the population line**.
+- The outcome variable $y$ does not need to be normally distributed.
+- Only the prediction error is!
+
+. . .
+
+We'll look at some examples and develop a new tool to examine deviations from normality: QQ-plots
+
+
+## Normality
+
+![](figures/model_plot_normality_1.svg){fig-align="center"}
+
+At each value of the predictor $x_i$, mistakes are normally distributed.
+
+## Normality
+
+![](figures/model_plot_normality_2.svg){fig-align="center"}
+
+By examining the residuals, the trend disappears.
+
+## Normality
+
+![](figures/model_plot_normality_3.svg){fig-align="center"}
+
+Now we can look at the residuals as a whole.
+
+## Normality
+
+![](figures/model_plot_normality_rotated.svg){fig-align="center"}
+
+## Normality
+
+![](figures/model_plot_normality_happy_vs_godly.svg){fig-align="center"}
+
+## Residual histograms
+
+The histogram of (the residuals of) Godly looks "more normal" than that of Happy.
+
+- Godly: fairly symmetric and bell-shaped.
+- Happy: a longer right tail.
+
+. . .
+
+While histograms are useful, but their appearance depends on the bins.
+
+## Histograms depend on the bins
+
+![](figures/hist_bins.svg){fig-align="center"}
+
+## From histograms to QQ plots
+
+![](figures/hist_qq_sim_1.svg){fig-align="center"}
+
+## From histograms to QQ plots
+
+![](figures/hist_qq_sim_2.svg){fig-align="center"}
+
+## From histograms to QQ plots
+
+![](figures/hist_qq_sim_3.svg){fig-align="center"}
+
+## From histograms to QQ plots
+
+![](figures/hist_qq_sim_4.svg){fig-align="center"}
+
+## From histograms to QQ plots
+
+![](figures/hist_qq_sim_5.svg){fig-align="center"}
+
+## How to read a normal Q-Q plot
+
+A Q-Q plot compares:
+
+- The percentiles of our residuals.
+- The percentiles we would expect from a normal distribution.
+
+. . .
+
+- Approximately normal: points lie on a straight line.
+- Skewness or unusual tails: systematic departures from that line.
+- Some deviation is expected in a sample.
+
+::: {.notes}
+
+- The sample residuals had mean 0 and standard deviation 8.86
+- A normal distribution would expect 97.5% of observations to fall below a value $1.96 \times 8.86=17.37$
+- In our sample, the top 97.5% of the residuals for happy fell were actually at 22.2
+  * we look at equally spaced percentages that we vary from almost 0% to almost 100%
+
+:::
+
+## QQ-plots for the Faces
+
+![](figures/model_plot_normality_qq_happy_vs_godly.svg){fig-align="center"}
+
+## Histograms and QQ-plots
+
+![](figures/model_plot_normality_hist_qq_happy_vs_godly.svg){fig-align="center"}
+
+## Faces: the predictor need not be normal
+
+
+::: {.columns}
+
+::: {.column}
+
+Let's consider the regression
+
+$$
+\widehat{\mathrm{trustworthy}} = a + b \times \mathrm{gender}
+$$
+
+- gender was scored on a scale from 0 to 100.
+  + Like all other variables.
+
+
+Gender clearly has two peaks and is absolutely not normal.
+
+
+:::
+
+::: {.column}
+
+![](figures/gender_raw_normality.svg){fig-align="right"}
+
+
+:::
+
+:::
+
+## Faces: the predictor need not be normal
+
+![](figures/trustworthy_vs_genderoptimized.svg){fig-align="center"}
+
+## Faces: the predictor need not be normal
+
+![](figures/trustworthy_vs_gender_residoptimized.svg){fig-align="center"}
+
+## Faces: the predictor need not be normal
+
+![](figures/trustworthy_vs_gender_resid_qq_1.svg){fig-align="center"}
+
+## Faces: the predictor need not be normal
+
+![](figures/trustworthy_vs_gender_resid_qq_2.svg){fig-align="center"}
+
+## Faces: the predictor need not be normal
+
+- The independent variable Gender is absolutely not normally distributed
+- But the residuals look fine in the Q-Q plot
+
+# Constant Error Variance
+
+## Homoscedasticity
+
+The model uses **one error variance** for all predictor values.
+
+At every $x_i$, we expect a similar spread of the residuals.
+
+- Homoscedasticity: the same error variance across $x$.
+- Heteroscedasticity: error variance changes across $x$.
+
+The residuals can look normal overall, but still heteroscedastic.
+
+## Typical and Smart - Regression
+
+![](figures/smart_typical_1optimized.svg){fig-align="center"}
+
+## Typical and Smart - Residuals
+
+![](figures/smart_typical_2optimized.svg){fig-align="center"}
+
+## Typical and Smart - Normality
+
+![](figures/smart_typical_hist_qq.svg){fig-align="center"}
+
+## Examine the residuals' spread
+
+![](figures/residual_variance2_1.svg){fig-align="center"}
+
+## Examine the residuals' spread
+
+![](figures/residual_variance2_2.svg){fig-align="center"}
+
+## Examine the residuals' spread
+
+![](figures/residual_variance2_3.svg){fig-align="center"}
+
+## Examine the residuals' spread
+
+- Typical: spread is relatively similar across much of the predictor range.
+- Smart: residuals tend to be more spread out at lower ratings.
+
+In general, the residuals can widen or narrow. Both suggest unequal error variance.
+
+. . .
+
+Why does it matter?
+
+- The usual standard errors assume constant error variance.
+- If this assumption is violated, significance tests may be misleading.
+
+## Zooming out
+
+We've examined three assumptions using plots.
+
+But can we also use statistical tests?
+
+. . .
+
+Well, for normality we can use the Shapiro–Wilk test!
+
+## Shapiro-Wilk: testing normality
+
+
+$$
+\begin{aligned}
+\hypo_0 &: \text{the distribution is normal}\\
+\hypo_1 &: \text{the distribution is not normal}
+\end{aligned}
+$$
+
+SPSS gives you a test-statistic $W$ and a $p$-value.
+
+. . .
+
+- If $p< .05$, there is evidence against normality.
+
+. . .
+
+You know by now:
+
+- what a test statistic is
+- what a $p$-value is
+- and therefore how to interpret the Shapiro Wilk test.
+
+## Faces: Shapiro-Wilk results
+
+{{< include figures/faces_normality_table.qmd >}}
+
+Each row is a test on the _residuals_ of the regression predicting trustworthiness with that variable.
+
+. . .
+
+Let's compare these results with the Q-Q plots.
+
+## Faces: Shapiro-Wilk vs. Q-Q plots
+
+![](figures/qq_plots_combined.svg){fig-align="center"}
+
+
+## Sample size changes what a test detects
+
+- Small sample: an important departure can go undetected.
+- Large sample: a minor departure can be statistically significant.
+
+. . .
+
+Often, the Q-Q plots can be more informative than the statistical tests.
+
+In the faces data, with $N=1,004$, many shapiro wilk tests are significant.
+
+But many Q-Q plots look fine.
+
+. . .
+
+There is a parallel with the "significant" $R=0.01$ here.
+
+. . .
+
+Just because an assumption is violated according to a significance test, does not mean it actually is a problem.
+
+. . .
+
+The type and severity of the violation matter.
+
+
+# Independence
+
+## Independence
+
+$$
+Y_i = \alpha + \beta\times x_i + \textcolor{blue}{\epsilon_i},
+\qquad \textcolor{blue}{\epsilon_i \overset{\mathrm{iid}}{\sim} \mathcal{N}(0, \sigma_\epsilon^2)}
+$$
+
+Independence: Prediction errors of different observations are unrelated.
+
+
+
+## What does one row represent?
+
+Independent observations contribute independent information.
+
+Study | Potential dependence
+--- | ---
+One measurement from each independently sampled person | No dependence built into the design
+Two measurements from each person | Measurements share a person
+Students from the same classroom | Students share a classroom
+
+. . .
+
+- This is all about how the data were collected.
+- We usually cannot assess this using statistics, but have to reason about the design
+
+## Independence in the faces data
+
+Each regression has one row per face, not one row per individual rating.
+
+. . .
+
+We could wonder:
+
+- Are the same or closely related face stimuli included more than once?
+- Did participants rate multiple faces, potentially introducing shared rating tendencies?
+- How were ratings combined into the face averages?
+
+. . .
+
+Just because we average many ratings does not mean the ratings of the faces become independent.
+
+# Conclusions
+
+## We've learned
+
+| Assumption | How do we check it? |
+|---|---|
+| Linearity | Look for patterns in the residual plot |
+| Outliers | Cook's distance |
+| Normality | Examine the Q-Q plot |
+| Homoscedasticity | Examine the spread of residuals |
+| Independence | Consider how the data were collected |
+
+## Can we prove an assumption?
+
+. . .
+
+No.
+
+Assumptions concern the population. We examine sample diagnostics.
+
+. . .
+
+- A plot can reveal important departures.
+- A formal test can provide evidence against an assumption.
+- Neither can prove that an assumption holds exactly.
+
+. . .
+
+In large samples, the degree of the violations matters much more than a significance test.
+
+Large sample sizes mean small deviations are quickly significant
+
+## When assumptions are violated
+
+Ideal world: fit a different model that doesn't make the assumption
+
+This course: report it properly.
+
+## Next weeks
+
+- Independent samples t-test (next week)
+  * Here we do have a solution when homoscedasticity is violated
+- ANOVA (both weeks after that)
+
