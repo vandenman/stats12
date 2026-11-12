@@ -201,7 +201,7 @@ fig_recap2 <- fig_recap1 +
 
 fig_recap3 <- fig_recap1 + 
   geom_segment(x = x0, y = y0, xend = x1, yend = y1, arrow = arrow(length = unit(0.4,"cm")), color = intercept_color) +
-  annotate("text", x = x0, y = y0*0.97, label = expression(widehat(Trustworthy) == 33.67 + 0.45 %*% `Gender`), hjust = 0.25, vjust = 1, color = intercept_color)
+  annotate("text", x = x0, y = y0*0.97, label = expression(widehat(Trustworthy) == 69.82 - 0.22 %*% `Gender`), hjust = 0.25, vjust = 1, color = intercept_color)
 
 dat$resid_gender <- residuals(fit)
 resid_gender <- ggplot(dat, aes(gender, resid_gender)) +
@@ -225,16 +225,23 @@ gender_qq <- ggplot(dat, aes(sample = gender)) +
   coord_cartesian(ylim = c(-10, 110)) +
   theme_bw(base_size = 24)
 
+gender_resid_hist <- ggplot(dat, aes(resid_gender)) +
+  geom_histogram(bins = 30, fill = "grey80", colour = "grey45") +
+  labs(x = "Perceived gender rating (0-100)", y = "Number of faces", title = "Histogram of the residuals")
+
+gender_hist <- ggplot(dat, aes(gender)) +
+  geom_histogram(bins = 30, fill = "grey80", colour = "grey45") +
+  labs(x = "Perceived gender rating (0-100)", y = "Number of faces", title = "Histogram of the raw data")
+
 save_figs(fig_recap0, fig_recap1, fig_recap2, fig_recap3, .base = file.path(out_dir, "reg_recap_%d.svg"), width = 50)
 to_optimize <- list.files(out_dir, pattern = "reg_recap_.*.svg")
 sapply(to_optimize, \(src) optimize_svg(fs::path(out_dir, src), width = 256, quality = 85))
 
-gender_resid_qq + plot_spacer()
-gender_resid_qq + gender_qq + plot_layout(axes = "collect_y")
+qq1 <- gender_resid_qq + plot_spacer()
+qq2 <- gender_resid_qq + gender_qq + plot_layout(axes = "collect_y")
+qq3 <- (gender_resid_hist + gender_hist) / qq2
 
-save_figs(resid_gender, 
-          gender_resid_qq + plot_spacer(),
-          gender_resid_qq + gender_qq + plot_layout(axes = "collect_y"),
+save_figs(resid_gender, qq1, qq2, qq3,
           .base = file.path(out_dir, "reg_recap2_%d.svg"), width = 50)
 
 
