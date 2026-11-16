@@ -2,7 +2,7 @@ rm(list = ls())
 library(dplyr)
 library(ggplot2)
 library(fs)
-
+library(patchwork)
 fragment_kable <- function(obj, steps, digits = 2, ...) {
   stopifnot(length(steps) == ncol(obj))
 
@@ -26,10 +26,21 @@ fragment_kable <- function(obj, steps, digits = 2, ...) {
 
   knitr::asis_output(as.character(table))
 }
+save_figs <- function(..., width = 25, height = 25, units = "cm", limitsize = TRUE, .base) {
+  dont_save <- getOption("dont_save", FALSE)
+  if (dont_save) return()
+
+  if (...length() == 1L) {
+    ggsave(...elt(1), file = .base,
+           width = width, height = height, units = units, limitsize = limitsize)
+  } else
+    for (i in seq_len(...length()))
+      ggsave(...elt(i), file = sprintf(.base, i),
+             width = width, height = height, units = units, limitsize = limitsize)
+}
+
 out_dir_fig <- path("lecture12", "figures")
 out_dir_tb  <- path("lecture12", "tables")
-data("anorexia", package = "MASS")
-data("birthwt", package = "MASS")
 
 set_theme(
   theme_bw(base_size = 24) +
@@ -108,6 +119,10 @@ fit <- lm(Prejudice ~ Cast, murrar)
 fit_a <- coef(fit)[1]
 fit_b <- coef(fit)[2]
 coef(fit)
+
+summary(murrar |> lm(formula = Prejudice ~ Cast))
+summary(murrar |> mutate(Cast = relevel(Cast, "diverse")) |> lm(formula = Prejudice ~ Cast))
+
 murrar_means
 fitted.values(fit)
 
@@ -130,6 +145,92 @@ g_base0
 g_base1
 g_base2
 save_figs(g_base0, g_base1, g_base2, width = 40, .base = path(out_dir_fig, "scatter_%d", ext = "svg"))
+
+plot_qq <- function(fit, color = "red") {
+  r <- residuals(fit)
+  dparams <- list(mean = mean(r), sd = sd(r))
+  ggplot(data.frame(residual = r), aes(sample = residual)) +
+    stat_qq_line(colour = color, dparams = dparams) +
+    stat_qq(size = 0.7, alpha = 0.6, dparams = dparams) +
+    labs(x = "Theoretical quantile", y = "Residual quantile", title = "Q-Q plot")
+}
+plot_qq(fit)
+shapiro.test(residuals(fit))
+
+cooks.distance(fit)
+cooks <- data.frame(
+  observation = seq_len(nrow(murrar)),
+  distance = cooks.distance(fit)
+)
+
+blue <- "dodgerblue"
+scy <- scale_y_continuous(breaks = seq(-80, 40, 20), limits = c(-80, 40))
+fig0 <- plot_qq(fit, blue) + scy
+
+fig1 <- ggplot(cooks, aes(observation, distance)) +
+  geom_segment(aes(xend = observation, yend = 0), linewidth = 1.1) +
+  geom_point() +
+  scale_x_continuous(breaks = seq(0, nrow(murrar), 5)) +
+  labs(x = "Observation", y = "Cook's distance")
+fig1
+fig2 <- ggplot(cooks, aes(observation, distance)) +
+  geom_segment(aes(xend = observation, yend = 0, color = distance > .1), linewidth = 1.1) +
+  geom_point(aes(color = distance > .1, fill = distance > .1)) +
+  scale_fill_manual(values = c("FALSE" = "grey", "TRUE" = "red"), guide = "none") +
+  scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red"), guide = "none") +
+  scale_x_continuous(breaks = seq(0, nrow(murrar), 5)) +
+  labs(x = "Observation", y = "Cook's distance")
+fig2
+
+fig3 <- ggplot(murrar2 |> mutate(cook = cooks$distance, high_cook = cook > .1), aes(x = Cast, y = Prejudice, color = high_cook, fill = high_cook)) +
+  ggbeeswarm::geom_beeswarm(alpha = .7) +
+  geom_abline(intercept = fit_a-fit_b, slope = fit_b, color = regressioncol) +
+  scale_fill_manual(values = c("FALSE" = "grey", "TRUE" = "red"), guide = "none") +
+  scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red"), guide = "none") +
+  mean_points
+fig3
+
+fig4 <- fig0 + ggtitle("With outliers") +
+  plot_qq(fit3, blue) + scy + ggtitle("Without outliers") +
+  plot_layout(axes = "collect")
+
+save_figs(fig0, fig1, fig2, fig3, fig4, width = 40, .base = path(out_dir_fig, "normality_outliers%d", ext = "svg"))
+
+r <- residuals(fit)
+g <- murrar$Cast
+dparams <- list(mean = mean(r), sd = sd(r))
+ggplot(data.frame(residual = r), aes(sample = residual)) +
+  stat_qq_line(colour = color, dparams = dparams) +
+  stat_qq(size = 0.7, alpha = 0.6, dparams = dparams) +
+  labs(x = "Theoretical quantile", y = "Residual quantile", title = "Q-Q plot")
+
+r <- residuals(fit)
+g <- murrar$Cast
+dparams <- list(mean = mean(r), sd = sd(r))
+
+ggplot(data.frame(residual = r, Cast = g), aes(sample = residual)) +
+  stat_qq_line() +
+  stat_qq(size = 0.7, alpha = 0.6) +
+  facet_wrap(~ Cast) +
+  labs(x = "Theoretical quantile", y = "Residual quantile", title = "Q-Q plot")
+
+murrar3 <- murrar |> filter(Prejudice > -40)
+
+t.test(Prejudice ~ Cast, murrar)
+t.test(Prejudice ~ Cast, murrar3)
+
+car::leveneTest(Prejudice ~ Cast, murrar, center = mean)
+car::leveneTest(Prejudice ~ Cast, murrar3, center = mean)
+murrar |> group_by(Cast) |> summarise(sd = sd(Prejudice))
+murrar3 |> group_by(Cast) |> summarise(sd = sd(Prejudice))
+
+fit3 <- lm(Prejudice ~ Cast, murrar3)
+plot_qq(fit3)
+shapiro.test(residuals(fit3))
+nortest::lillie.test(residuals(fit3))
+murrar |> select(Prejudice, Cast) |> mutate(filter = Prejudice > -40) |> dput()
+
+
 
 lm(Prejudice ~ Cast, murrar)
 t.test(Prejudice ~ Cast, murrar)
@@ -203,3 +304,24 @@ car::leveneTest(weight ~ sex_baby,  data = births, center = mean)
 car::leveneTest(weight ~ smoke,     data = births, center = mean)
 car::leveneTest(weight ~ premature, data = births, center = mean)
 car::leveneTest(weight ~ old_mom,   data = births, center = mean)
+
+
+# Primary analysis
+t.test(Prejudice ~ Cast, data = murrar)
+
+# Sensitivity analysis
+t.test(Prejudice ~ Cast, data = murrar3)
+
+# Bootstrap the mean difference, retaining all observations
+set.seed(123)
+B <- 10000
+
+x <- murrar$Prejudice[murrar$Cast == "all-white"]
+y <- murrar$Prejudice[murrar$Cast == "diverse"]
+
+boot_diff <- replicate(B, {
+  mean(sample(x, length(x), replace = TRUE)) -
+    mean(sample(y, length(y), replace = TRUE))
+})
+
+quantile(boot_diff, c(.025, .975))
