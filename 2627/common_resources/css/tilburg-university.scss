@@ -131,3 +131,45 @@ $font-family-sans-serif: Arial, Helvetica, sans-serif;
 .reveal table tbody tr:nth-child(even) > td {
   background-color: $table-stripe-bg;
 }
+
+/* Center and overlay incremental figures */
+.reveal .svg-stack ul {
+  display: grid;
+  place-items: center;
+  height: 50vh;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reveal .svg-stack li {
+  grid-area: 1 / 1;
+  margin: 0;
+  padding: 0;
+}
+
+/* Show only the currently active figure */
+.reveal .svg-stack li.fragment.visible:not(.current-fragment) {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.reveal .svg-stack img {
+  display: block;
+  width: var(--svg-width, 75%);
+  height: auto;
+  max-height: 50vh;
+  max-width: 100%;
+  margin: auto;
+  object-fit: contain;
+}
+
+/* Hide the first image when a subsequent fragment appears */
+.reveal .svg-stack:not(.hide-first) ul:has(li.fragment.visible) > li:first-child {
+  visibility: hidden;
+}
+
+.reveal table.compact-table th,
+.reveal table.compact-table td {
+  padding: 0.12em 0.1em;
+}
