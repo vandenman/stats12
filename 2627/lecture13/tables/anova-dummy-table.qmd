@@ -2,16 +2,16 @@
 <thead><tr>
 <th style="text-align:right;"> Machiavellism </th>
    <th style="text-align:left;"> House </th>
-   <th style="text-align:right;" class="fragment" data-fragment-index="2"> Dummy_Ravenclaw </th>
-   <th style="text-align:right;" class="fragment" data-fragment-index="3"> Dummy_Huffelpuff </th>
+   <th style="text-align:right;" class="fragment" data-fragment-index="2"> Dummy_Huffelpuff </th>
+   <th style="text-align:right;" class="fragment" data-fragment-index="3"> Dummy_Ravenclaw </th>
    <th style="text-align:right;" class="fragment" data-fragment-index="4"> Dummy_Slytherin </th>
   </tr></thead>
 <tbody>
 <tr>
 <td style="text-align:right;"> 20 </td>
    <td style="text-align:left;"> Ravenclaw </td>
-   <td style="text-align:right;" class="fragment" data-fragment-index="2"> 1 </td>
-   <td style="text-align:right;" class="fragment" data-fragment-index="3"> 0 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="2"> 0 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="3"> 1 </td>
    <td style="text-align:right;" class="fragment" data-fragment-index="4"> 0 </td>
   </tr>
 <tr>
@@ -38,8 +38,8 @@
 <tr>
 <td style="text-align:right;"> 23 </td>
    <td style="text-align:left;"> Hufflepuff </td>
-   <td style="text-align:right;" class="fragment" data-fragment-index="2"> 0 </td>
-   <td style="text-align:right;" class="fragment" data-fragment-index="3"> 1 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="2"> 1 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="3"> 0 </td>
    <td style="text-align:right;" class="fragment" data-fragment-index="4"> 0 </td>
   </tr>
 <tr>
@@ -52,15 +52,15 @@
 <tr>
 <td style="text-align:right;"> 25 </td>
    <td style="text-align:left;"> Ravenclaw </td>
-   <td style="text-align:right;" class="fragment" data-fragment-index="2"> 1 </td>
-   <td style="text-align:right;" class="fragment" data-fragment-index="3"> 0 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="2"> 0 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="3"> 1 </td>
    <td style="text-align:right;" class="fragment" data-fragment-index="4"> 0 </td>
   </tr>
 <tr>
 <td style="text-align:right;"> 19 </td>
    <td style="text-align:left;"> Hufflepuff </td>
-   <td style="text-align:right;" class="fragment" data-fragment-index="2"> 0 </td>
-   <td style="text-align:right;" class="fragment" data-fragment-index="3"> 1 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="2"> 1 </td>
+   <td style="text-align:right;" class="fragment" data-fragment-index="3"> 0 </td>
    <td style="text-align:right;" class="fragment" data-fragment-index="4"> 0 </td>
   </tr>
 </tbody>

@@ -73,7 +73,7 @@ Harry potter house:
 |-----------|-----|-----|-----|
 Gryffindor  |  0  |  0  |  0  |
 Ravenclaw   |  1  |  0  |  0  |
-Huffelpuf   |  0  |  1  |  0  |
+huffelpuff   |  0  |  1  |  0  |
 Slytherin   |  0  |  0  |  1  |
 
 #  Regression with multiple dummies:
@@ -292,27 +292,37 @@ What if the predictor is categorical?
 ## Categorical predictors are common!
 
 - Nominal (no natural order):
-  * Biological sex (male/female)
-  * Student status (Dutch/French/German/...)
+  * Nationality (Dutch/ French/ German/ ...)
   * Device type (mobile (android)/ mobile (iOS)/desktop / tablet)
+  * Media genre (sci-fi, documentary, comedy, true crime, ...)
+  * Blood type (A, B, AB, O)
+  * Workplace (Office/ Hybrid/ Remote)
 
 - Ordinal (natural order):
   * Socio-economic status (Low/Medium/High)
   * Education (VMBO/ HAVO/ VWO)
+  * Seniority (Junior / Medior / Senior)
+  * Satisfaction (Very dissatisfied / Dissatisfied / Neutral / Satisfied / Very satisfied)
 
 ## Categorical predictors are common!
 
-- Treatment:
-  * Medicine X vs. medicine Y: which treats patients better?
-  * Teaching method X vs. Y: which helps students learn better?
-  * Website design A vs. B: which leads to longer visits?
+## Categorical predictors are common!
+
+- Experimental treatments:
+  * Medicine A / B / Placebo: which works best?
+  * Teaching method A / B / C: which leads to higher exam scores?
+  * Website design A / B / C: which keeps visitors engaged longer?
 
 . . .
 
 - Many online platforms use A/B testing:
-  * Instagram: Test different algorithms for recommending content (maximizing doomscrolling)
-  * ChatGPT: Compare model versions using user feedback and usage patterns
-  * YouTube: Test titles and thumbnails to increase watch time
+  * Instagram: Different algorithms for recommending content (maximizing doomscrolling)
+  * ChatGPT: Comparing model versions
+  * YouTube: Multiple titles and thumbnails
+
+. . .
+
+What if we want to compare more than two groups?
 
 
 ## Houses of Hogwarts and Personality
@@ -357,7 +367,8 @@ Jakob, L., Garcia-Garzon, E., Jarke, H., & Dablander, F. (2019). The science beh
 
 ## The Short Dark Triad (Jones & Paulhus, 2013)
 
-![](data/The%20Dark%20Triad.svg){.absolute top=450 right=50 width="150" height="150"}
+<!-- ![](data/The%20Dark%20Triad.svg){.absolute top=450 right=50 width="150" height="150"} -->
+![](https://upload.wikimedia.org/wikipedia/commons/2/2b/The_Dark_Triad.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original){.absolute top=450 right=50 width="150" height="150"}
 
 ::: {style="font-size: 48%; line-height: 1.12;"}
 
@@ -447,7 +458,7 @@ $$
 
 . . .
 
-but like with binary predictors, we stil can't multiply words with numbers.
+but like with binary predictors, we still can't multiply words with numbers.
 
 We need to assign numbers to them.
 
@@ -459,11 +470,11 @@ So we extent dummy coding to multiple categories.
 
 ## Dummy Coding
 
-| Observed | Dummy_Ravenclaw | Dummy_Huffelpuf | Dummy_Slytherin |
+| Observed | Dummy_huffelpuff | Dummy_Ravenclaw | Dummy_Slytherin |
 |----|----|----|----|
 | Gryffindor | 0 | 0 | 0 |
-| Ravenclaw  | 1 | 0 | 0 |
-| Huffelpuf  | 0 | 1 | 0 |
+| huffelpuff  | 1 | 0 | 0 |
+| Ravenclaw  | 0 | 1 | 0 |
 | Slytherin  | 0 | 0 | 1 |
 
 ## Dummy Coding
@@ -482,8 +493,8 @@ $$
 \begin{align}
 \widehat{\mathrm{Machiavellism}} =
 a &+
-b_1\times \mathrm{``Dummy\_Ravenclaw''} \\
-&+b_2\times \mathrm{``Dummy\_Huffelpuf''} \\
+b_1\times \mathrm{``Dummy\_huffelpuff''} \\
+&+b_2\times \mathrm{``Dummy\_Ravenclaw''} \\
 &+b_3\times \mathrm{``Dummy\_Slytherin''}
 \end{align}
 $$
@@ -492,15 +503,15 @@ we now one intercept $a$ and 3 slope parameters, $b_1, b_2, b_3$!
 
 So what do they mean?
 
-
+<!--
 ## Dummy Coding
 
-| Observed | Dummy_Ravenclaw | Dummy_Huffelpuf | Dummy_Slytherin |
+| Observed | Dummy_Ravenclaw | Dummy_huffelpuff | Dummy_Slytherin |
 |----|----|----|----|
 |          | $b_1$           | $b_2$           | $b_3$ |
 | Gryffindor | 0 | 0 | 0 |
 | Ravenclaw  | 1 | 0 | 0 |
-| Huffelpuf  | 0 | 1 | 0 |
+| huffelpuff  | 0 | 1 | 0 |
 | Slytherin  | 0 | 0 | 1 |
 
 :::{.incremental}
@@ -511,14 +522,14 @@ So what do they mean?
 ::: {.column}
 
 - $\mathrm{Gryffindor} = a$
-- $\mathrm{Ravenclaw} = a + b_1$
+- $\mathrm{huffelpuff} = a + b_1$
 
 :::
 
 ::: {.column}
 
 
-- $\mathrm{Huffelpuf} = a + b_2$
+- $\mathrm{Ravenclaw} = a + b_2$
 - $\mathrm{Slytherin} = a + b_3$
 
 :::
@@ -530,6 +541,7 @@ So what do they mean?
 . . .
 
 So what do the slopes mean?
+-->
 
 ## Dummy coding: Hogwarts houses
 
@@ -543,15 +555,15 @@ $$
   <thead>
     <tr>
       <th>House</th>
-      <th>Ravenclaw ($x_{i1}$)</th>
-      <th>Huffelpuf ($x_{i2}$)</th>
+      <th>huffelpuff ($x_{i1}$)</th>
+      <th>Ravenclaw ($x_{i2}$)</th>
       <th>Slytherin ($x_{i3}$)</th>
     </tr>
   </thead>
   <tbody>
     <tr><td>Gryffindor</td><td>0</td><td>0</td><td>0</td></tr>
-    <tr><td>Ravenclaw</td><td>1</td><td>0</td><td>0</td></tr>
-    <tr><td>Huffelpuf</td><td>0</td><td>1</td><td>0</td></tr>
+    <tr><td>huffelpuff</td><td>1</td><td>0</td><td>0</td></tr>
+    <tr><td>Ravenclaw</td><td>0</td><td>1</td><td>0</td></tr>
     <tr><td>Slytherin</td><td>0</td><td>0</td><td>1</td></tr>
   </tbody>
 </table>
@@ -566,7 +578,7 @@ $$
 $$
 \begin{aligned}
 \widehat{\mathrm{Gryffindor}}
-&= a + b_1\times 0 + b_2 \times 0 + b_3 \times 0 \\
+&= a + b_1\!\times\! 0 + b_2 \!\times\! 0 + b_3 \!\times\! 0 \\
 &= a
 \end{aligned}
 $$
@@ -575,8 +587,8 @@ $$
 ::: {.fragment data-fragment-index="3"}
 $$
 \begin{aligned}
-\widehat{\mathrm{Ravenclaw}}
-&= a + b_1\times 1 + b_2 \times 0 + b_3 \times 0 \\
+\widehat{\mathrm{huffelpuff}}
+&= a + b_1\!\times\! 1 + b_2 \!\times\! 0 + b_3 \!\times\! 0 \\
 &= a + b_1
 \end{aligned}
 $$
@@ -589,8 +601,8 @@ $$
 ::: {.fragment data-fragment-index="4"}
 $$
 \begin{aligned}
-\widehat{\mathrm{Huffelpuf}}
-&= a + b_1\times 1 + b_2 \times 1 + b_3 \times 0 \\
+\widehat{\mathrm{Ravenclaw}}
+&= a + b_1\!\times\! 0 + b_2 \!\times\! 1 + b_3 \!\times\! 0 \\
 &= a + b_2
 \end{aligned}
 $$
@@ -600,7 +612,7 @@ $$
 $$
 \begin{aligned}
 \widehat{\mathrm{Slytherin}}
-&= a + b_1\times 1 + b_2 \times 0 + b_3 \times 1 \\
+&= a + b_1\!\times\! 1 + b_2 \!\times\! 0 + b_3 \!\times\! 1 \\
 &= a + b_3
 \end{aligned}
 $$
@@ -617,7 +629,7 @@ $$
   * In our case, the mean Machiavellism of Gryffindors
 - Each slope is the mean difference between that group's and the reference category
   * So $b_1$ is the mean difference between Gryffindors and Ravenclaws
-  * So $b_2$ is the mean difference between Gryffindors and Huffelpufs
+  * So $b_2$ is the mean difference between Gryffindors and huffelpuffs
   * So $b_3$ is the mean difference between Gryffindors and Slytherins
 
 
@@ -630,30 +642,28 @@ $$
 - ![](figures/hp_mach_reg_4.svg)
 - ![](figures/hp_mach_reg_5.svg)
 :::
-<!--
-TODO:
-
-add horizontal line for intercept, this goes through Griffyindor
-add vertical offset for each b
-
- -->
 
 <!--
 TODO:
-the figures go Gryffindor, Huffelpuf, Ravenclaw, Slytherin.
-the tables go Gryffindor, Ravenclaw, Huffelpuf, Slytherin.
+the figures go Gryffindor, huffelpuff, Ravenclaw, Slytherin.
+the tables go Gryffindor, Ravenclaw, huffelpuff, Slytherin.
 
 align this!
  -->
 
+<!--
+TODO: add here the slide with the spss betas, and show the values
+those correspond to the previous plot!
+-->
+
 ## Changing the reference category
 
-| Observed | Dummy_Gryffindor | Dummy_Huffelpuf | Dummy_Slytherin |
+| Observed | Dummy_Gryffindor | Dummy_huffelpuff | Dummy_Slytherin |
 |----|----|----|----|
 |          | $b_1$           | $b_2$           | $b_3$ |
 | Gryffindor | 1 | 0 | 0 |
 | Ravenclaw  | 0 | 0 | 0 |
-| Huffelpuf  | 0 | 1 | 0 |
+| huffelpuff  | 0 | 1 | 0 |
 | Slytherin  | 0 | 0 | 1 |
 
 :::{.incremental}
@@ -669,7 +679,7 @@ align this!
 
 ::: {.column}
 
-- $\mathrm{Huffelpuf} = a + b_2$
+- $\mathrm{huffelpuff} = a + b_2$
 - $\mathrm{Slytherin} = a + b_3$
 
 :::
@@ -704,14 +714,14 @@ add vertical offset for each b
     <tr>
       <th>House</th>
       <th>Ravenclaw ($x_{i1}$)</th>
-      <th>Huffelpuf ($x_{i2}$)</th>
+      <th>huffelpuff ($x_{i2}$)</th>
       <th>Slytherin ($x_{i3}$)</th>
     </tr>
   </thead>
   <tbody>
     <tr><td>Gryffindor</td><td>0</td><td>0</td><td>0</td></tr>
     <tr><td>Ravenclaw</td><td>1</td><td>0</td><td>0</td></tr>
-    <tr><td>Huffelpuf</td><td>0</td><td>1</td><td>0</td></tr>
+    <tr><td>huffelpuff</td><td>0</td><td>1</td><td>0</td></tr>
     <tr><td>Slytherin</td><td>0</td><td>0</td><td>1</td></tr>
   </tbody>
 </table>
@@ -728,7 +738,7 @@ add vertical offset for each b
 ::: {.column}
 
 
-- $\mathrm{Huffelpuf} = a + b_2$
+- $\mathrm{huffelpuff} = a + b_2$
 - $\mathrm{Slytherin} = a + b_3$
 
 :::
