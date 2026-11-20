@@ -207,3 +207,62 @@ boxplot_dat_m |>
   fragment_kable(steps = c(NA, NA, 2, 3, 4)) |>
   writeLines(path(out_dir_tb, "anova-dummy-table.qmd"))
 
+dim(boxplot_dat_m)
+
+boxplot_dat_m_means <- boxplot_dat_m |> group_by(Sorting_house) |> summarise(mean = mean(value))
+mean_points <- geom_point(data = boxplot_dat_m_means, aes(x = Sorting_house, y = mean), shape = 23, fill = "dodgerblue", size = 8, inherit.aes = FALSE)
+mean_lines <- geom_line(data = boxplot_dat_m_means |> mutate(x = 1:4), aes(x = x, y = mean), color = "firebrick2", inherit.aes = FALSE)
+g_base0 <- fig3
+g_base1 <- g_base0 +
+  mean_points +
+  ggtitle("Blue diamonds are sample means")
+g_base2 <- g_base0 +
+  mean_lines +
+  mean_points +
+  ggtitle("What is the red line?")
+
+g_base3 <- g_base0 +
+  mean_points +
+  geom_hline(yintercept = boxplot_dat_m_means$mean[1], color = "paleturquoise", linetype = "dashed", linewidth = 2) +
+  geom_label(x = 0.5, y = boxplot_dat_m_means$mean[1], label = expression(a), color = "paleturquoise3") +
+  ggtitle("a")
+
+ff <- function(x, y) { y + (x - y) / 2 }
+g_base4 <- g_base0 +
+  mean_points +
+  geom_hline(yintercept = boxplot_dat_m_means$mean[1], color = "paleturquoise", linetype = "dashed", linewidth = 2) +
+  geom_segment(data = tibble(
+    x     = boxplot_dat_m_means$Sorting_house[-1],
+    xend  = boxplot_dat_m_means$Sorting_house[-1],
+    y     = boxplot_dat_m_means$mean[1],
+    yend  = boxplot_dat_m_means$mean[-1],
+    group = boxplot_dat_m_means$Sorting_house[-1]
+  ), mapping = aes(x = x, xend = xend, y = y, yend = yend, group = group), inherit.aes = FALSE, linewidth = 2,
+  color = "maroon") +
+  geom_label(x = 0.5, y = boxplot_dat_m_means$mean[1], label = expression(a), color = "paleturquoise3") +
+  geom_label(x = 2.1, y = ff(boxplot_dat_m_means$mean[2], boxplot_dat_m_means$mean[1]), label = expression(b[1]), hjust = 0, color = "maroon4") +
+  geom_label(x = 3.1, y = ff(boxplot_dat_m_means$mean[3], boxplot_dat_m_means$mean[1]), label = expression(b[2]), hjust = 0, color = "maroon4") +
+  geom_label(x = 4.1, y = ff(boxplot_dat_m_means$mean[4], boxplot_dat_m_means$mean[1]), label = expression(b[3]), hjust = 0, color = "maroon4") +
+  ggtitle("b")
+g_base4
+
+g_base5 <- g_base0 +
+  mean_points +
+  geom_hline(yintercept = boxplot_dat_m_means$mean[2], color = "paleturquoise", linetype = "dashed", linewidth = 2) +
+  geom_segment(data = tibble(
+    x     = boxplot_dat_m_means$Sorting_house[-1],
+    xend  = boxplot_dat_m_means$Sorting_house[-1],
+    y     = boxplot_dat_m_means$mean[1],
+    yend  = boxplot_dat_m_means$mean[-1],
+    group = boxplot_dat_m_means$Sorting_house[-1]
+  ), mapping = aes(x = x, xend = xend, y = y, yend = yend, group = group), inherit.aes = FALSE, linewidth = 2,
+  color = "maroon") +
+  geom_label(x = 0.5, y = boxplot_dat_m_means$mean[2], label = expression(a), color = "paleturquoise3") +
+  geom_label(x = 1.1, y = ff(boxplot_dat_m_means$mean[1], boxplot_dat_m_means$mean[2]), label = expression(b[1]), hjust = 0, color = "maroon4") +
+  geom_label(x = 3.1, y = ff(boxplot_dat_m_means$mean[3], boxplot_dat_m_means$mean[2]), label = expression(b[2]), hjust = 0, color = "maroon4") +
+  geom_label(x = 4.1, y = ff(boxplot_dat_m_means$mean[4], boxplot_dat_m_means$mean[2]), label = expression(b[3]), hjust = 0, color = "maroon4") +
+  ggtitle("Huffelpuf as reference category")
+
+
+save_figs(g_base0, g_base1, g_base2, g_base3, g_base4, width = 40, .base = fs::path(out_dir_fig, "hp_mach_reg_%d", ext = "svg"))
+

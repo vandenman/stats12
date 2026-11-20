@@ -621,6 +621,31 @@ $$
   * So $b_3$ is the mean difference between Gryffindors and Slytherins
 
 
+## What does the regression look like?
+
+::: {.incremental .svg-stack}
+- ![](figures/hp_mach_reg_1.svg)
+- ![](figures/hp_mach_reg_2.svg)
+- ![](figures/hp_mach_reg_3.svg)
+- ![](figures/hp_mach_reg_4.svg)
+- ![](figures/hp_mach_reg_5.svg)
+:::
+<!--
+TODO:
+
+add horizontal line for intercept, this goes through Griffyindor
+add vertical offset for each b
+
+ -->
+
+<!--
+TODO:
+the figures go Gryffindor, Huffelpuf, Ravenclaw, Slytherin.
+the tables go Gryffindor, Ravenclaw, Huffelpuf, Slytherin.
+
+align this!
+ -->
+
 ## Changing the reference category
 
 | Observed | Dummy_Gryffindor | Dummy_Huffelpuf | Dummy_Slytherin |
@@ -659,6 +684,16 @@ NOTE:
 ask here, what does b_3 mean now?
 
  -->
+
+ <!--
+TODO:
+
+show the same plot as before but now with the different reference category!
+add horizontal line for intercept, this goes through Griffyindor
+add vertical offset for each b
+
+ -->
+
 
 # Testing
 
@@ -926,413 +961,409 @@ Here, $p$ is the number of parameters in the model.
 - In bivariate regression, we have a $a$ and $b$, so $p = 2$.
   * $\frac{N-p}{p-1} = N - 2$.
 - For Macchiavellism data, we have $a$, $b_1$, $b_2$, $b_3$, so $p = 4$.
-  * $\frac{N-p}{p-1} = \frac{N-4}{2}$.
+  * $\frac{N-p}{p-1} = \frac{N-4}{3}$.
 :::
 
 <!--
 Keep the slides above this comment unchanged.
  -->
 
+## Regression output in SPSS {.small-slide .spss-regression-output}
+
+<!-- The Hogwarts tables and diagnostic plot use scripts/house_analysis.r. -->
+
+<style>
+.reveal .spss-table {
+  width: 100%;
+  margin: 0.5em auto;
+}
+.reveal .spss-table th,
+.reveal .spss-table td {
+  padding: 0.35em 0.5em;
+  text-align: right;
+  font-weight: normal;
+}
+.reveal .spss-table caption {
+  caption-side: top;
+  margin-bottom: 0.3em;
+  font-style: italic;
+}
+.reveal .spss-table .term {
+  text-align: left;
+}
+.reveal .spss-table .group-title {
+  text-align: center;
+  border-bottom: 1px solid currentColor;
+}
+.reveal .spss-table tr.fragment.highlight-row {
+  opacity: 1;
+  visibility: visible;
+}
+.reveal .spss-table tr.fragment.highlight-row.visible {
+  outline: 3px solid firebrick;
+  outline-offset: -2px;
+}
+.reveal .spss-regression-output h2 {
+  margin-bottom: 0.65rem;
+}
+.reveal .spss-regression-output .spss-table {
+  width: 92%;
+  margin: 0.25em auto 0.8em;
+  font-size: 0.78em;
+  line-height: 1.2;
+}
+.reveal .spss-regression-output .spss-model-summary {
+  width: 72%;
+}
+.reveal .spss-regression-output .spss-table th,
+.reveal .spss-regression-output .spss-table td {
+  padding: 0.18em 0.5em;
+}
+.reveal .spss-regression-output .spss-table caption {
+  margin: 0;
+  padding: 0 0 0.25em;
+}
+.reveal .spss-regression-output .spss-notes {
+  width: 92%;
+  margin: 0 auto;
+  font-size: 0.78em;
+}
+.reveal .spss-regression-output .spss-notes p {
+  margin: 0.25em 0;
+}
+</style>
+
+<table class="spss-table spss-model-summary">
+  <caption>Model Summary</caption>
+  <thead>
+    <tr>
+      <th scope="col" class="term">Model</th>
+      <th scope="col">R</th>
+      <th scope="col">R Square</th>
+      <th scope="col">Adjusted R Square</th>
+      <th scope="col">Std. Error of the Estimate</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row" class="term">1</th>
+      <td>.338</td><td>.114</td><td>.111</td><td>6.015</td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="spss-table">
+  <caption>ANOVA</caption>
+  <thead>
+    <tr>
+      <th scope="col" class="term">Model</th>
+      <th scope="col" class="term"></th>
+      <th scope="col">Sum of Squares</th>
+      <th scope="col">df</th>
+      <th scope="col">Mean Square</th>
+      <th scope="col">F</th>
+      <th scope="col">Sig.</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="term">1</td><th scope="row" class="term">Regression</th>
+      <td>3935.101</td><td>3</td><td>1311.700</td><td>36.259</td><td>&lt;.001</td>
+    </tr>
+    <tr>
+      <td></td><th scope="row" class="term">Residual</th>
+      <td>30496.517</td><td>843</td><td>36.176</td><td></td><td></td>
+    </tr>
+    <tr>
+      <td></td><th scope="row" class="term">Total</th>
+      <td>34431.617</td><td>846</td><td></td><td></td><td></td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="spss-table">
+  <caption>Coefficients</caption>
+  <thead>
+    <tr>
+      <th scope="col" rowspan="2" class="term">Model</th>
+      <th scope="col" rowspan="2" class="term"></th>
+      <th scope="colgroup" colspan="2" class="group-title">Unstandardized Coefficients</th>
+      <th class="group-title">Standardized Coefficients</th>
+      <th scope="col" rowspan="2">t</th>
+      <th scope="col" rowspan="2">Sig.</th>
+    </tr>
+    <tr>
+      <th scope="col">B</th>
+      <th scope="col">Std. Error</th>
+      <th scope="col">Beta</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="term">1</td><th scope="row" class="term">(Constant)</th>
+      <td>26.341</td><td>0.408</td><td></td><td>64.514</td><td>&lt;.001</td>
+    </tr>
+    <tr>
+      <td></td><th scope="row" class="term">Ravenclaw</th>
+      <td>−0.129</td><td>0.549</td><td>−0.009</td><td>−0.235</td><td>.814</td>
+    </tr>
+    <tr>
+      <td></td><th scope="row" class="term">Hufflepuff</th>
+      <td>−2.086</td><td>0.578</td><td>−0.143</td><td>−3.609</td><td>&lt;.001</td>
+    </tr>
+    <tr class="fragment highlight-row" data-fragment-index="1">
+      <td></td><th scope="row" class="term">Slytherin</th>
+      <td>4.569</td><td>0.645</td><td>0.270</td><td>7.083</td><td>&lt;.001</td>
+    </tr>
+  </tbody>
+</table>
+
+:::: {.spss-notes}
+
+Machiavellianism is the outcome variable. "(Constant)" is the mean for Gryffindor, the reference category.
+
+::: {.fragment data-fragment-index="2"}
+Slytherin scored about 4.57 points higher on average than Gryffindor.
+:::
+
+::::
+
+## Testing a coefficient
+
+Does the population mean differ between Slytherin and Gryffindor?
+
+$$
+\hypo_0:\beta_3=0
+\qquad
+\hypo_1:\beta_3\ne 0
+$$
+
+. . .
+
+$$
+t = \frac{b_3 - 0}{\SE_{b_3}} \approx \frac{4.569}{0.645} \approx 7.08
+\qquad
+df = N-4 = 843
+$$
+
+. . .
+
+SPSS reports $p<.001$ in the *Sig.* column. There is evidence of a difference between these two houses.
+
+## Testing all coefficients for House
+
+The overall regression $F$-test compares one mean for everyone with one mean per house.
+
+. . .
+
+There are three dummy coefficients and four fitted parameters in total, so the degrees of freedom are $3$ and $847-4=843$. The multiplier in the regression $F$ formula is $(N-4)/3$.
+
+. . .
+
+$$
+F(3,843)=36.26,\qquad p<.001,\qquad R^2=.114
+$$
+
+The data provide evidence that at least two population means differ. House accounts for about 11.4% of the observed variation in Machiavellianism scores.
+
+# ANOVA
+
 ## Why is it called ANOVA?
 
 **AN**alysis **O**f **VA**riance
 
-. . .
-
-We want to know whether the **means** of our four houses differ.
-
-So why are we analyzing variance?
+We want to know whether the house *means* differ. Why are we analyzing variance?
 
 . . .
 
-Because we can split the total variation in Machiavellianism into:
+We can split the total variation into two parts.
 
 ::: {.incremental}
 
-1. **Between-group variation:** differences between the house means.
-2. **Within-group variation:** differences between students within the same house.
+- *Between houses*. How far are the house means from the overall mean?
+- *Within houses*. How far are individual scores from their own house mean?
 
 :::
 
 . . .
 
-**Idea:** If the houses really differ, between-group variation
-should be large relative to within-group variation.
+If the population means differ, we expect more variation between houses relative to the variation within houses.
 
+## Three sums of squares {.small-slide}
 
-## Sums of squares
+For participant $i$, $y_i$ is their score, $\bar{y}$ is the overall mean, and $\hat{y}_i$ is their fitted score (their house mean).
 
-We already know these from regression!
+. . .
 
 $$
-SST = SSR + SSE
+\begin{aligned}
+\TSS &= \sum_i(y_i-\bar{y})^2
+&&\text{(total variation)}\\[8pt]
+\SSE &= \sum_i(y_i-\hat{y}_i)^2
+&&\text{(unexplained variation within houses)}\\[8pt]
+\RSS &= \TSS-\SSE = \sum_i(\hat{y}_i-\bar{y})^2
+&&\text{(explained variation between houses)}
+\end{aligned}
 $$
 
 . . .
 
-In ANOVA, we often use different names:
+The regression sum of squares ($\RSS$) is the reduction in squared error when we use the house means to predict scores. The sum runs over participants, so a larger house contributes its mean more times.
+
+## From sums of squares to mean squares
+
+We divide each sum of squares by its degrees of freedom.
 
 $$
-\underbrace{SST}_{\text{Total}}
-=
-\underbrace{SSB}_{\text{Between groups}}
-+
-\underbrace{SSW}_{\text{Within groups}}
+\begin{aligned}
+\MSR &= \frac{\RSS}{k-1}
+&&\text{(between houses)}\\[8pt]
+\MSE &= \frac{\SSE}{N-k}
+&&\text{(within houses)}
+\end{aligned}
+$$
+
+Here $k$ is the number of groups and $N$ is the number of observations. With $k=4$ and $N=847$, the degrees of freedom are $3$ and $843$.
+
+. . .
+
+If $\hypo_0$ is true, both mean squares estimate the same population error variance. The $F$-test compares them using $F=\MSR/\MSE$.
+
+## One-way ANOVA in SPSS {.small-slide}
+
+<table class="spss-table">
+  <caption>Machiavellianism</caption>
+  <thead>
+    <tr>
+      <th scope="col" class="term">Source</th>
+      <th scope="col">Sum of Squares</th>
+      <th scope="col">df</th>
+      <th scope="col">Mean Square</th>
+      <th scope="col">F</th>
+      <th scope="col">Sig.</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row" class="term">Between Groups</th>
+      <td>3935.10</td><td>3</td><td>1311.70</td><td>36.26</td><td>&lt;.001</td>
+    </tr>
+    <tr>
+      <th scope="row" class="term">Within Groups</th>
+      <td>30496.52</td><td>843</td><td>36.18</td><td></td><td></td>
+    </tr>
+    <tr>
+      <th scope="row" class="term">Total</th>
+      <td>34431.62</td><td>846</td><td></td><td></td><td></td>
+    </tr>
+  </tbody>
+</table>
+
+. . .
+
+$$
+F
+  = \frac{\RSS/3}{\SSE/843}
+  = \frac{3935.10/3}{30496.52/843}
+  = \frac{\MSR}{\MSE}
+  = \frac{1311.70}{36.18}
+  = 36.26
+$$
+
+The *Between Groups* row gives $\RSS$ and $\MSR$, the *Within Groups* row gives $\SSE$ and $\MSE$, and the *Total* row gives $\TSS$.
+
+The $p$-value comes from the upper tail of the $F$-distribution with $3$ and $843$ degrees of freedom.
+
+<!--
+TODO: add a slide with the same regression table back in!
+ -->
+
+## Which houses differ?
+
+The omnibus test asks whether all four population means are equal.
+
+. . .
+
+The coefficients table compares each house with Gryffindor. How could we compare Slytherin with Hufflepuff?
+
+. . .
+
+We could make Hufflepuff the reference group or use a pairwise comparison. If we test all six pairs, we can use a multiple-comparison procedure such as Tukey's test.
+
+## Effect size
+
+In one-way ANOVA, *eta squared* is the proportion of observed variation explained by group membership.
+
+$$
+\eta^2 = \frac{\RSS}{\TSS} = R^2
 $$
 
 . . .
 
-::: {.columns}
+For the Hogwarts data, $\eta^2 = 3935.10/34431.62 \approx .114$.
 
-::: {.column}
+Would the differences between these scores be meaningful in practice?
 
-**Between groups (SSB)**
+# Assumptions
 
-$$
-\sum_i(\hat{y}_i-\bar{y})^2
-$$
+## Assumptions for one-way ANOVA
 
-How much do group means differ from the overall mean?
-
-:::
-
-::: {.column}
-
-**Within groups (SSW)**
-
-$$
-\sum_i(y_i-\hat{y}_i)^2
-$$
-
-How much do individuals differ from their group mean?
-
-:::
-
-:::
-
-
-## The F-statistic
-
-We compare the between-group and within-group variation.
-
-$$
-F = \frac{MS_B}{MS_W}
-$$
-
-. . .
-
-Here, MS means *Mean Square*: a sum of squares divided
-by its degrees of freedom.
-
-$$
-F =
-\frac{SSB / df_B}
-     {SSW / df_W}
-$$
-
-. . .
-
-This is exactly the regression F-test!
-
-$$
-F =
-\frac{SSR / df_R}
-     {SSE / df_E}
-$$
-
-. . .
-
-A larger F-statistic means more variation between groups,
-relative to the variation within groups.
-
-
-## Degrees of freedom
-
-How many degrees of freedom do we have?
-
-Remember our model:
-
-$$
-\hat{y}_i = a+b_1x_{i1}+b_2x_{i2}+b_3x_{i3}
-$$
-
-. . .
-
-We have four groups, but only **three slopes**.
+<!--
+TODO:
+first reiterate the general assumptions once more
+then explain that linearity is always met just like the t-test
+for Equal variances, no solution if violated unlike the Welch's t-test
+  - There are alternatives, but not part of this course (remove Welch ANOVA)
+  - Levene's test does generalize
+ -->
+The same assumptions apply to the dummy-coded regression and the classical one-way ANOVA.
 
 ::: {.incremental}
 
-- Between groups: $df_B = g-1 = 4-1 = 3$
-- Within groups: $df_W = n-g = n-4$
+- *Linearity*. Each group gets its own fitted mean, so the mean model needs no straight-line trend across groups.
+- *Normality*. Errors are normally distributed within each house. We can check this with Q–Q plots of the residuals by house.
+- *Equal variances*. The population variance is the same in each house. Compare the within-house spread.
+- *Independence*. Consider how scores were collected. Repeated scores from the same person or recruitment in clusters could lead to dependence.
 
 :::
 
-. . .
+## Equal variances {.small-slide}
 
-In general, with $g$ groups and $n$ observations:
-
-$$
-\boxed{F = \frac{SSB/(g-1)}{SSW/(n-g)}}
-$$
-
-
-## Calculating the F-statistic
-
-Suppose our Hogwarts data give us:
-
-- 4 houses and 20 students
-- $SST = 200$
-- $SSW = 120$
-
-. . .
-
-How much variation is explained by House?
-
-$$
-SSB = SST-SSW=200-120=80
-$$
+<table class="spss-table">
+  <caption>Group Statistics</caption>
+  <thead>
+    <tr>
+      <th scope="col" class="term">House</th>
+      <th scope="col">N</th>
+      <th scope="col">Mean</th>
+      <th scope="col">Std. Deviation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><th scope="row" class="term">Gryffindor</th><td>217</td><td>26.34</td><td>5.53</td></tr>
+    <tr><th scope="row" class="term">Ravenclaw</th><td>269</td><td>26.21</td><td>5.96</td></tr>
+    <tr><th scope="row" class="term">Hufflepuff</th><td>216</td><td>24.25</td><td>6.29</td></tr>
+    <tr><th scope="row" class="term">Slytherin</th><td>145</td><td>30.91</td><td>6.38</td></tr>
+  </tbody>
+</table>
 
 . . .
 
-Now calculate the F-statistic:
-
-$$
-F = \frac{80/3}{120/16}
-$$
+Levene's test gives $F(3,843)=1.66$, $p=.174$. The test provides little evidence of unequal variances.
 
 . . .
 
-$$
-\boxed{F(3,16) = 3.56}
-$$
+If the spreads differ substantially, Welch's ANOVA allows unequal variances, just like Welch's $t$-test for two groups.
 
-<!-- Hypothetical teaching example, not actual Hogwarts data. -->
+## Normality within each house {.small-slide}
 
-
-## What does this F-statistic tell us?
-
-We obtained:
-
-$$
-F(3,16) = 3.56
-$$
+![](figures/hp_mach_qq.svg){fig-alt="Residual Q–Q plots for Gryffindor, Ravenclaw, Hufflepuff, and Slytherin" fig-align="center" width="100%"}
 
 . . .
 
-Is this sufficiently large to reject the null hypothesis?
-
-. . .
-
-As before, we compare it to an **F-distribution**.
-
-- Numerator degrees of freedom: $df_1 = g-1$
-- Denominator degrees of freedom: $df_2 = n-g$
-
-. . .
-
-The p-value is the probability, assuming the null hypothesis,
-of obtaining an F-statistic at least this large.
-
-. . .
-
-For our example: $p \approx 0.038$.
-
-At $\alpha = 0.05$, we reject the null hypothesis!
-
-
-## What can we conclude?
-
-Suppose our F-test for the Hogwarts data is significant.
-
-What does this mean?
-
-::: {.incremental}
-
-- There is evidence that House is associated with Machiavellianism.
-- At least two houses have different population means.
-- The full regression model explains significantly more variation than the null model.
-
-:::
-
-. . .
-
-**But which houses differ?**
-
-We cannot conclude that from the omnibus F-test alone.
-
-To investigate specific differences, we need follow-up comparisons.
-
-
-# ANOVA
-
-## ANOVA is regression!
-
-One-way ANOVA is a regression model with:
-
-- One categorical predictor
-- A continuous outcome
-- Dummy variables representing the categories
-
-. . .
-
-The omnibus F-test is exactly the same as the
-overall regression F-test.
-
-. . .
-
-The difference is largely a matter of terminology!
-
-| Regression | ANOVA |
-|:---|:---|
-| SSR | SSB |
-| SSE | SSW |
-| Explained variance | Between-group variation |
-| Residual variance | Within-group variation |
-
-<!-- ANOVA = Analysis of Variance -->
-
-
-## Effect size: eta squared
-
-Remember $R^2$?
-
-$$
-R^2 = \frac{SSR}{SST}
-$$
-
-. . .
-
-In one-way ANOVA, we commonly call this **eta squared**:
-
-$$
-\boxed{\eta^2 = \frac{SSB}{SST} = R^2}
-$$
-
-. . .
-
-It tells us what proportion of the variation in the outcome
-is explained by group membership.
-
-. . .
-
-For example, $\eta^2 = 0.20$ means that House explains
-20% of the observed variation in Machiavellianism.
-
-
-## How large is the effect?
-
-Some conventional rules of thumb for $\eta^2$:
-
-| Effect | $\eta^2$ |
-|:---|:---:|
-| Small | 0.01 |
-| Medium | 0.06 |
-| Large | 0.14 |
-
-. . .
-
-But remember:
-
-- These are only rough guidelines.
-- $\eta^2$ is numerically identical to $R^2$ in one-way ANOVA.
-- An effect being statistically significant does not necessarily mean it is large or important.
-
-<!-- Cohen (1988) conventions; context matters. -->
-
-
-## Interpreting ANOVA output
-
-![](images/regression_anova.png)
-
-<!-- Original example: Environment predicts test scores. -->
-
-What should we look for?
-
-::: {.incremental}
-
-1. The **F-statistic and p-value**: is there an overall effect?
-2. **$R^2$ or $\eta^2$**: how much variation is explained?
-3. The **group means**: what do the observed differences look like?
-4. The **regression coefficients**: which groups differ from the reference group?
-
-:::
-
-
-## Interpreting the results
-
-In the example, Environment predicts test scores:
-
-$$
-R^2 = .21,\quad F(2,2130)=284.65,\quad p<.001
-$$
-
-. . .
-
-What does this mean?
-
-::: {.incremental}
-
-- Environment has a statistically significant association with test scores.
-- Environment explains 21% of the variation in test scores.
-- At least two environments have different population means.
-
-:::
-
-. . .
-
-But the F-test does not tell us which environments differ!
-
-
-## Which groups differ?
-
-In the original example, the group means are:
-
-| Environment | Mean test score |
-|:---|---:|
-| Urban | 61.75 |
-| Suburban | 76.04 |
-| Rural | 64.05 |
-
-. . .
-
-With Urban as the reference group, the dummy coefficients test:
-
-::: {.incremental}
-
-- **Suburban vs. Urban**
-- **Rural vs. Urban**
-
-:::
-
-. . .
-
-But what about **Suburban vs. Rural**?
-
-. . .
-
-We would need to change the reference category or
-perform an appropriate pairwise comparison.
-
-<!-- If testing multiple pairwise comparisons, consider multiple-testing corrections. -->
-
-
-## Important remarks
-
-::: {.incremental}
-
-- The omnibus F-test tells us whether **any group means differ**, not which ones.
-- Individual dummy coefficient tests compare each group to the **reference group**.
-- Changing the reference group changes the coefficients, but **not** the overall F-test.
-- Standardized regression coefficients are generally not useful for interpreting dummy variables.
-
-:::
-
-. . .
-
-**Take-home message:** One-way ANOVA is simply regression
-with a categorical predictor, using an omnibus F-test.
-
-## Next Week
-
-- What if the predictor has more than two categories?
-  * ANOVA
+The middle of each plot follows the line fairly closely. The tails show some departures, and the steps reflect ties in the questionnaire scores.
+
+<!--
+TODO: slide about independence
+TODO: slide about next week
+-->
