@@ -1,0 +1,155 @@
+.anova-demo {
+  --anova-ink: #203040;
+  --anova-muted: #465769;
+  --anova-border: #cbd5df;
+  --anova-grid: #e3e9ef;
+  --anova-grand: #263a4e;
+  --anova-between: #81432e;
+  width: 100%;
+  color: var(--anova-ink);
+  font-size: 20px;
+  line-height: 1.3;
+  text-align: left;
+}
+
+.anova-demo .anova-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25em 1.15em;
+  padding: 0.25em 0 0.55em;
+  border-bottom: 1px solid var(--anova-border);
+  margin-bottom: 0.6em;
+}
+
+.anova-demo .anova-controls label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  min-height: 33px;
+  cursor: pointer;
+}
+
+.anova-demo .anova-controls input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #005685;
+}
+
+.anova-demo .anova-reset {
+  margin-left: auto;
+  padding: 0.3em 0.85em;
+  border: 1px solid #8095a9;
+  border-radius: 4px;
+  background: #f5f8fa;
+  color: var(--anova-ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.anova-demo .anova-reset:hover { background: #e6eff5; }
+.anova-demo .anova-controls :focus-visible { outline: 2px solid #005685; outline-offset: 3px; }
+
+.anova-demo .anova-main {
+  display: grid;
+  grid-template-columns: minmax(0, 2.25fr) minmax(0, 1fr);
+  gap: 1.15em;
+}
+
+.anova-demo .anova-instruction {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 0.5em;
+  color: var(--anova-muted);
+  font-size: 0.9em;
+}
+
+.anova-demo .anova-value {
+  color: var(--anova-ink);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.anova-demo svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+}
+
+.anova-demo svg text { fill: var(--anova-ink); font-family: inherit; font-size: 17px; }
+.anova-demo svg .anova-group-label { fill: currentColor; font-weight: 700; font-size: 20px; }
+.anova-demo svg .anova-grid { stroke: var(--anova-grid); stroke-width: 1; }
+.anova-demo svg .anova-axis { stroke: #798a9b; stroke-width: 1.5; }
+.anova-demo svg .anova-group-mean { stroke: currentColor; stroke-width: 3; }
+.anova-demo svg .anova-grand-mean { stroke: var(--anova-grand); stroke-width: 2.2; stroke-dasharray: 8 5; }
+.anova-demo svg .anova-within { stroke: currentColor; stroke-width: 1.4; opacity: 0.7; }
+.anova-demo svg .anova-between { stroke: var(--anova-between); stroke-width: 2.4; stroke-dasharray: 2 3; }
+
+.anova-demo .anova-a { color: #28648a; }
+.anova-demo .anova-b { color: #96511f; }
+.anova-demo .anova-c { color: #3b6d55; }
+
+.anova-demo svg .anova-point { cursor: ns-resize; touch-action: none; }
+.anova-demo svg .anova-hit { fill: transparent; }
+.anova-demo svg .anova-dot { fill: currentColor; stroke: #fff; stroke-width: 1.6; pointer-events: none; }
+.anova-demo svg .anova-point:focus { outline: none; }
+.anova-demo svg .anova-point:hover .anova-dot,
+.anova-demo svg .anova-point:focus-visible .anova-dot,
+.anova-demo svg .anova-point.is-dragging .anova-dot { stroke: var(--anova-ink); stroke-width: 2.4; }
+
+.anova-demo .anova-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2em 0.95em;
+  min-height: 1.4em;
+  color: var(--anova-muted);
+  font-size: 0.8em;
+}
+
+.anova-demo .anova-legend[hidden] { visibility: hidden; }
+.anova-demo .anova-legend span { display: inline-flex; align-items: center; gap: 0.4em; }
+.anova-demo .anova-legend i { width: 20px; border-top: 3px solid #28648a; }
+.anova-demo .anova-legend .anova-dot-key { width: 10px; height: 10px; border: 0; border-radius: 50%; background: #28648a; }
+.anova-demo .anova-legend .anova-grand-key { border-color: var(--anova-grand); border-top-style: dashed; }
+.anova-demo .anova-legend .anova-within-key { border-top-width: 1.5px; }
+.anova-demo .anova-legend .anova-between-key { border-color: var(--anova-between); border-top-style: dotted; }
+
+.anova-demo .anova-results {
+  min-width: 0;
+  align-self: start;
+  margin-top: 1.2em;
+  padding: 0.8em;
+  border: 1px solid var(--anova-border);
+  border-radius: 6px;
+  background: #f5f8fa;
+  font-variant-numeric: tabular-nums;
+}
+
+.anova-demo .anova-results dl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.35em 0.6em;
+  margin: 0;
+  font-size: 0.9em;
+}
+
+.anova-demo .anova-results dt { font-weight: 400; }
+.anova-demo .anova-results dd { margin: 0; text-align: right; font-weight: 650; }
+.anova-demo .anova-results small { color: var(--anova-muted); vertical-align: baseline; }
+.anova-demo .anova-test { margin-top: 0.65em; padding-top: 0.65em; border-top: 1px solid var(--anova-border); }
+.anova-demo [data-result="fTest"] { font-weight: 700; font-size: 0.95em; }
+.anova-demo .anova-conclusion { margin-top: 0.45em; font-size: 0.9em; }
+.anova-demo .anova-note { color: var(--anova-muted); font-size: 0.75em; }
+.anova-demo .anova-note:not(:empty) { margin-top: 0.45em; }
+
+.anova-demo .anova-explanation {
+  display: grid;
+  gap: 0.14em;
+  padding-top: 0.45em;
+  border-top: 1px solid var(--anova-border);
+  font-size: 0.9em;
+}

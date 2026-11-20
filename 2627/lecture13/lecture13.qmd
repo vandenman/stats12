@@ -20,6 +20,8 @@ format:
             <script src="../common_resources/components/regression.js"></script>
             <link rel="stylesheet" href="../common_resources/components/variance-demo.css">
             <script src="../common_resources/components/variance-demo.js"></script>
+            <link rel="stylesheet" href="../common_resources/components/anova-demo.css">
+            <script src="../common_resources/components/anova-demo.js"></script>
             <link rel="stylesheet" href="../common_resources/components/distributions.css">
             <script src="../common_resources/components/distributions.js"></script>
             <script src="../common_resources/components/show-first.js"></script>
@@ -72,8 +74,8 @@ Harry potter house:
 |           | b_1 | b_2 | b_3 |
 |-----------|-----|-----|-----|
 Gryffindor  |  0  |  0  |  0  |
-Ravenclaw   |  1  |  0  |  0  |
-huffelpuff   |  0  |  1  |  0  |
+Hufflepuff  |  1  |  0  |  0  |
+Ravenclaw   |  0  |  1  |  0  |
 Slytherin   |  0  |  0  |  1  |
 
 #  Regression with multiple dummies:
@@ -450,10 +452,10 @@ Jakob, L., Garcia-Garzon, E., Jarke, H., & Dablander, F. (2019). The science beh
 
 ## Dummy Coding
 
-If we put predict Machiavellism using House with a regression we get:
+If we predict Machiavellianism using House with a regression we get:
 
 $$
-\widehat{\mathrm{Machiavellism}} = a + b\times \mathrm{``Gryffindor''}
+\widehat{\mathrm{Machiavellianism}} = a + b\times \mathrm{``Gryffindor''}
 $$
 
 . . .
@@ -470,10 +472,10 @@ So we extent dummy coding to multiple categories.
 
 ## Dummy Coding
 
-| Observed | Dummy_huffelpuff | Dummy_Ravenclaw | Dummy_Slytherin |
+| Observed | Dummy_Hufflepuff | Dummy_Ravenclaw | Dummy_Slytherin |
 |----|----|----|----|
 | Gryffindor | 0 | 0 | 0 |
-| huffelpuff  | 1 | 0 | 0 |
+| Hufflepuff  | 1 | 0 | 0 |
 | Ravenclaw  | 0 | 1 | 0 |
 | Slytherin  | 0 | 0 | 1 |
 
@@ -491,9 +493,9 @@ The regression equation becomes:
 
 $$
 \begin{align}
-\widehat{\mathrm{Machiavellism}} =
+\widehat{\mathrm{Machiavellianism}} =
 a &+
-b_1\times \mathrm{``Dummy\_huffelpuff''} \\
+b_1\times \mathrm{``Dummy\_Hufflepuff''} \\
 &+b_2\times \mathrm{``Dummy\_Ravenclaw''} \\
 &+b_3\times \mathrm{``Dummy\_Slytherin''}
 \end{align}
@@ -506,12 +508,12 @@ So what do they mean?
 <!--
 ## Dummy Coding
 
-| Observed | Dummy_Ravenclaw | Dummy_huffelpuff | Dummy_Slytherin |
+| Observed | Dummy_Hufflepuff | Dummy_Ravenclaw | Dummy_Slytherin |
 |----|----|----|----|
 |          | $b_1$           | $b_2$           | $b_3$ |
 | Gryffindor | 0 | 0 | 0 |
-| Ravenclaw  | 1 | 0 | 0 |
-| huffelpuff  | 0 | 1 | 0 |
+| Hufflepuff  | 1 | 0 | 0 |
+| Ravenclaw  | 0 | 1 | 0 |
 | Slytherin  | 0 | 0 | 1 |
 
 :::{.incremental}
@@ -522,7 +524,7 @@ So what do they mean?
 ::: {.column}
 
 - $\mathrm{Gryffindor} = a$
-- $\mathrm{huffelpuff} = a + b_1$
+- $\mathrm{Hufflepuff} = a + b_1$
 
 :::
 
@@ -555,14 +557,14 @@ $$
   <thead>
     <tr>
       <th>House</th>
-      <th>huffelpuff ($x_{i1}$)</th>
+      <th>Hufflepuff ($x_{i1}$)</th>
       <th>Ravenclaw ($x_{i2}$)</th>
       <th>Slytherin ($x_{i3}$)</th>
     </tr>
   </thead>
   <tbody>
     <tr><td>Gryffindor</td><td>0</td><td>0</td><td>0</td></tr>
-    <tr><td>huffelpuff</td><td>1</td><td>0</td><td>0</td></tr>
+    <tr><td>Hufflepuff</td><td>1</td><td>0</td><td>0</td></tr>
     <tr><td>Ravenclaw</td><td>0</td><td>1</td><td>0</td></tr>
     <tr><td>Slytherin</td><td>0</td><td>0</td><td>1</td></tr>
   </tbody>
@@ -587,7 +589,7 @@ $$
 ::: {.fragment data-fragment-index="3"}
 $$
 \begin{aligned}
-\widehat{\mathrm{huffelpuff}}
+\widehat{\mathrm{Hufflepuff}}
 &= a + b_1\!\times\! 1 + b_2 \!\times\! 0 + b_3 \!\times\! 0 \\
 &= a + b_1
 \end{aligned}
@@ -612,7 +614,7 @@ $$
 $$
 \begin{aligned}
 \widehat{\mathrm{Slytherin}}
-&= a + b_1\!\times\! 1 + b_2 \!\times\! 0 + b_3 \!\times\! 1 \\
+&= a + b_1\!\times\! 0 + b_2 \!\times\! 0 + b_3 \!\times\! 1 \\
 &= a + b_3
 \end{aligned}
 $$
@@ -626,10 +628,10 @@ $$
 ## Parameter meaning
 
 - The intercept is the _mean of the reference category_
-  * In our case, the mean Machiavellism of Gryffindors
+  * In our case, the mean Machiavellianism of Gryffindors
 - Each slope is the mean difference between that group's and the reference category
-  * So $b_1$ is the mean difference between Gryffindors and Ravenclaws
-  * So $b_2$ is the mean difference between Gryffindors and huffelpuffs
+  * So $b_1$ is the mean difference between Gryffindors and Hufflepuffs
+  * So $b_2$ is the mean difference between Gryffindors and Ravenclaws
   * So $b_3$ is the mean difference between Gryffindors and Slytherins
 
 
@@ -644,26 +646,18 @@ $$
 :::
 
 <!--
-TODO:
-the figures go Gryffindor, huffelpuff, Ravenclaw, Slytherin.
-the tables go Gryffindor, Ravenclaw, huffelpuff, Slytherin.
-
-align this!
- -->
-
-<!--
 TODO: add here the slide with the spss betas, and show the values
 those correspond to the previous plot!
 -->
 
 ## Changing the reference category
 
-| Observed | Dummy_Gryffindor | Dummy_huffelpuff | Dummy_Slytherin |
+| Observed | Dummy_Gryffindor | Dummy_Hufflepuff | Dummy_Slytherin |
 |----|----|----|----|
 |          | $b_1$           | $b_2$           | $b_3$ |
 | Gryffindor | 1 | 0 | 0 |
+| Hufflepuff  | 0 | 1 | 0 |
 | Ravenclaw  | 0 | 0 | 0 |
-| huffelpuff  | 0 | 1 | 0 |
 | Slytherin  | 0 | 0 | 1 |
 
 :::{.incremental}
@@ -673,13 +667,13 @@ those correspond to the previous plot!
 ::: {.column}
 
 - $\mathrm{Gryffindor} = a + b_1$
-- $\mathrm{Ravenclaw} = a$
+- $\mathrm{Hufflepuff} = a + b_2$
 
 :::
 
 ::: {.column}
 
-- $\mathrm{huffelpuff} = a + b_2$
+- $\mathrm{Ravenclaw} = a$
 - $\mathrm{Slytherin} = a + b_3$
 
 :::
@@ -699,7 +693,7 @@ ask here, what does b_3 mean now?
 TODO:
 
 show the same plot as before but now with the different reference category!
-add horizontal line for intercept, this goes through Griffyindor
+add horizontal line for intercept, this goes through Gryffindor
 add vertical offset for each b
 
  -->
@@ -713,15 +707,15 @@ add vertical offset for each b
   <thead>
     <tr>
       <th>House</th>
-      <th>Ravenclaw ($x_{i1}$)</th>
-      <th>huffelpuff ($x_{i2}$)</th>
+      <th>Hufflepuff ($x_{i1}$)</th>
+      <th>Ravenclaw ($x_{i2}$)</th>
       <th>Slytherin ($x_{i3}$)</th>
     </tr>
   </thead>
   <tbody>
     <tr><td>Gryffindor</td><td>0</td><td>0</td><td>0</td></tr>
-    <tr><td>Ravenclaw</td><td>1</td><td>0</td><td>0</td></tr>
-    <tr><td>huffelpuff</td><td>0</td><td>1</td><td>0</td></tr>
+    <tr><td>Hufflepuff</td><td>1</td><td>0</td><td>0</td></tr>
+    <tr><td>Ravenclaw</td><td>0</td><td>1</td><td>0</td></tr>
     <tr><td>Slytherin</td><td>0</td><td>0</td><td>1</td></tr>
   </tbody>
 </table>
@@ -731,14 +725,14 @@ add vertical offset for each b
 ::: {.column}
 
 - $\mathrm{Gryffindor} = a$
-- $\mathrm{Ravenclaw} = a + b_1$
+- $\mathrm{Hufflepuff} = a + b_1$
 
 :::
 
 ::: {.column}
 
 
-- $\mathrm{huffelpuff} = a + b_2$
+- $\mathrm{Ravenclaw} = a + b_2$
 - $\mathrm{Slytherin} = a + b_3$
 
 :::
@@ -751,7 +745,7 @@ Suppose we we test if $b_3$ differs from 0. What does that mean?
 
 . . .
 
-Whether the mean Machiavellism differs between Gryffindors and Slytherins
+Whether the mean Machiavellianism differs between Gryffindors and Slytherins
 
 
 ## General regression formula
@@ -762,7 +756,7 @@ $$
 
 where $\dots$ goes on the number of categories minus 1.
 
-So how do we test if there is an effect of _House_ on _Macchiavellism_?
+So how do we test if there is an effect of _House_ on _Machiavellianism_?
 
 When is there an effect?
 
@@ -928,7 +922,7 @@ What does this mean in terms of group means?
 
 $$
 \begin{aligned}
-\hypo_0 &: \mu_G = \mu_R = \mu_H = \mu_S\\
+\hypo_0 &: \mu_G = \mu_H = \mu_R = \mu_S\\
 \hypo_1 &: \text{At least two means differ}
 \end{aligned}
 $$
@@ -970,7 +964,7 @@ Here, $p$ is the number of parameters in the model.
 ::: {.fragment fragment-index="2"}
 - In bivariate regression, we have a $a$ and $b$, so $p = 2$.
   * $\frac{N-p}{p-1} = N - 2$.
-- For Macchiavellism data, we have $a$, $b_1$, $b_2$, $b_3$, so $p = 4$.
+- For Machiavellianism data, we have $a$, $b_1$, $b_2$, $b_3$, so $p = 4$.
   * $\frac{N-p}{p-1} = \frac{N-4}{3}$.
 :::
 
@@ -1114,12 +1108,12 @@ Keep the slides above this comment unchanged.
       <td>26.341</td><td>0.408</td><td></td><td>64.514</td><td>&lt;.001</td>
     </tr>
     <tr>
-      <td></td><th scope="row" class="term">Ravenclaw</th>
-      <td>−0.129</td><td>0.549</td><td>−0.009</td><td>−0.235</td><td>.814</td>
-    </tr>
-    <tr>
       <td></td><th scope="row" class="term">Hufflepuff</th>
       <td>−2.086</td><td>0.578</td><td>−0.143</td><td>−3.609</td><td>&lt;.001</td>
+    </tr>
+    <tr>
+      <td></td><th scope="row" class="term">Ravenclaw</th>
+      <td>−0.129</td><td>0.549</td><td>−0.009</td><td>−0.235</td><td>.814</td>
     </tr>
     <tr class="fragment highlight-row" data-fragment-index="1">
       <td></td><th scope="row" class="term">Slytherin</th>
@@ -1198,6 +1192,10 @@ We can split the total variation into two parts.
 . . .
 
 If the population means differ, we expect more variation between houses relative to the variation within houses.
+
+## Between-group and within-group variation
+
+{{< include ../common_resources/components/anova-demo.qmd >}}
 
 ## Three sums of squares {.small-slide}
 
@@ -1351,8 +1349,8 @@ The same assumptions apply to the dummy-coded regression and the classical one-w
   </thead>
   <tbody>
     <tr><th scope="row" class="term">Gryffindor</th><td>217</td><td>26.34</td><td>5.53</td></tr>
-    <tr><th scope="row" class="term">Ravenclaw</th><td>269</td><td>26.21</td><td>5.96</td></tr>
     <tr><th scope="row" class="term">Hufflepuff</th><td>216</td><td>24.25</td><td>6.29</td></tr>
+    <tr><th scope="row" class="term">Ravenclaw</th><td>269</td><td>26.21</td><td>5.96</td></tr>
     <tr><th scope="row" class="term">Slytherin</th><td>145</td><td>30.91</td><td>6.38</td></tr>
   </tbody>
 </table>
@@ -1367,7 +1365,7 @@ If the spreads differ substantially, Welch's ANOVA allows unequal variances, jus
 
 ## Normality within each house {.small-slide}
 
-![](figures/hp_mach_qq.svg){fig-alt="Residual Q–Q plots for Gryffindor, Ravenclaw, Hufflepuff, and Slytherin" fig-align="center" width="100%"}
+![](figures/hp_mach_qq.svg){fig-alt="Residual Q–Q plots for Gryffindor, Hufflepuff, Ravenclaw, and Slytherin" fig-align="center" width="100%"}
 
 . . .
 

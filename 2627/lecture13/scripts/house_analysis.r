@@ -7,7 +7,7 @@ raw_data <- read.csv(
 )
 
 # Match the age and single-house filters in data_example.r.
-houses <- c("Gryffindor", "Ravenclaw", "Hufflepuff", "Slytherin")
+houses <- c("Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin")
 age <- ifelse(raw_data$age == 1987, 2016 - 1987, raw_data$age)
 house_data <- data.frame(
   House = factor(raw_data$Sorting_house, levels = houses),
@@ -51,8 +51,8 @@ print(car::leveneTest(fit, center = mean))
 
 house_colors <- c(
   Gryffindor = "#7F0909",
-  Ravenclaw = "#08245e",
   Hufflepuff = "#f0c75e",
+  Ravenclaw = "#08245e",
   Slytherin = "#2a623d"
 )
 house_data$Residual <- residuals(fit)

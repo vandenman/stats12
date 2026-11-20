@@ -65,7 +65,7 @@ datraw <- read.csv(path("lecture13", "data", "rtf74-osfstorage-archive", "harry_
 nr_houses <- sapply(str_split(as.character(datraw$Sorting_house), ';'), length)
 dat <- datraw[nr_houses == 1, ] %>%
   mutate(
-    Sorting_house = as.factor(as.character(Sorting_house))
+    Sorting_house = factor(Sorting_house, levels = c("Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"))
   )
 
 recode <- function(house, sorted) as.factor(as.numeric(house == sorted))
@@ -158,7 +158,7 @@ plot_full_df <- function(df, xlab = 'Personality Traits', title = 'Personality T
 
 boxplot_dat_m <- boxplot_dat |>
   filter(variable == "Machiav.") |>
-  mutate(variable = "Machiavellism")
+  mutate(variable = "Machiavellianism")
 
 plot_full_df(boxplot_dat, '') + fig0
 y_scale <- scale_y_continuous(breaks = seq(10, 50, 10), limits = c(9, 51))
@@ -173,7 +173,7 @@ fig1 <- fig0 +
 fig2 <- ggplot(boxplot_dat_m, aes(x = Sorting_house, y = value, group = Sorting_house, fill = Sorting_house)) +
   y_scale +
   xlab(NULL) +
-  ylab('Machiavellism') +
+  ylab('Machiavellianism') +
   scale_color_manual(name = 'House', values = c('#7F0909', '#f0c75e', '#08245e', '#2a623d')) +
   scale_fill_manual(name = 'House', values = c('#7F0909', '#f0c75e', '#08245e', '#2a623d')) +
   ggtitle("Add fake spread to x-coordinates") +
@@ -185,7 +185,7 @@ fig3 <- ggplot(boxplot_dat_m, aes(x = Sorting_house, y = value, group = Sorting_
   y_scale +
   ggbeeswarm::geom_beeswarm() +
   xlab(NULL) +
-  ylab('Machiavellism') +
+  ylab('Machiavellianism') +
   scale_color_manual(name = 'House', values = c('#7F0909', '#f0c75e', '#08245e', '#2a623d')) +
   scale_fill_manual(name = 'House', values = c('#7F0909', '#f0c75e', '#08245e', '#2a623d')) +
   ggtitle("Add fake spread to x-coordinates") +
@@ -198,12 +198,13 @@ rows <- c(1, 2, 3, 4, 16, 5, 6, 7)
 
 boxplot_dat_m |>
   select(-variable) |>
-  rename(Machiavellism = "value", House = "Sorting_house") |>
-  relocate(Machiavellism, House) |>
+  rename(Machiavellianism = "value", House = "Sorting_house") |>
+  relocate(Machiavellianism, House) |>
+  mutate(Dummy_Hufflepuff = ifelse(House == "Hufflepuff", 1, 0)) |>
   mutate(Dummy_Ravenclaw = ifelse(House == "Ravenclaw", 1, 0)) |>
-  mutate(Dummy_Huffelpuff = ifelse(House == "Hufflepuff", 1, 0)) |>
   mutate(Dummy_Slytherin = ifelse(House == "Slytherin", 1, 0)) |>
   slice(rows) |>
+  arrange(House) |>
   fragment_kable(steps = c(NA, NA, 2, 3, 4)) |>
   writeLines(path(out_dir_tb, "anova-dummy-table.qmd"))
 
@@ -261,7 +262,7 @@ g_base5 <- g_base0 +
   geom_label(x = 1.1, y = ff(boxplot_dat_m_means$mean[1], boxplot_dat_m_means$mean[2]), label = expression(b[1]), hjust = 0, color = "maroon4") +
   geom_label(x = 3.1, y = ff(boxplot_dat_m_means$mean[3], boxplot_dat_m_means$mean[2]), label = expression(b[2]), hjust = 0, color = "maroon4") +
   geom_label(x = 4.1, y = ff(boxplot_dat_m_means$mean[4], boxplot_dat_m_means$mean[2]), label = expression(b[3]), hjust = 0, color = "maroon4") +
-  ggtitle("Huffelpuf as reference category")
+  ggtitle("Hufflepuff as reference category")
 
 
 save_figs(g_base0, g_base1, g_base2, g_base3, g_base4, width = 40, .base = fs::path(out_dir_fig, "hp_mach_reg_%d", ext = "svg"))

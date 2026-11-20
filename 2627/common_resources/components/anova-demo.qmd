@@ -1,0 +1,47 @@
+```{=html}
+<div class="anova-demo">
+  <div class="anova-controls">
+    <label><input type="checkbox" data-layer="group-means" checked> Show group means</label>
+    <label><input type="checkbox" data-layer="grand-mean" checked> Show grand mean</label>
+    <label><input type="checkbox" data-layer="deviations"> Show deviations</label>
+    <button type="button" class="anova-reset">Reset</button>
+  </div>
+
+  <div class="anova-main">
+    <div class="anova-plot">
+      <div class="anova-instruction">
+        <span>Drag a dot up or down.</span>
+        <span class="anova-value"></span>
+      </div>
+      <svg viewBox="0 0 640 320" role="group" data-prevent-swipe aria-label="Observation scores from 0 to 100 for groups A, B and C"></svg>
+      <div class="anova-legend" aria-label="Plot legend">
+        <span><i class="anova-dot-key" aria-hidden="true"></i> Observations</span>
+        <span><i class="anova-group-key" aria-hidden="true"></i> Group means</span>
+        <span><i class="anova-grand-key" aria-hidden="true"></i> Grand mean</span>
+      </div>
+      <div class="anova-legend anova-deviation-key" hidden>
+        <span><i class="anova-within-key" aria-hidden="true"></i> Within-group deviations</span>
+        <span><i class="anova-between-key" aria-hidden="true"></i> Between-group deviations</span>
+      </div>
+    </div>
+
+    <div class="anova-results">
+      <dl>
+        <dt>Between groups <small>SS</small></dt><dd data-result="ssBetween"></dd>
+        <dt>Within groups <small>SS</small></dt><dd data-result="ssWithin"></dd>
+        <dt>Total <small>SS</small></dt><dd data-result="ssTotal"></dd>
+      </dl>
+      <div class="anova-test">
+        <div data-result="fTest"></div>
+        <div class="anova-conclusion" role="status"></div>
+        <div class="anova-note"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="anova-explanation">
+    <strong>F = Between-group variation / Within-group variation</strong>
+    <span>F compares the two mean squares. Each is a sum of squares divided by its degrees of freedom.</span>
+  </div>
+</div>
+```
