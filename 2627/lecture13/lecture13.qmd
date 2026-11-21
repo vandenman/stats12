@@ -295,7 +295,7 @@ What if the predictor is categorical?
 
 - Nominal (no natural order):
   * Nationality (Dutch/ French/ German/ ...)
-  * Device type (mobile (android)/ mobile (iOS)/desktop / tablet)
+  * Device type (mobile (android)/ mobile (iOS)/ desktop / tablet)
   * Media genre (sci-fi, documentary, comedy, true crime, ...)
   * Blood type (A, B, AB, O)
   * Workplace (Office/ Hybrid/ Remote)
@@ -305,8 +305,6 @@ What if the predictor is categorical?
   * Education (VMBO/ HAVO/ VWO)
   * Seniority (Junior / Medior / Senior)
   * Satisfaction (Very dissatisfied / Dissatisfied / Neutral / Satisfied / Very satisfied)
-
-## Categorical predictors are common!
 
 ## Categorical predictors are common!
 
@@ -358,8 +356,14 @@ Jakob, L., Garcia-Garzon, E., Jarke, H., & Dablander, F. (2019). The science beh
 
 - Harry Potter fans can be assigned to one of these Houses by filling out an eight-item questionnaire
   * the Sorting Hat Quiz, made by J.K. Rowling (<https://www.pottermore.com>)
-- Crysel _et al._ (2015) did this and found relations with personality traits
+- Crysel _et al._ (2015) had participants use and examined relations with personality traits
 - Jakob _et al._ (2019) wanted to replicate this
+
+. . .
+
+- 847 participants filled out the Sorting Hat Quiz and various personality questionnaires
+  * Big 5/ OCEAN
+  * The Short Dark Triad
 
 ::: footer
 

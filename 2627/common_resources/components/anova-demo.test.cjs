@@ -1,6 +1,6 @@
 const assert = require("node:assert/strict");
 const { test } = require("node:test");
-const { calculateAnova, fSurvival, initialObservations } = require("./anova-demo.js");
+const { calculateAnova, fSurvival, initialObservations, shiftGroupToMean, spreadScoresToRange } = require("./anova-demo.js");
 
 function approximately(actual, expected, tolerance = 1e-12) {
   assert.ok(Math.abs(actual - expected) <= tolerance * Math.abs(expected),
@@ -66,6 +66,72 @@ test("F increases as means move apart and decreases as within-group spread grows
   assert.deepEqual(spread.groupMeans, initial.groupMeans);
   assert.equal(spread.ssBetween, initial.ssBetween);
   assert.ok(spread.f < initial.f);
+});
+
+test("moving a group mean preserves within-group variation up to either plot limit", () => {
+  const groups = initialObservations();
+  const scores = [32.1, 36, 38, 40, 43, 45.4];
+  groups[0] = scores;
+  const before = calculateAnova(groups);
+  const cases = [
+    [before.groupMeans[0] + 5.5, [37.6, 41.5, 43.5, 45.5, 48.5, 50.9]],
+    [0, [0, 3.9, 5.9, 7.9, 10.9, 13.3]],
+    [100, [86.7, 90.6, 92.6, 94.6, 97.6, 100]],
+  ];
+  for (const [target, expected] of cases) {
+    const shifted = shiftGroupToMean(scores, target);
+    shifted.forEach((value, i) => approximately(value, expected[i]));
+    const after = calculateAnova([shifted, ...groups.slice(1)]);
+    approximately(after.ssWithin, before.ssWithin);
+    assert.notEqual(after.ssBetween, before.ssBetween);
+  }
+  const atBothLimits = [0, 100];
+  assert.equal(shiftGroupToMean(atBothLimits, 80), atBothLimits);
+  assert.deepEqual(scores, [32.1, 36, 38, 40, 43, 45.4]);
+});
+
+test("changing one group's spread preserves its mean and the between-group sum of squares", () => {
+  const groups = initialObservations();
+  const before = calculateAnova(groups);
+  const wider = spreadScoresToRange(groups[0], 26);
+  assert.deepEqual(wider, [25, 33, 37, 41, 47, 51]);
+  const widerStats = calculateAnova([wider, ...groups.slice(1)]);
+  assert.equal(widerStats.ssBetween, before.ssBetween);
+  assert.ok(widerStats.ssWithin > before.ssWithin);
+
+  const atLimit = spreadScoresToRange(groups[0], 100);
+  assert.equal(Math.min(...atLimit), 0);
+  assert.ok(Math.max(...atLimit) <= 100);
+  const atLimitStats = calculateAnova([atLimit, ...groups.slice(1)]);
+  approximately(atLimitStats.groupMeans[0], before.groupMeans[0]);
+
+  const shifted = shiftGroupToMean(atLimit, 45);
+  approximately(calculateAnova([shifted, ...groups.slice(1)]).ssWithin, atLimitStats.ssWithin);
+});
+
+test("grand mean controls move or spread all scores together", () => {
+  const groups = initialObservations();
+  const before = calculateAnova(groups);
+  const regroup = scores => groups.map((group, j) => scores.slice(j * group.length, (j + 1) * group.length));
+  const shifted = calculateAnova(regroup(shiftGroupToMean(groups.flat(), 100)));
+  assert.equal(shifted.grandMean, 84);
+  assert.equal(shifted.ssBetween, before.ssBetween);
+  assert.equal(shifted.ssWithin, before.ssWithin);
+
+  const wider = calculateAnova(regroup(spreadScoresToRange(groups.flat(), 68)));
+  assert.equal(wider.grandMean, before.grandMean);
+  assert.equal(wider.ssBetween, 4 * before.ssBetween);
+  assert.equal(wider.ssWithin, 4 * before.ssWithin);
+});
+
+test("spread can collapse to zero and expand again around a fixed mean", () => {
+  const tied = spreadScoresToRange([37, 41, 51], 0);
+  const center = (37 + 41 + 51) / 3;
+  assert.deepEqual(tied, Array(3).fill(center));
+  const wider = spreadScoresToRange(tied, 20);
+  assert.deepEqual(wider, [center - 10, center, center + 10]);
+  const atEdge = [100, 100, 100];
+  assert.equal(spreadScoresToRange(atEdge, 20), atEdge);
 });
 
 test("zero within-group variation gives either infinite or undefined F", () => {

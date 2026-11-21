@@ -18,6 +18,42 @@
     return first + sum(values.map(value => value - first)) / values.length;
   }
 
+  function shiftLimits(values) {
+    return { min: -Math.min(...values), max: 100 - Math.max(...values) };
+  }
+
+  function shiftGroupToMean(values, targetMean) {
+    const { min, max } = shiftLimits(values);
+    const delta = targetMean - mean(values);
+    const requestedShift = delta > min && delta < max ? Math.round(delta * 10) / 10 : delta;
+    // Cap the shared shift before applying it so every pair of scores stays equally far apart.
+    const shift = Math.max(min, Math.min(max, requestedShift));
+    return shift === 0 ? values : values.map(value => value + shift);
+  }
+
+  const scoreRange = values => Math.max(...values) - Math.min(...values);
+
+  function spreadAroundMean(values) {
+    const center = mean(values);
+    const range = scoreRange(values);
+    // Give fully tied scores evenly spaced offsets so they can spread apart again.
+    const offsets = range === 0
+      ? values.map((_, i) => (i - (values.length - 1) / 2) / (values.length - 1))
+      : values.map(value => (value - center) / range);
+    const lower = -Math.min(...offsets);
+    const upper = Math.max(...offsets);
+    const maximumRange = Math.min(lower > 0 ? center / lower : Infinity,
+      upper > 0 ? (100 - center) / upper : Infinity);
+    return { center, range, offsets, maximumRange };
+  }
+
+  function spreadScoresToRange(values, targetRange) {
+    const { center, range, offsets, maximumRange } = spreadAroundMean(values);
+    const nextRange = Math.max(0, Math.min(maximumRange, targetRange));
+    if (nextRange === range) return values;
+    return offsets.map(offset => Math.max(0, Math.min(100, center + offset * nextRange)));
+  }
+
   function fSurvival(f, dfWithin) {
     // For two numerator degrees of freedom, the upper-tail beta integral
     // simplifies to (1 + 2F / dfWithin)^(-dfWithin / 2).
@@ -44,7 +80,8 @@
   }
 
   const formatNumber = new Intl.NumberFormat("en-US", { maximumSignificantDigits: 3 });
-  const groupNames = ["A", "B", "C"];
+  const formatF = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const groupNames = ["Gryffindor", "Ravenclaw", "Slytherin"];
 
   function addSvg(parent, tag, attrs = {}, label) {
     const element = document.createElementNS("http://www.w3.org/2000/svg", tag);
@@ -57,13 +94,14 @@
   function initialize(root) {
     const svg = root.querySelector("svg");
     const layerInputs = root.querySelectorAll("[data-layer]");
+    const modeButton = root.querySelector(".anova-drag-mode button");
     const deviationKey = root.querySelector(".anova-deviation-key");
-    const valueLabel = root.querySelector(".anova-value");
     const conclusion = root.querySelector(".anova-conclusion");
     const note = root.querySelector(".anova-note");
     const results = Object.fromEntries(Array.from(root.querySelectorAll("[data-result]"),
       element => [element.dataset.result, element]));
     let observations = initialObservations();
+    let adjustSpread = false;
     let drag;
     let inverseTransform;
 
@@ -87,38 +125,47 @@
 
     const layers = {
       deviations: addSvg(svg, "g", { "aria-hidden": "true" }),
-      "grand-mean": addSvg(svg, "g", { "aria-hidden": "true" }),
-      "group-means": addSvg(svg, "g", { "aria-hidden": "true" }),
+      "grand-mean": addSvg(svg, "g"),
+      "group-means": addSvg(svg, "g"),
     };
-    const grandMarker = addSvg(layers["grand-mean"], "line", {
-      class: "anova-grand-mean", x1: bounds.left, x2: bounds.right,
-    });
+
+    function addMeanSlider(layer, classes, lineClass, x1, x2) {
+      const element = addSvg(layer, "g", {
+        class: `anova-mean-slider ${classes}`, role: "slider", tabindex: "0", "aria-orientation": "vertical",
+      });
+      const ends = { x1, x2, "aria-hidden": "true" };
+      const hit = addSvg(element, "line", { ...ends, class: "anova-mean-hit" });
+      const marker = addSvg(element, "line", { ...ends, class: lineClass });
+      return { element, hit, marker };
+    }
+
+    const grandSlider = addMeanSlider(layers["grand-mean"], "anova-grand-slider", "anova-grand-mean",
+      bounds.left, bounds.right);
     const pointLayer = addSvg(svg, "g");
     // Spread the hit areas horizontally so tied values remain draggable.
     const pointOffsets = [-12, 60, -36, 36, -60, 12];
     const groups = observations.map((values, j) => {
       const center = bounds.left + (j + 0.5) * groupWidth;
-      const color = `anova-${groupNames[j].toLowerCase()}`;
+      const name = groupNames[j];
+      const groupClass = `anova-${name.toLowerCase()}`;
       addSvg(axes, "text", {
-        class: `anova-group-label ${color}`, x: center, y: height - 9, "text-anchor": "middle",
-      }, groupNames[j]);
-      const marker = addSvg(layers["group-means"], "line", {
-        class: `anova-group-mean ${color}`, x1: center - 78, x2: center + 78,
-      });
+        class: `anova-group-label ${groupClass}`, x: center, y: height - 9, "text-anchor": "middle",
+      }, name);
+      const meanSlider = addMeanSlider(layers["group-means"], groupClass, "anova-group-mean", center - 78, center + 78);
       const between = addSvg(layers.deviations, "path", { class: "anova-between", fill: "none" });
       const points = values.map((_, i) => {
         const x = center + pointOffsets[i];
-        const within = addSvg(layers.deviations, "line", { class: `anova-within ${color}`, x1: x, x2: x });
+        const within = addSvg(layers.deviations, "line", { class: `anova-within ${groupClass}`, x1: x, x2: x });
         const element = addSvg(pointLayer, "g", {
-          class: `anova-point ${color}`, role: "slider", tabindex: "0",
-          "aria-label": `Group ${groupNames[j]}, observation ${i + 1}`,
+          class: `anova-point ${groupClass}`, role: "slider", tabindex: "0",
+          "aria-label": `${name}, observation ${i + 1}`,
           "aria-orientation": "vertical", "aria-valuemin": 0, "aria-valuemax": 100,
         });
         addSvg(element, "circle", { class: "anova-hit", r: 11.5, "aria-hidden": "true" });
         addSvg(element, "circle", { class: "anova-dot", r: 7.4, "aria-hidden": "true" });
-        return { x, within, element, j, i };
+        return { x, within, element, i };
       });
-      return { center, marker, between, points };
+      return { center, meanSlider, between, points };
     });
 
     function setLineY(line, y1, y2 = y1) {
@@ -126,13 +173,33 @@
       line.setAttribute("y2", y2);
     }
 
+    function renderMeanSlider({ element, hit, marker }, meanLabel, spreadLabel, values, center) {
+      if (adjustSpread) {
+        const { range, maximumRange } = spreadAroundMean(values);
+        element.setAttribute("aria-label", `${spreadLabel} (score range)`);
+        element.setAttribute("aria-valuemin", "0");
+        element.setAttribute("aria-valuemax", maximumRange.toFixed(1));
+        element.setAttribute("aria-valuenow", range.toFixed(1));
+      } else {
+        const { min, max } = shiftLimits(values);
+        element.setAttribute("aria-label", meanLabel);
+        element.setAttribute("aria-valuemin", (center + min).toFixed(1));
+        element.setAttribute("aria-valuemax", (center + max).toFixed(1));
+        element.setAttribute("aria-valuenow", center.toFixed(1));
+      }
+      setLineY(hit, y(center));
+      setLineY(marker, y(center));
+    }
+
     function render() {
       const stats = calculateAnova(observations);
       const grandY = y(stats.grandMean);
-      setLineY(grandMarker, grandY);
-      groups.forEach(({ center, marker, between, points }, j) => {
-        const meanY = y(stats.groupMeans[j]);
-        setLineY(marker, meanY);
+      renderMeanSlider(grandSlider, "Grand mean", "Overall spread", observations.flat(), stats.grandMean);
+      groups.forEach(({ center, meanSlider, between, points }, j) => {
+        const groupMean = stats.groupMeans[j];
+        const meanY = y(groupMean);
+        const name = groupNames[j];
+        renderMeanSlider(meanSlider, `${name} mean`, `${name} spread`, observations[j], groupMean);
         const x = center + 76;
         between.setAttribute("d", `M ${x - 4} ${meanY} h 8 m -4 0 V ${grandY} m -4 0 h 8`);
         points.forEach(({ x, within, element, i }) => {
@@ -148,14 +215,13 @@
         results[name].textContent = formatNumber.format(stats[name]);
       }
 
-      const fText = stats.f === null ? "undefined" : formatNumber.format(stats.f);
-      let pText = "—";
+      const fText = stats.f === null ? "undefined" : formatF.format(stats.f);
+      results.fTest.textContent = `F(${stats.dfBetween}, ${stats.dfWithin}) = ${fText}`;
+      let pText = "p = —";
       if (stats.p !== null) {
-        pText = stats.p > 0 && stats.p < 0.001
-          ? stats.p.toExponential(2)
-          : formatNumber.format(stats.p);
+        pText = stats.p < 0.001 ? "p <.001" : `p = ${formatNumber.format(stats.p)}`;
       }
-      results.fTest.textContent = `F(${stats.dfBetween}, ${stats.dfWithin}) = ${fText}, p = ${pText}`;
+      results.pValue.textContent = pText;
 
       let decision = "All observations are equal. The F-test is undefined.";
       if (stats.p !== null) {
@@ -167,17 +233,31 @@
       note.textContent = stats.f === Infinity ? "Within-group variation is zero." : "";
     }
 
-    function showValue({ j, i }) {
-      valueLabel.textContent = `Group ${groupNames[j]} · ${observations[j][i].toFixed(1)}`;
-    }
-
-    function updatePoint(point, value) {
+    function updatePoint(j, i, value) {
       const clamped = Math.max(0, Math.min(100, Math.round(value * 10) / 10));
-      if (observations[point.j][point.i] !== clamped) {
-        observations[point.j][point.i] = clamped;
+      if (observations[j][i] !== clamped) {
+        const scores = observations[j].slice();
+        scores[i] = clamped;
+        observations[j] = scores;
         render();
       }
-      showValue(point);
+    }
+
+    function updateScores(scores, groupIndex) {
+      const current = groupIndex === undefined ? observations.flat() : observations[groupIndex];
+      if (scores.every((score, i) => score === current[i])) return;
+      if (groupIndex === undefined) {
+        let start = 0;
+        observations = observations.map(group => {
+          const end = start + group.length;
+          const updated = scores.slice(start, end);
+          start = end;
+          return updated;
+        });
+      } else {
+        observations[groupIndex] = scores;
+      }
+      render();
     }
 
     function measurePlot() {
@@ -190,59 +270,106 @@
       return 100 * (bounds.bottom - local.y) / plotHeight;
     }
 
-    function stopDrag(event) {
-      if (drag?.pointerId !== event.pointerId) return;
-      drag.point.element.classList.remove("is-dragging");
+    function stopDrag({ pointerId }) {
+      if (drag?.pointerId !== pointerId) return;
+      const { element } = drag;
       drag = undefined;
+      element.classList.remove("is-dragging");
+      if (element.hasPointerCapture(pointerId)) element.releasePointerCapture(pointerId);
     }
 
     const keySteps = { ArrowUp: 1, ArrowDown: -1, ArrowRight: 1, ArrowLeft: -1, PageUp: 10, PageDown: -10 };
-    for (const point of groups.flatMap(group => group.points)) {
-      point.element.addEventListener("focus", () => showValue(point));
-      point.element.addEventListener("keydown", event => {
+    function bindSlider(element, getAdjustment) {
+      element.addEventListener("keydown", event => {
         if (!Object.hasOwn(keySteps, event.key) && event.key !== "Home" && event.key !== "End") return;
         event.preventDefault();
         event.stopPropagation();
+        if (drag) stopDrag(drag);
+        const { value, updateValue } = getAdjustment();
         let next;
         if (event.key === "Home") next = 0;
         else if (event.key === "End") next = 100;
-        else next = observations[point.j][point.i] + keySteps[event.key];
-        updatePoint(point, next);
+        else next = value + keySteps[event.key];
+        updateValue(next);
       });
 
-      point.element.addEventListener("pointerdown", event => {
+      element.addEventListener("pointerdown", event => {
         if (drag || event.button !== 0) return;
         measurePlot();
         if (!inverseTransform) return;
-        point.element.setPointerCapture(event.pointerId);
-        point.element.classList.add("is-dragging");
+        const { value, updateValue } = getAdjustment();
+        element.setPointerCapture(event.pointerId);
+        element.classList.add("is-dragging");
         drag = {
-          point,
+          element,
+          updateValue,
           pointerId: event.pointerId,
-          offset: observations[point.j][point.i] - pointerValue(event),
+          offset: value - pointerValue(event),
         };
         event.stopPropagation();
-        showValue(point);
       });
     }
 
-    svg.addEventListener("pointermove", event => {
-      if (drag?.pointerId === event.pointerId) updatePoint(drag.point, pointerValue(event) + drag.offset);
+    function bindMeanSlider(element, groupIndex) {
+      bindSlider(element, () => {
+        // Keep the starting shape for the whole drag, even when its range temporarily reaches zero.
+        const scores = groupIndex === undefined ? observations.flat() : observations[groupIndex];
+        const adjust = adjustSpread ? spreadScoresToRange : shiftGroupToMean;
+        return {
+          value: adjustSpread ? scoreRange(scores) : mean(scores),
+          updateValue: target => updateScores(adjust(scores, target), groupIndex),
+        };
+      });
+    }
+
+    bindMeanSlider(grandSlider.element);
+    groups.forEach(({ meanSlider, points }, j) => {
+      bindMeanSlider(meanSlider.element, j);
+      for (const { element, i } of points) {
+        bindSlider(element, () => ({ value: observations[j][i], updateValue: value => updatePoint(j, i, value) }));
+      }
     });
-    svg.addEventListener("lostpointercapture", stopDrag);
+
+    svg.addEventListener("pointermove", event => {
+      if (drag?.pointerId === event.pointerId) drag.updateValue(pointerValue(event) + drag.offset);
+    });
+    for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) {
+      svg.addEventListener(type, stopDrag);
+    }
 
     function updateLayers() {
       for (const input of layerInputs) {
-        layers[input.dataset.layer].style.display = input.checked ? "" : "none";
+        const layer = layers[input.dataset.layer];
+        if (!input.checked && drag && layer.contains(drag.element)) stopDrag(drag);
+        layer.style.display = input.checked ? "" : "none";
       }
       deviationKey.hidden = !root.querySelector('[data-layer="deviations"]').checked;
     }
 
     for (const input of layerInputs) input.addEventListener("change", updateLayers);
+    function updateModeLabel() {
+      const active = adjustSpread ? "Adjust spread" : "Adjust means";
+      const inactive = adjustSpread ? "Adjust means" : "Adjust spread";
+      modeButton.textContent = active;
+      modeButton.setAttribute("aria-label", `Drag mode. ${active}. Switch to ${inactive}`);
+    }
+    modeButton.addEventListener("click", () => {
+      if (drag) stopDrag(drag);
+      adjustSpread = !adjustSpread;
+      updateModeLabel();
+      render();
+    });
+    root.querySelector(".anova-controls").addEventListener("keydown", event => {
+      // Let Space activate the focused control without advancing the slide.
+      if (event.key === " ") event.stopPropagation();
+    });
     root.querySelector(".anova-reset").addEventListener("click", () => {
-      if (drag) drag.point.element.releasePointerCapture(drag.pointerId);
+      if (drag) stopDrag(drag);
       observations = initialObservations();
-      valueLabel.textContent = "";
+      adjustSpread = false;
+      updateModeLabel();
+      for (const input of layerInputs) input.checked = input.defaultChecked;
+      updateLayers();
       render();
     });
 
@@ -250,6 +377,7 @@
     window.addEventListener("resize", measurePlot);
     document.addEventListener("fullscreenchange", measurePlot);
     window.Reveal?.on("resize", measurePlot);
+    updateModeLabel();
     updateLayers();
     render();
   }
@@ -276,7 +404,7 @@
   }
 
   if (typeof module === "object" && module.exports) {
-    module.exports = { calculateAnova, fSurvival, initialObservations };
+    module.exports = { calculateAnova, fSurvival, initialObservations, shiftGroupToMean, spreadScoresToRange };
   } else if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", mount, { once: true });
   } else {

@@ -37,8 +37,13 @@
   accent-color: #005685;
 }
 
-.anova-demo .anova-reset {
-  margin-left: auto;
+.anova-demo .anova-drag-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.anova-demo .anova-controls button {
   padding: 0.3em 0.85em;
   border: 1px solid #8095a9;
   border-radius: 4px;
@@ -49,28 +54,15 @@
   cursor: pointer;
 }
 
-.anova-demo .anova-reset:hover { background: #e6eff5; }
+.anova-demo .anova-drag-mode button { min-width: 8.1em; }
+.anova-demo .anova-reset { margin-left: auto; }
+.anova-demo .anova-controls button:hover { background: #e6eff5; }
 .anova-demo .anova-controls :focus-visible { outline: 2px solid #005685; outline-offset: 3px; }
 
 .anova-demo .anova-main {
   display: grid;
   grid-template-columns: minmax(0, 2.25fr) minmax(0, 1fr);
   gap: 1.15em;
-}
-
-.anova-demo .anova-instruction {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 0 0.5em;
-  color: var(--anova-muted);
-  font-size: 0.9em;
-}
-
-.anova-demo .anova-value {
-  color: var(--anova-ink);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
 }
 
 .anova-demo svg {
@@ -89,17 +81,23 @@
 .anova-demo svg .anova-within { stroke: currentColor; stroke-width: 1.4; opacity: 0.7; }
 .anova-demo svg .anova-between { stroke: var(--anova-between); stroke-width: 2.4; stroke-dasharray: 2 3; }
 
-.anova-demo .anova-a { color: #28648a; }
-.anova-demo .anova-b { color: #96511f; }
-.anova-demo .anova-c { color: #3b6d55; }
+.anova-demo .anova-gryffindor { color: #7F0909; }
+.anova-demo .anova-ravenclaw { color: #08245e; }
+.anova-demo .anova-slytherin { color: #2a623d; }
 
-.anova-demo svg .anova-point { cursor: ns-resize; touch-action: none; }
+.anova-demo svg .anova-point,
+.anova-demo svg .anova-mean-slider { cursor: ns-resize; touch-action: none; }
 .anova-demo svg .anova-hit { fill: transparent; }
+.anova-demo svg .anova-mean-hit { stroke: transparent; stroke-width: 22; }
 .anova-demo svg .anova-dot { fill: currentColor; stroke: #fff; stroke-width: 1.6; pointer-events: none; }
-.anova-demo svg .anova-point:focus { outline: none; }
+.anova-demo svg .anova-point:focus,
+.anova-demo svg .anova-mean-slider:focus { outline: none; }
 .anova-demo svg .anova-point:hover .anova-dot,
 .anova-demo svg .anova-point:focus-visible .anova-dot,
 .anova-demo svg .anova-point.is-dragging .anova-dot { stroke: var(--anova-ink); stroke-width: 2.4; }
+.anova-demo svg .anova-mean-slider:is(:hover, :focus-visible, .is-dragging) :is(.anova-group-mean, .anova-grand-mean) {
+  stroke-width: 5;
+}
 
 .anova-demo .anova-legend {
   display: flex;
@@ -112,16 +110,14 @@
 
 .anova-demo .anova-legend[hidden] { visibility: hidden; }
 .anova-demo .anova-legend span { display: inline-flex; align-items: center; gap: 0.4em; }
-.anova-demo .anova-legend i { width: 20px; border-top: 3px solid #28648a; }
-.anova-demo .anova-legend .anova-dot-key { width: 10px; height: 10px; border: 0; border-radius: 50%; background: #28648a; }
+.anova-demo .anova-legend i { width: 20px; border-top: 3px solid currentColor; }
+.anova-demo .anova-legend .anova-dot-key { width: 10px; height: 10px; border: 0; border-radius: 50%; background: currentColor; }
 .anova-demo .anova-legend .anova-grand-key { border-color: var(--anova-grand); border-top-style: dashed; }
 .anova-demo .anova-legend .anova-within-key { border-top-width: 1.5px; }
 .anova-demo .anova-legend .anova-between-key { border-color: var(--anova-between); border-top-style: dotted; }
 
 .anova-demo .anova-results {
-  min-width: 0;
-  align-self: start;
-  margin-top: 1.2em;
+  margin-top: 0.7em;
   padding: 0.8em;
   border: 1px solid var(--anova-border);
   border-radius: 6px;
@@ -129,19 +125,32 @@
   font-variant-numeric: tabular-nums;
 }
 
-.anova-demo .anova-results dl {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 0.35em 0.6em;
+.anova-demo .anova-results table {
+  width: 100%;
   margin: 0;
   font-size: 0.9em;
 }
 
-.anova-demo .anova-results dt { font-weight: 400; }
-.anova-demo .anova-results dd { margin: 0; text-align: right; font-weight: 650; }
-.anova-demo .anova-results small { color: var(--anova-muted); vertical-align: baseline; }
+.anova-demo .anova-results table th,
+.anova-demo .anova-results table td {
+  border: 0;
+  padding: 0.16em 0;
+}
+
+.anova-demo .anova-results table th { background: transparent; text-align: left; }
+.anova-demo .anova-results thead th { border-bottom: 1px solid var(--anova-border); }
+.anova-demo .anova-results tbody th { font-weight: 400; }
+.anova-demo .anova-results table td { padding-left: 0.6em; text-align: right; font-weight: 650; }
 .anova-demo .anova-test { margin-top: 0.65em; padding-top: 0.65em; border-top: 1px solid var(--anova-border); }
-.anova-demo [data-result="fTest"] { font-weight: 700; font-size: 0.95em; }
+.anova-demo .anova-statistics {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 9.5ch;
+  gap: 0.5em;
+  font-weight: 700;
+  font-size: 0.95em;
+}
+.anova-demo [data-result="fTest"] { overflow-wrap: anywhere; }
+.anova-demo [data-result="pValue"] { white-space: nowrap; }
 .anova-demo .anova-conclusion { margin-top: 0.45em; font-size: 0.9em; }
 .anova-demo .anova-note { color: var(--anova-muted); font-size: 0.75em; }
 .anova-demo .anova-note:not(:empty) { margin-top: 0.45em; }
@@ -149,7 +158,6 @@
 .anova-demo .anova-explanation {
   display: grid;
   gap: 0.14em;
-  padding-top: 0.45em;
-  border-top: 1px solid var(--anova-border);
+  margin-top: 0.6em;
   font-size: 0.9em;
 }
