@@ -160,7 +160,7 @@ boxplot_dat_m <- boxplot_dat |>
   filter(variable == "Machiav.") |>
   mutate(variable = "Machiavellianism")
 
-plot_full_df(boxplot_dat, '') + fig0
+# plot_full_df(boxplot_dat, '') + fig0
 y_scale <- scale_y_continuous(breaks = seq(10, 50, 10), limits = c(9, 51))
 fig0 <- plot_full_df(boxplot_dat, '') + y_scale + theme_bw(base_size = 24)
 fig1 <- fig0 +

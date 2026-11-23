@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Machiavellianism by Hogwarts house</title>
+  <style>
+    body { color: #202124; font: 16px/1.4 Arial, sans-serif; margin: 2rem; }
+    main { max-width: 920px; margin: auto; }
+    h1 { font-size: 1.35em; }
+    table { border-collapse: collapse; width: 100%; margin: 0 0 1.4em; break-inside: avoid; }
+    caption { text-align: left; font-weight: bold; margin-bottom: .35em; }
+    th, td { border: 1px solid #888; padding: .32em .55em; }
+    thead { background: #f3f3f3; }
+    th[scope=row] { text-align: left; font-weight: normal; }
+    td { text-align: right; font-variant-numeric: tabular-nums; }
+    @media print { body { margin: 0; } }
+  </style>
+</head>
+<body>
+<main>
+<h1>Machiavellianism by Hogwarts house</h1>
+<table>
+  <caption>Model Summary</caption>
+  <thead>
+    <tr><th scope="col">Model</th><th scope="col">R</th><th scope="col">R Square</th><th scope="col">Adjusted R Square</th><th scope="col">Std. Error of the Estimate</th></tr>
+  </thead>
+  <tbody>
+    <tr><th scope="row">1</th><td>.338</td><td>.114</td><td>.111</td><td>6.015</td></tr>
+  </tbody>
+</table>
+<table>
+  <caption>ANOVA</caption>
+  <thead>
+    <tr><th scope="col">Model</th><th scope="col">Source</th><th scope="col">Sum of Squares</th><th scope="col">df</th><th scope="col">Mean Square</th><th scope="col">F</th><th scope="col">Sig.</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><th scope="row">Regression</th><td>3935.101</td><td>3</td><td>1311.700</td><td>36.259</td><td>&lt;.001</td></tr>
+    <tr><td></td><th scope="row">Residual</th><td>30496.517</td><td>843</td><td>36.176</td><td></td><td></td></tr>
+    <tr><td></td><th scope="row">Total</th><td>34431.617</td><td>846</td><td></td><td></td><td></td></tr>
+  </tbody>
+</table>
+<table>
+  <caption>Coefficients</caption>
+  <colgroup span="2"></colgroup>
+  <colgroup span="2"></colgroup>
+  <colgroup span="1"></colgroup>
+  <colgroup span="2"></colgroup>
+  <thead>
+    <tr><th scope="col" rowspan="2">Model</th><th scope="col" rowspan="2">Term</th>
+        <th scope="colgroup" colspan="2">Unstandardized Coefficients</th>
+        <th scope="col">Standardized Coefficients</th>
+        <th scope="col" rowspan="2">t</th><th scope="col" rowspan="2">Sig.</th></tr>
+    <tr><th scope="col">B</th><th scope="col">Std. Error</th><th scope="col">Beta</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><th scope="row">(Constant)</th><td>26.341</td><td>0.408</td><td></td><td>64.514</td><td>&lt;.001</td></tr>
+    <tr><td></td><th scope="row">Hufflepuff</th><td>-2.086</td><td>0.578</td><td>-0.143</td><td>-3.609</td><td>&lt;.001</td></tr>
+    <tr><td></td><th scope="row">Ravenclaw</th><td>-0.129</td><td>0.549</td><td>-0.009</td><td>-0.235</td><td>.814</td></tr>
+    <tr><td></td><th scope="row">Slytherin</th><td>4.569</td><td>0.645</td><td>0.270</td><td>7.083</td><td>&lt;.001</td></tr>
+  </tbody>
+</table>
+</main>
+</body>
+</html>

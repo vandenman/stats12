@@ -1,0 +1,61 @@
+<!-- The Hogwarts tables and diagnostic plots use scripts/house_analysis.r. -->
+
+<table class="spss-table spss-model-summary">
+  <caption>Model Summary</caption>
+  <thead>
+    <tr>
+      <th scope="col" class="term">Model</th>
+      <th scope="col">R</th>
+      <th scope="col">R Square</th>
+      <th scope="col">Adjusted R Square</th>
+      <th scope="col">Std. Error of the Estimate</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row" class="term">1</th>
+      <td>.338</td>
+      <td class="spss-r-square">.114</td>
+      <td>.111</td><td>6.015</td>
+    </tr>
+  </tbody>
+</table>
+
+{{< include /lecture13/tables/spss-regression-anova.qmd >}}
+
+<table class="spss-table">
+  <caption>Coefficients</caption>
+  <thead>
+    <tr>
+      <th scope="col" rowspan="2" class="term">Model</th>
+      <th scope="col" rowspan="2" class="term"></th>
+      <th scope="colgroup" colspan="2" class="group-title">Unstandardized Coefficients</th>
+      <th class="group-title">Standardized Coefficients</th>
+      <th scope="col" rowspan="2">t</th>
+      <th scope="col" rowspan="2">Sig.</th>
+    </tr>
+    <tr>
+      <th scope="col">B</th>
+      <th scope="col">Std. Error</th>
+      <th scope="col">Beta</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="term">1</td><th scope="row" class="term">(Constant)</th>
+      <td>26.341</td><td>0.408</td><td></td><td>64.514</td><td>&lt;.001</td>
+    </tr>
+    <tr>
+      <td></td><th scope="row" class="term">Hufflepuff</th>
+      <td>−2.086</td><td>0.578</td><td>−0.143</td><td>−3.609</td><td>&lt;.001</td>
+    </tr>
+    <tr>
+      <td></td><th scope="row" class="term">Ravenclaw</th>
+      <td>−0.129</td><td>0.549</td><td>−0.009</td><td>−0.235</td><td>.814</td>
+    </tr>
+    <tr class="spss-slytherin">
+      <td></td><th scope="row" class="term">Slytherin</th>
+      <td>4.569</td><td>0.645</td><td>0.270</td><td>7.083</td><td>&lt;.001</td>
+    </tr>
+  </tbody>
+</table>

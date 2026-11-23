@@ -638,6 +638,49 @@ $$
   * So $b_2$ is the mean difference between Gryffindors and Ravenclaws
   * So $b_3$ is the mean difference between Gryffindors and Slytherins
 
+. . .
+
+What is the mean difference between Slytherins and Ravenclaws?
+
+. . .
+
+::: {.columns style="font-size: 75%;"}
+
+::: {.column width="30%"}
+
+
+$$
+\begin{align}
+\widehat{\mathrm{Ravenclaws}}&= a + b_2 \\
+\widehat{\mathrm{Slytherin}} &= a + b_3 \\
+\end{align}
+$$
+
+
+:::
+
+::: {.column width="70%"}
+
+$$
+\widehat{\mathrm{Ravenclaws} - \mathrm{Slytherin}} = a + b_2 - (a + b_3) = b_2 - b_3
+$$
+
+:::
+
+:::
+
+
+<!--
+- The intercept is the _mean of the reference category_, Gryffindor.
+- Each slope is a house mean minus the reference mean. For example, $b_3$ is Slytherin's mean minus Gryffindor's mean.
+
+. . .
+
+SPSS can calculate a standardized *Beta* for a dummy variable. Its size depends on the group proportions. Switching groups is a full step from 0 to 1, so a one-standard-deviation change has little meaning as a change in group membership.
+
+Use the **unstandardized $B$** to read the difference between means in the original score units.
+-->
+
 
 ## What does the regression look like?
 
@@ -702,6 +745,23 @@ add vertical offset for each b
 
  -->
 
+
+## Changing the reference category -- coefficients {.small-slide}
+
+| House | Observed mean | [Gryffindor as reference]{.fragment data-fragment-index="1"} | [Ravenclaw as reference]{.fragment data-fragment-index="2"} |
+|---|---:|---:|---:|
+| Gryffindor | 26.34 | [$a=26.34$]{.fragment data-fragment-index="1"} | [$b_1=0.13$]{.fragment data-fragment-index="2"} |
+| Hufflepuff | 24.25 | [$b_1=-2.09$]{.fragment data-fragment-index="1"} | [$b_2=-1.96$]{.fragment data-fragment-index="2"} |
+| Ravenclaw | 26.21 | [$b_2=-0.13$]{.fragment data-fragment-index="1"} | [$a=26.21$]{.fragment data-fragment-index="2"} |
+| Slytherin | 30.91 | [$b_3=4.57$]{.fragment data-fragment-index="1"} | [$b_3=4.70$]{.fragment data-fragment-index="2"} |
+
+::: {.fragment data-fragment-index="3"}
+What do you think happens to any significance tests when we change the reference category?
+:::
+
+::: {.fragment data-fragment-index="4"}
+If the test still the same thing, nothing.
+:::
 
 # Testing
 
@@ -811,6 +871,23 @@ Whether the mean Machiavellianism differs between Gryffindors and Slytherins
 }
 .reveal .spss-regression-output .spss-notes p {
   margin: 0.25em 0;
+}
+.reveal .spss-comparison .spss-table {
+  font-size: 0.60em;
+  line-height: 1.2;
+}
+.reveal .spss-comparison .spss-table th,
+.reveal .spss-comparison .spss-table td {
+  padding: 0.3em;
+}
+.reveal .spss-comparison .spss-explained > :is(th, td) {
+  background: #e0eef9;
+}
+.reveal .spss-comparison .spss-residual > :is(th, td) {
+  background: #f9ecdc;
+}
+.reveal .spss-comparison .spss-total > :is(th, td) {
+  background: #edf0f2;
 }
 </style>
 
@@ -1092,6 +1169,27 @@ $$
 F(3,843) = ...
 $$
 
+## Testing all coefficients for House {.small-slide}
+
+:::: {.columns}
+
+::: {.column width="57%"}
+
+1. Hypothesis: Under $\hypo_0$, all four population means are equal.
+2. Test statistic: Compare $F=36.26$ with an $F$-distribution with $3$ and $843$ degrees of freedom.
+3. $p$-value: Under $\hypo_0$ and the model assumptions, this is the probability of an $F$ of $36.26$ or larger. SPSS reports $p<.001$.
+4. Conclusion: Reject $\hypo_0$ at $\alpha=.05$. There is evidence that at least two population means differ.
+
+:::
+
+::: {.column width="42%"}
+
+![](../lecture10/figures/f_dist_3.svg){width="100%"}
+
+:::
+
+::::
+
 ## Regression output in SPSS {.small-slide .spss-regression-output}
 
 {{< include tables/spss-regression-output.qmd >}}
@@ -1101,22 +1199,6 @@ $$
   <span class="fragment spss-show-df" data-fragment-index="2"></span>
   <span class="fragment spss-show-test-result" data-fragment-index="3"></span>
 </div>
-
-## Testing all coefficients for House
-
-The overall regression $F$-test compares one mean for everyone with one mean per house.
-
-. . .
-
-There are three dummy coefficients and four fitted parameters in total, so the degrees of freedom are $3$ and $847-4=843$. The multiplier in the regression $F$ formula is $(N-4)/3$.
-
-. . .
-
-$$
-F(3,843)=36.26,\qquad p<.001,\qquad R^2=.114
-$$
-
-The data provide evidence that at least two population means differ. House accounts for about 11.4% of the observed variation in Machiavellianism scores.
 
 # ANOVA
 
@@ -1210,33 +1292,7 @@ shouldn't we use p rather than k?
 
 ## One-way ANOVA in SPSS {.small-slide}
 
-<table class="spss-table">
-  <caption>Machiavellianism</caption>
-  <thead>
-    <tr>
-      <th scope="col" class="term">Source</th>
-      <th scope="col">Sum of Squares</th>
-      <th scope="col">df</th>
-      <th scope="col">Mean Square</th>
-      <th scope="col">F</th>
-      <th scope="col">Sig.</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th scope="row" class="term">Between Groups</th>
-      <td>3935.10</td><td>3</td><td>1311.70</td><td>36.26</td><td>&lt;.001</td>
-    </tr>
-    <tr>
-      <th scope="row" class="term">Within Groups</th>
-      <td>30496.52</td><td>843</td><td>36.18</td><td></td><td></td>
-    </tr>
-    <tr>
-      <th scope="row" class="term">Total</th>
-      <td>34431.62</td><td>846</td><td></td><td></td><td></td>
-    </tr>
-  </tbody>
-</table>
+{{< include tables/spss-one-way-anova.qmd >}}
 
 . . .
 
@@ -1253,25 +1309,67 @@ The *Between Groups* row gives $\RSS$ and $\MSR$, the *Within Groups* row gives 
 
 The $p$-value comes from the upper tail of the $F$-distribution with $3$ and $843$ degrees of freedom.
 
-<!--
-TODO: add a slide with the same regression table back in!
- -->
+## ANOVA and regression give the same results {.small-slide .spss-comparison}
 
-## Which houses differ?
+:::: {.columns}
 
-The omnibus test asks whether all four population means are equal.
+::: {.column width="50%"}
+
+### Regression
+
+{{< include tables/spss-regression-anova.qmd >}}
+
+:::
+
+::: {.column width="48%"}
+
+### One-way ANOVA
+
+{{< include tables/spss-one-way-anova.qmd >}}
+
+:::
+
+::::
+
+Match _Regression_ with _Between Groups_, _Residual_ with _Within Groups_ (and _Total_ with _Total_).
 
 . . .
 
-The coefficients table compares each house with Gryffindor. How could we compare Slytherin with Hufflepuff?
+Both give $F(3,843)=36.26$, $p<.001$. Regression's $R^2=.114$ is ANOVA's $\eta^2=.114$.
 
 . . .
 
-- We could make Hufflepuff the reference group
-- We could use a pairwise $t$-tests.
-  * There exist corrections for the multiple comparisons we discussed before (not part of the course).
+One-way ANOVA and regression with dummy variables are mathematically equivalent. They give exactly the same omnibus $F$-test.
 
-## Effect size
+. . .
+
+Just like student's $t$-test and regression with a binary dummy-coded predictor last week.
+
+## Which houses differ? {.small-slide}
+
+The omnibus test asks whether all four population means are equal. How do we compare Slytherin with Hufflepuff?
+
+$$
+\bar y_S-\bar y_H=30.91-24.25=6.66
+$$
+
+Which regression coefficient tells us whether this difference is significant?
+
+. . .
+
+With Gryffindor as reference, this difference is $b_3-b_1$.
+
+. . .
+
+- If we use Hufflepuff as the reference group, then Slytherin's new slope estimates and tests this difference ($b_3-b_1$).
+  * We'd get $t(843)=10.31$, $p<.001$.
+  * You can't read this from the standard output from ANOVA or regression.
+
+## Effect size {.small-slide}
+
+:::: {.columns}
+
+::: {.column width="56%"}
 
 In one-way ANOVA, *eta squared* is the proportion of observed variation explained by group membership.
 
@@ -1279,24 +1377,45 @@ $$
 \eta^2 = \frac{\RSS}{\TSS} = R^2
 $$
 
-. . .
+For the Hogwarts data,
+$$
+\eta^2 = 3935.10/34431.62 = .114
+$$
 
-For the Hogwarts data, $\eta^2 = 3935.10/34431.62 \approx .114$.
+:::
+
+::: {.column width="40%"}
+
+Common interpretation
+
+| Effect | $\eta^2$ |
+|---|---:|
+| Small | .01 |
+| Medium | .06 |
+| Large | .14 |
+
+:::
+
+::::
 
 Would the differences between these scores be meaningful in practice?
+
+. . .
+
+It falls between the medium and large benchmarks, so yes. Keep in mind that these are rough conventions, and that practical importance usually depends on the context.
+
+. . .
+
+::: {style="font-size: 80%;"}
+
+I find it interesting that a Sorting hat questionnaire, _designed for entertainment_, has actual value when predicting/ explaining differences in personality scores, which were _designed to measure personality_.
+
+:::
 
 # Assumptions
 
 ## Assumptions for one-way ANOVA
 
-<!--
-TODO:
-first reiterate the general assumptions once more
-then explain that linearity is always met just like the t-test
-for Equal variances, no solution if violated unlike the Welch's t-test
-  - There are alternatives, but not part of this course (remove Welch ANOVA)
-  - Levene's test does generalize
- -->
 The same assumptions apply to the dummy-coded regression and the classical one-way ANOVA.
 
 ::: {.incremental}
@@ -1353,6 +1472,16 @@ Levene's test gives $F(3,843)=1.66$, $p=.174$. The test provides little evidence
 
 If the spreads differ substantially, Welch's ANOVA allows unequal variances, just like Welch's $t$-test for two groups.
 
+## Equal variances -- residuals versus predicted values {.small-slide}
+
+![](figures/hp_mach_resid_vs_predicted.svg){fig-alt="Standardized residuals plotted against predicted Machiavellianism, with one vertical band per Hogwarts house and a dashed line at zero." fig-align="center" width="88%"}
+
+Each house has one fitted mean, so the regression diagnostic shows four vertical bands. Do they have roughly equal spreads?
+
+. . .
+
+Really hard to tell due to the overlapping points.
+
 ## Normality within each house {.small-slide}
 
 ![](figures/hp_mach_qq.svg){fig-alt="Residual Q–Q plots for Gryffindor, Hufflepuff, Ravenclaw, and Slytherin" fig-align="center" width="100%"}
@@ -1365,15 +1494,13 @@ The middle of each plot follows the line fairly closely. The tails show some dep
 
 After accounting for House, the errors for different participants should be independent.
 
-<!--
-TODO: bring up the sources where they recruited, like facebook!
- -->
+"We recruited participants through social media (Facebook, Twitter, and Reddit), private contacts, and student e-mail groups".
 
-Each participant contributes one Machiavellianism score. Suppose several participants were recruited from the same fan club. Why might that matter?
+Do you think the assumption is violated or not?
 
 . . .
 
-People in the same club may share experiences that make their errors more similar. This dependence can affect standard errors and $p$-values.
+Facebook/ twitter means there is a common factor, they are all connected/ friends with the authors! That can increase undesired dependencies which may violate the assumptions. Nevertheless, really hard to tell from the data themselves though.
 
 Assess independence from the study design. Look for repeated scores from the same person or groups of people recruited together.
 

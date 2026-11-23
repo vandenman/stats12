@@ -1,0 +1,34 @@
+<table class="spss-table">
+  <caption>ANOVA</caption>
+  <thead>
+    <tr>
+      <th scope="col" class="term">Model</th>
+      <th scope="col" class="term"></th>
+      <th scope="col">Sum of Squares</th>
+      <th scope="col">df</th>
+      <th scope="col">Mean Square</th>
+      <th scope="col">F</th>
+      <th scope="col">Sig.</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="spss-explained">
+      <td class="term">1</td><th scope="row" class="term">Regression</th>
+      <td>3935.101</td>
+      <td class="spss-df">3</td>
+      <td>1311.700</td>
+      <td class="spss-test-result">36.259</td>
+      <td class="spss-test-result">&lt;.001</td>
+    </tr>
+    <tr class="spss-residual">
+      <td></td><th scope="row" class="term">Residual</th>
+      <td>30496.517</td>
+      <td class="spss-df">843</td>
+      <td>36.176</td><td></td><td></td>
+    </tr>
+    <tr class="spss-total">
+      <td></td><th scope="row" class="term">Total</th>
+      <td>34431.617</td><td>846</td><td></td><td></td><td></td>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,27 @@
+<table class="spss-table">
+  <caption>Machiavellianism</caption>
+  <thead>
+    <tr>
+      <th scope="col" class="term">Source</th>
+      <th scope="col">Sum of Squares</th>
+      <th scope="col">df</th>
+      <th scope="col">Mean Square</th>
+      <th scope="col">F</th>
+      <th scope="col">Sig.</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="spss-explained">
+      <th scope="row" class="term">Between Groups</th>
+      <td>3935.10</td><td>3</td><td>1311.70</td><td>36.26</td><td>&lt;.001</td>
+    </tr>
+    <tr class="spss-residual">
+      <th scope="row" class="term">Within Groups</th>
+      <td>30496.52</td><td>843</td><td>36.18</td><td></td><td></td>
+    </tr>
+    <tr class="spss-total">
+      <th scope="row" class="term">Total</th>
+      <td>34431.62</td><td>846</td><td></td><td></td><td></td>
+    </tr>
+  </tbody>
+</table>

@@ -67,3 +67,16 @@ qq_plot <- ggplot(house_data, aes(sample = Residual)) +
 
 ggsave(file.path("lecture13", "figures", "hp_mach_qq.svg"), qq_plot,
        width = 40, height = 13, units = "cm")
+
+house_data$Predicted <- fitted(fit)
+house_data$Standardized_Residual <- rstandard(fit)
+residual_plot <- ggplot(house_data, aes(Predicted, Standardized_Residual, colour = House)) +
+  geom_hline(yintercept = 0, colour = "grey55", linetype = "dashed") +
+  geom_point(size = 2, alpha = 0.65) +
+  scale_colour_manual(values = house_colors) +
+  labs(x = "Predicted Machiavellianism", y = "Standardized residual") +
+  theme_bw(base_size = 22) +
+  theme(legend.position = "top", panel.grid.minor = element_blank())
+
+ggsave(file.path("lecture13", "figures", "hp_mach_resid_vs_predicted.svg"), residual_plot,
+       width = 32, height = 13, units = "cm")
