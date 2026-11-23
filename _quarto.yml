@@ -27,7 +27,6 @@ book:
   author: Don van den Bergh & Caspar J. Van Lissa
   doi: ''
   license: CC-BY
-  downloads: [pdf]
   site-url: https://vandenman.github.io/stats12/
   repo-url: https://github.com/vandenman/stats12
   description: Book Description
@@ -122,8 +121,3 @@ format:
     - include/webex.js
     - include/script.js
     - include/webex.js
-  pdf:
-    include-in-header: preamble.tex
-    extra_dependencies: tcolorbox
-    output-file: "Statistics-1-and-2"
-    output-ext:  "pdf"

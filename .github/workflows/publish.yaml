@@ -4,6 +4,11 @@ on:
   push:
     branches: [las2627]
   workflow_dispatch:
+    inputs:
+      rebuild_book:
+        description: Rebuild all book chapters
+        type: boolean
+        default: false
 name: publish
 
 permissions:
@@ -28,7 +33,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          # To install LaTeX to build PDF book
+          # LaTeX is used for the printable Exam 2 formula sheet.
           tinytex: true
 
       - uses: r-lib/actions/setup-r@v2
@@ -46,9 +51,46 @@ jobs:
       - name: Render Exam 2 and resit formula sheet
         run: quarto render 2627/misc/formula_sheet/formula_sheet2.qmd --to all
 
-      - name: Render and Publish
+      - name: Build or reuse the HTML book
+        shell: bash
+        env:
+          REBUILD_BOOK: ${{ inputs.rebuild_book || contains(github.event.head_commit.message, '[rebuild book]') }}
+        run: |
+          # The book uses root-level sources and assets. Course-year files
+          # are published separately, and docs contains build output.
+          book_key=$(git ls-files --stage -z -- . ':(exclude)2627/' ':(exclude)docs/' | git hash-object --stdin)
+          published_key=
+          if [[ "$REBUILD_BOOK" != true ]]; then
+            published_ref=$(git ls-remote origin refs/heads/gh-pages)
+            if [[ -n "$published_ref" ]]; then
+              git fetch --no-tags --depth=1 origin refs/heads/gh-pages
+              published_key=$(git show FETCH_HEAD:.book-source 2>/dev/null || true)
+            fi
+          fi
+
+          # Start from a clean output directory. The source branch still
+          # tracks some files in docs from older builds.
+          rm -rf docs
+          if [[ "$published_key" == "$book_key" ]] && git cat-file -e FETCH_HEAD:index.html; then
+            echo "Reusing the published book HTML."
+            mkdir docs
+            git archive FETCH_HEAD | tar -xf - -C docs
+          else
+            echo "Rendering the book as HTML."
+            quarto render --to html
+          fi
+
+          cp --parents \
+            2627/misc/practice/practice.html \
+            2627/misc/formula_sheet/formula_sheet.html \
+            2627/misc/formula_sheet/formula_sheet2.html \
+            2627/misc/formula_sheet/formula_sheet2.pdf docs/
+          printf '%s\n' "$book_key" > docs/.book-source
+
+      - name: Publish prepared site
         uses: quarto-dev/quarto-actions/publish@v2
         with:
           target: gh-pages
+          render: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
