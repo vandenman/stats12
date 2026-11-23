@@ -164,6 +164,24 @@ $font-family-sans-serif: Arial, Helvetica, sans-serif;
   object-fit: contain;
 }
 
+/* Use the space Reveal allocates to a stretch element below the slide content. */
+.reveal .svg-stack.r-stretch > ul {
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-items: stretch;
+  height: 100%;
+  margin: 0;
+}
+
+.reveal .svg-stack.r-stretch > ul > li {
+  margin: 0;
+}
+
+.reveal .svg-stack.r-stretch img {
+  width: var(--svg-width, 100%);
+  height: 100%;
+  max-height: 100%;
+}
+
 /* Hide the first image when a subsequent fragment appears */
 .reveal .svg-stack:not(.hide-first) ul:has(li.fragment.visible) > li:first-child {
   visibility: hidden;

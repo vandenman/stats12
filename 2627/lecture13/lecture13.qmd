@@ -109,7 +109,7 @@ $$
 
 ## Trustworthy Faces
 
-::: {.incremental .svg-stack}
+::: {.incremental .svg-stack .r-stretch}
 - ![](../lecture12/figures/murray_raw_1.svg)
 - ![](../lecture12/figures/scatter_1.svg)
 - ![](../lecture12/figures/scatter_2.svg)
@@ -446,7 +446,7 @@ Jakob, L., Garcia-Garzon, E., Jarke, H., & Dablander, F. (2019). The science beh
 
 ## Let's examine the data
 
-::: {.incremental .svg-stack height="100%" width="100%"}
+::: {.incremental .svg-stack .r-stretch}
 - ![](figures/hp_mach_1.svg)
 - ![](figures/hp_mach_2.svg)
 - ![](figures/hp_mach_3.svg)
@@ -468,7 +468,7 @@ but like with binary predictors, we still can't multiply words with numbers.
 
 We need to assign numbers to them.
 
-So we extent dummy coding to multiple categories.
+So we extend dummy coding to multiple categories.
 
 ## Dummy Coding {.small-slide}
 
@@ -641,7 +641,7 @@ $$
 
 ## What does the regression look like?
 
-::: {.incremental .svg-stack}
+::: {.incremental .svg-stack .r-stretch}
 - ![](figures/hp_mach_reg_1.svg)
 - ![](figures/hp_mach_reg_2.svg)
 - ![](figures/hp_mach_reg_3.svg)
@@ -1339,7 +1339,28 @@ The same assumptions apply to the dummy-coded regression and the classical one-w
 
 :::
 
+## Levene's Test
+
+We can test the assumption of homoscedasticity using Levene's test.
+
+$$
+\begin{aligned}
+\hypo_0 &: \text{the variances of the houses are equal}\\
+\hypo_1 &: \text{the variances of at least two houses differs}
+\end{aligned}
+$$
+
+. . .
+
+- Levene's test uses an F-statistic to test whether the group variances are equal.
+- If Levene's test is *significant*, there is evidence that at least two variances are not equal
+
 ## Equal variances {.small-slide}
+
+<!--
+TODO: add a slide that first recaps Levene's test from last week
+then explain that the test works with any number of groups
+ -->
 
 <table class="spss-table">
   <caption>Group Statistics</caption>
