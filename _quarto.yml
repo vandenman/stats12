@@ -5,6 +5,8 @@ project:
     - resources
     - 2627/misc/practice/practice.html
     - 2627/misc/formula_sheet/formula_sheet.html
+    - 2627/misc/formula_sheet/formula_sheet2.html
+    - 2627/misc/formula_sheet/formula_sheet2.pdf
 execute:
   freeze: auto
   warnings: false
@@ -16,7 +18,11 @@ book:
       - text: "Practice"
         href: 2627/misc/practice/practice.html
       - text: "Formula Sheet"
-        href: 2627/misc/formula_sheet/formula_sheet.html
+        menu:
+          - text: "Exam 1"
+            href: 2627/misc/formula_sheet/formula_sheet.html
+          - text: "Exam 2 and resit"
+            href: 2627/misc/formula_sheet/formula_sheet2.html
   subtitle: ''
   author: Don van den Bergh & Caspar J. Van Lissa
   doi: ''

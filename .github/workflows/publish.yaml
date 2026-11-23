@@ -43,6 +43,9 @@ jobs:
       - name: Render formula sheet
         run: quarto render 2627/misc/formula_sheet/formula_sheet.qmd --to html
 
+      - name: Render Exam 2 and resit formula sheet
+        run: quarto render 2627/misc/formula_sheet/formula_sheet2.qmd --to all
+
       - name: Render and Publish
         uses: quarto-dev/quarto-actions/publish@v2
         with:
