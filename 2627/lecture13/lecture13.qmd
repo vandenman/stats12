@@ -1502,8 +1502,6 @@ Do you think the assumption is violated or not?
 
 Facebook/ twitter means there is a common factor, they are all connected/ friends with the authors! That can increase undesired dependencies which may violate the assumptions. Nevertheless, really hard to tell from the data themselves though.
 
-Assess independence from the study design. Look for repeated scores from the same person or groups of people recruited together.
-
 # Conclusions
 
 ## We've learned -- Categorical predictors
