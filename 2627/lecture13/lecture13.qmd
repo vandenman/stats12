@@ -752,6 +752,106 @@ Suppose we we test if $b_3$ differs from 0. What does that mean?
 Whether the mean Machiavellianism differs between Gryffindors and Slytherins
 
 
+## Regression coefficients in SPSS {.small-slide .spss-regression-output}
+
+<style>
+.reveal .spss-table {
+  width: 100%;
+  margin: 0.5em auto;
+}
+.reveal .spss-table th,
+.reveal .spss-table td {
+  padding: 0.35em 0.5em;
+  text-align: right;
+  font-weight: normal;
+}
+.reveal .spss-table caption {
+  caption-side: top;
+  margin-bottom: 0.3em;
+  font-style: italic;
+}
+.reveal .spss-table .term {
+  text-align: left;
+}
+.reveal .spss-table .group-title {
+  text-align: center;
+  border-bottom: 1px solid currentColor;
+}
+.spss-regression-output:has(.spss-show-coefficient.visible) .spss-slytherin,
+.spss-regression-output:has(.spss-show-r-square.visible) .spss-r-square,
+.spss-regression-output:has(.spss-show-df.visible) .spss-df,
+.spss-regression-output:has(.spss-show-test-result.visible) .spss-test-result {
+  outline: 3px solid firebrick;
+  outline-offset: -2px;
+}
+.reveal .spss-regression-output h2 {
+  margin-bottom: 0.65rem;
+}
+.reveal .spss-regression-output .spss-table {
+  width: 92%;
+  margin: 0.25em auto 0.8em;
+  font-size: 0.78em;
+  line-height: 1.2;
+}
+.reveal .spss-regression-output .spss-model-summary {
+  width: 72%;
+}
+.reveal .spss-regression-output .spss-table th,
+.reveal .spss-regression-output .spss-table td {
+  padding: 0.18em 0.5em;
+}
+.reveal .spss-regression-output .spss-table caption {
+  margin: 0;
+  padding: 0 0 0.25em;
+}
+.reveal .spss-regression-output .spss-notes {
+  width: 92%;
+  margin: 0 auto;
+  font-size: 0.78em;
+}
+.reveal .spss-regression-output .spss-notes p {
+  margin: 0.25em 0;
+}
+</style>
+
+{{< include tables/spss-regression-output.qmd >}}
+
+<div hidden aria-hidden="true">
+  <span class="fragment spss-show-coefficient" data-fragment-index="1"></span>
+</div>
+
+:::: {.spss-notes}
+
+Machiavellianism is the outcome variable. "(Constant)" is the mean for Gryffindor, the reference category.
+
+::: {.fragment data-fragment-index="2"}
+Slytherin scored about 4.57 points higher on average than Gryffindor.
+:::
+
+::::
+
+## Testing a coefficient
+
+Does the population mean differ between Slytherin and Gryffindor?
+
+$$
+\hypo_0:\beta_3=0
+\qquad
+\hypo_1:\beta_3\ne 0
+$$
+
+. . .
+
+$$
+t = \frac{b_3 - 0}{\SE_{b_3}} = \frac{4.569}{0.645} = 7.08
+\qquad
+df = N-4 = 843
+$$
+
+. . .
+
+From the $t$-table (or SPSS output) we find $p<.001$. Gryffindor and Slytherin differ significantly in mean Macchiavellianism score.
+
 ## General regression formula
 
 $$
@@ -913,8 +1013,8 @@ For our four Hogwarts houses, we test:
 
 $$
 \begin{aligned}
-\hypo_0 &: b_1 = b_2 = b_3 = 0\\
-\hypo_1 &: \text{At least one } b_i \neq 0
+\hypo_0 &: \beta_1 = \beta_2 = \beta_3 = 0\\
+\hypo_1 &: \text{At least one } \beta_i \neq 0
 \end{aligned}
 $$
 
@@ -969,194 +1069,38 @@ Here, $p$ is the number of parameters in the model.
 - In bivariate regression, we have a $a$ and $b$, so $p = 2$.
   * $\frac{N-p}{p-1} = N - 2$.
 - For Machiavellianism data, we have $a$, $b_1$, $b_2$, $b_3$, so $p = 4$.
-  * $\frac{N-p}{p-1} = \frac{N-4}{3}$.
+  * $\frac{N-p}{p-1} = \frac{N-4}{3}= \frac{847-4}{3}= \frac{843}{3}$.
 :::
 
 <!--
 Keep the slides above this comment unchanged.
- -->
+-->
+
+## Degrees of freedom for the $F$-test
+
+There are two degrees of Freedom for the $F$-test:
+
+- Numerator (Regression): $p-1 = 4-1 = 3$. The full model adds three house coefficients to the intercept-only model.
+- Denominator (Residual): $N-p = 847-4 = 843$. The full model fits four parameters to 847 observations.
+
+. . .
+
+
+We report the numerator degrees of freedom first.
+
+$$
+F(3,843) = ...
+$$
 
 ## Regression output in SPSS {.small-slide .spss-regression-output}
 
-<!-- The Hogwarts tables and diagnostic plot use scripts/house_analysis.r. -->
+{{< include tables/spss-regression-output.qmd >}}
 
-<style>
-.reveal .spss-table {
-  width: 100%;
-  margin: 0.5em auto;
-}
-.reveal .spss-table th,
-.reveal .spss-table td {
-  padding: 0.35em 0.5em;
-  text-align: right;
-  font-weight: normal;
-}
-.reveal .spss-table caption {
-  caption-side: top;
-  margin-bottom: 0.3em;
-  font-style: italic;
-}
-.reveal .spss-table .term {
-  text-align: left;
-}
-.reveal .spss-table .group-title {
-  text-align: center;
-  border-bottom: 1px solid currentColor;
-}
-.reveal .spss-table tr.fragment.highlight-row {
-  opacity: 1;
-  visibility: visible;
-}
-.reveal .spss-table tr.fragment.highlight-row.visible {
-  outline: 3px solid firebrick;
-  outline-offset: -2px;
-}
-.reveal .spss-regression-output h2 {
-  margin-bottom: 0.65rem;
-}
-.reveal .spss-regression-output .spss-table {
-  width: 92%;
-  margin: 0.25em auto 0.8em;
-  font-size: 0.78em;
-  line-height: 1.2;
-}
-.reveal .spss-regression-output .spss-model-summary {
-  width: 72%;
-}
-.reveal .spss-regression-output .spss-table th,
-.reveal .spss-regression-output .spss-table td {
-  padding: 0.18em 0.5em;
-}
-.reveal .spss-regression-output .spss-table caption {
-  margin: 0;
-  padding: 0 0 0.25em;
-}
-.reveal .spss-regression-output .spss-notes {
-  width: 92%;
-  margin: 0 auto;
-  font-size: 0.78em;
-}
-.reveal .spss-regression-output .spss-notes p {
-  margin: 0.25em 0;
-}
-</style>
-
-<table class="spss-table spss-model-summary">
-  <caption>Model Summary</caption>
-  <thead>
-    <tr>
-      <th scope="col" class="term">Model</th>
-      <th scope="col">R</th>
-      <th scope="col">R Square</th>
-      <th scope="col">Adjusted R Square</th>
-      <th scope="col">Std. Error of the Estimate</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th scope="row" class="term">1</th>
-      <td>.338</td><td>.114</td><td>.111</td><td>6.015</td>
-    </tr>
-  </tbody>
-</table>
-
-<table class="spss-table">
-  <caption>ANOVA</caption>
-  <thead>
-    <tr>
-      <th scope="col" class="term">Model</th>
-      <th scope="col" class="term"></th>
-      <th scope="col">Sum of Squares</th>
-      <th scope="col">df</th>
-      <th scope="col">Mean Square</th>
-      <th scope="col">F</th>
-      <th scope="col">Sig.</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="term">1</td><th scope="row" class="term">Regression</th>
-      <td>3935.101</td><td>3</td><td>1311.700</td><td>36.259</td><td>&lt;.001</td>
-    </tr>
-    <tr>
-      <td></td><th scope="row" class="term">Residual</th>
-      <td>30496.517</td><td>843</td><td>36.176</td><td></td><td></td>
-    </tr>
-    <tr>
-      <td></td><th scope="row" class="term">Total</th>
-      <td>34431.617</td><td>846</td><td></td><td></td><td></td>
-    </tr>
-  </tbody>
-</table>
-
-<table class="spss-table">
-  <caption>Coefficients</caption>
-  <thead>
-    <tr>
-      <th scope="col" rowspan="2" class="term">Model</th>
-      <th scope="col" rowspan="2" class="term"></th>
-      <th scope="colgroup" colspan="2" class="group-title">Unstandardized Coefficients</th>
-      <th class="group-title">Standardized Coefficients</th>
-      <th scope="col" rowspan="2">t</th>
-      <th scope="col" rowspan="2">Sig.</th>
-    </tr>
-    <tr>
-      <th scope="col">B</th>
-      <th scope="col">Std. Error</th>
-      <th scope="col">Beta</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="term">1</td><th scope="row" class="term">(Constant)</th>
-      <td>26.341</td><td>0.408</td><td></td><td>64.514</td><td>&lt;.001</td>
-    </tr>
-    <tr>
-      <td></td><th scope="row" class="term">Hufflepuff</th>
-      <td>−2.086</td><td>0.578</td><td>−0.143</td><td>−3.609</td><td>&lt;.001</td>
-    </tr>
-    <tr>
-      <td></td><th scope="row" class="term">Ravenclaw</th>
-      <td>−0.129</td><td>0.549</td><td>−0.009</td><td>−0.235</td><td>.814</td>
-    </tr>
-    <tr class="fragment highlight-row" data-fragment-index="1">
-      <td></td><th scope="row" class="term">Slytherin</th>
-      <td>4.569</td><td>0.645</td><td>0.270</td><td>7.083</td><td>&lt;.001</td>
-    </tr>
-  </tbody>
-</table>
-
-:::: {.spss-notes}
-
-Machiavellianism is the outcome variable. "(Constant)" is the mean for Gryffindor, the reference category.
-
-::: {.fragment data-fragment-index="2"}
-Slytherin scored about 4.57 points higher on average than Gryffindor.
-:::
-
-::::
-
-## Testing a coefficient
-
-Does the population mean differ between Slytherin and Gryffindor?
-
-$$
-\hypo_0:\beta_3=0
-\qquad
-\hypo_1:\beta_3\ne 0
-$$
-
-. . .
-
-$$
-t = \frac{b_3 - 0}{\SE_{b_3}} \approx \frac{4.569}{0.645} \approx 7.08
-\qquad
-df = N-4 = 843
-$$
-
-. . .
-
-SPSS reports $p<.001$ in the *Sig.* column. There is evidence of a difference between these two houses.
+<div hidden aria-hidden="true">
+  <span class="fragment spss-show-r-square" data-fragment-index="1"></span>
+  <span class="fragment spss-show-df" data-fragment-index="2"></span>
+  <span class="fragment spss-show-test-result" data-fragment-index="3"></span>
+</div>
 
 ## Testing all coefficients for House
 
@@ -1209,11 +1153,11 @@ For participant $i$, $y_i$ is their score, $\bar{y}$ is the overall mean, and $\
 
 $$
 \begin{aligned}
-\TSS &= \sum_i(y_i-\bar{y})^2
+\TSS &= \sum_{i=1}^N(y_i-\bar{y})^2
 &&\text{(total variation)}\\[8pt]
-\SSE &= \sum_i(y_i-\hat{y}_i)^2
+\SSE &= \sum_{i=1}^N(y_i-\hat{y}_i)^2
 &&\text{(unexplained variation within houses)}\\[8pt]
-\RSS &= \TSS-\SSE = \sum_i(\hat{y}_i-\bar{y})^2
+\RSS &= \TSS-\SSE = \sum_{i=1}^N(\hat{y}_i-\bar{y})^2
 &&\text{(explained variation between houses)}
 \end{aligned}
 $$
@@ -1240,6 +1184,29 @@ Here $k$ is the number of groups and $N$ is the number of observations. With $k=
 . . .
 
 If $\hypo_0$ is true, both mean squares estimate the same population error variance. The $F$-test compares them using $F=\MSR/\MSE$.
+
+## From sums of squares to mean squares
+
+We divide each sum of squares by its degrees of freedom.
+
+$$
+\begin{aligned}
+\MSR &= \frac{\RSS}{k-1}
+&&\text{(between houses)}\\[8pt]
+\MSE &= \frac{\SSE}{N-k}
+&&\text{(within houses)}
+\end{aligned}
+$$
+
+With $k$ houses, the regression fits one intercept and $k-1$ dummy slopes, so $p=k$.
+
+In Lecture 10, we fitted one intercept and one slope, so $p=2$ and the degrees of freedom were $1$ and $N-2$.
+
+
+<!--
+Notes:
+shouldn't we use p rather than k?
+ -->
 
 ## One-way ANOVA in SPSS {.small-slide}
 
@@ -1300,7 +1267,9 @@ The coefficients table compares each house with Gryffindor. How could we compare
 
 . . .
 
-We could make Hufflepuff the reference group or use a pairwise comparison. If we test all six pairs, we can use a multiple-comparison procedure such as Tukey's test.
+- We could make Hufflepuff the reference group
+- We could use a pairwise $t$-tests.
+  * There exist corrections for the multiple comparisons we discussed before (not part of the course).
 
 ## Effect size
 
@@ -1352,15 +1321,11 @@ $$
 
 . . .
 
+- This is the same test as last week, but now for two or more groups
 - Levene's test uses an F-statistic to test whether the group variances are equal.
 - If Levene's test is *significant*, there is evidence that at least two variances are not equal
 
 ## Equal variances {.small-slide}
-
-<!--
-TODO: add a slide that first recaps Levene's test from last week
-then explain that the test works with any number of groups
- -->
 
 <table class="spss-table">
   <caption>Group Statistics</caption>
@@ -1396,7 +1361,48 @@ If the spreads differ substantially, Welch's ANOVA allows unequal variances, jus
 
 The middle of each plot follows the line fairly closely. The tails show some departures, and the steps reflect ties in the questionnaire scores.
 
+## Independence
+
+After accounting for House, the errors for different participants should be independent.
+
 <!--
-TODO: slide about independence
+TODO: bring up the sources where they recruited, like facebook!
+ -->
+
+Each participant contributes one Machiavellianism score. Suppose several participants were recruited from the same fan club. Why might that matter?
+
+. . .
+
+People in the same club may share experiences that make their errors more similar. This dependence can affect standard errors and $p$-values.
+
+Assess independence from the study design. Look for repeated scores from the same person or groups of people recruited together.
+
+# Conclusions
+
+## We've learned -- Categorical predictors
+
+- With $k$ groups, use $k-1$ dummy variables (0 and 1).
+  - The intercept $a$ is the reference group mean.
+  - Each slope $b_i$ is a group mean minus the reference mean.
+- A coefficient $t$-test compares a group mean with the reference mean.
+- The overall regression $F$-test is equivalent to one-way ANOVA. It tests whether all population means are equal.
+- $F=\MSR/\MSE$, with $k-1$ and $N-k$ degrees of freedom.
+- Eta squared ($\eta^2=R^2$) is the proportion of observed variation explained by group membership.
+
+## We've learned -- Assumptions
+
+| Assumption | How do we check it? |
+|---|---|
+| Linearity | Automatically satisfied when each group has its own fitted mean |
+| Normality | Examine Q–Q plots of the residuals by group |
+| Equal variances | Compare group spreads and use Levene's test |
+| Independence | Consider how the data were collected |
+
+## Next week
+
+- Continuation of ANOVA
+- Q&A session
+
+<!--
 TODO: slide about next week
 -->
