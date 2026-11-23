@@ -2748,11 +2748,9 @@
     },
     "eulerr": {
       "Package": "eulerr",
-      "Version": "8.1.0",
+      "Version": "8.4.3",
       "Source": "Repository",
-      "Title": "Area-Proportional Euler and Venn Diagrams",
-      "Authors@R": "c(person(\"Johan\", \"Larsson\", email = \"johan@jolars.co\", role = c(\"aut\", \"cre\", \"cph\"), comment = c(ORCID = \"0000-0002-4029-5945\")), person(\"A. Jonathan R.\", \"Godfrey\", role = \"ctb\"), person(\"Peter\", \"Gustafsson\", role = \"ctb\"), person(\"David H.\", \"Eberly\", role = \"ctb\", comment = \"geometric algorithms\"), person(\"Emanuel\", \"Huber\", role = \"ctb\", comment = \"root solver code\"), person(\"Florian\", \"Privé\", role = \"ctb\"))",
-      "Description": "Generate area-proportional Euler diagrams using numerical optimization. A Euler diagram is a generalization of a Venn diagram, relaxing the criterion that all interactions need to be represented. Diagrams may be fit with circles, ellipses, squares, and rectangles via a wide range of inputs and can be visualized in numerous ways.",
+      "Priority": null,
       "Depends": [
         "R (>= 4.2)"
       ],
@@ -2764,6 +2762,9 @@
         "stats",
         "utils"
       ],
+      "LinkingTo": [
+        null
+      ],
       "Suggests": [
         "covr",
         "knitr",
@@ -2771,23 +2772,19 @@
         "pBrackets",
         "RConics",
         "rmarkdown",
-        "testthat",
-        "spelling"
+        "spelling",
+        "testthat"
+      ],
+      "Enhances": [
+        null
       ],
       "License": "MIT + file LICENSE",
-      "Encoding": "UTF-8",
-      "LazyData": "true",
-      "VignetteBuilder": "knitr",
-      "URL": "https://github.com/jolars/eulerr, https://jolars.github.io/eulerr/, https://eunoia.bz",
-      "BugReports": "https://github.com/jolars/eulerr/issues",
-      "Language": "en-US",
-      "Config/rextendr/version": "0.4.2",
-      "SystemRequirements": "Cargo (Rust's package manager), rustc >= 1.88.0",
-      "Config/roxygen2/version": "8.0.0",
+      "License_is_FOSS": null,
+      "License_restricts_use": null,
+      "OS_type": null,
       "NeedsCompilation": "yes",
-      "Author": "Johan Larsson [aut, cre, cph] (ORCID: <https://orcid.org/0000-0002-4029-5945>), A. Jonathan R. Godfrey [ctb], Peter Gustafsson [ctb], David H. Eberly [ctb] (geometric algorithms), Emanuel Huber [ctb] (root solver code), Florian Privé [ctb]",
-      "Maintainer": "Johan Larsson <johan@jolars.co>",
-      "Repository": "CRAN"
+      "Repository": "CRAN",
+      "Type": "source"
     },
     "evaluate": {
       "Package": "evaluate",
