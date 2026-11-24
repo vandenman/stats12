@@ -1,0 +1,481 @@
+---
+title: "Mock Exam II"
+subtitle: "LAS"
+author: "Don van den Bergh"
+date: 2026-11-24
+date-format: "DD-MM-YYYY"
+format:
+  pdf:
+    documentclass: article
+    geometry:
+      - margin=2.2cm
+    fontsize: 11pt
+    number-sections: false
+    include-in-header:
+      text: |
+        \usepackage{needspace}
+params:
+  answers: false
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+#| include: false
+source("../../lecture13/scripts/spss_regression_html.r", local = TRUE)
+
+show_answer <- function(text) {
+  if (isTRUE(params$answers)) {
+    cat("\n\n::: {.callout-note title=\"Answer\"}\n")
+    cat(text)
+    cat("\n:::\n\n")
+  }
+}
+
+# Match the sample summaries shown in the tables.
+mock_scores <- function(n, mean, sd) {
+  mean + sd * as.numeric(scale(qnorm(ppoints(n))))
+}
+
+mock_regression <- function(x, intercept, slope, r) {
+  pattern <- sin(seq_along(x) * 2.4) + cos(seq_along(x) * 0.8)
+  error <- residuals(lm(pattern ~ x))
+  error_sd <- abs(slope) * sd(x) * sqrt(1 / r^2 - 1)
+  y <- intercept + slope * x + error_sd * error / sd(error)
+  lm(y ~ x)
+}
+
+mock_anova <- function(n, rss, sse) {
+  offsets <- seq_along(n) - weighted.mean(seq_along(n), n)
+  means <- 40 + offsets * sqrt(rss / sum(n * offsets^2))
+  scores <- Map(mock_scores, n, means, sqrt(sse / (sum(n) - length(n))))
+  score <- unlist(scores)
+  group <- factor(rep(seq_along(n), n))
+  aov(score ~ group)
+}
+
+# Keep the SPSS captions, body values and blank cells in the print layout.
+print_spss <- function(output, hide_total_ss = FALSE, hide_df = FALSE) {
+  fragment <- xml2::read_xml(paste0("<output>", output, "</output>"))
+  for (table in xml2::xml_find_all(fragment, "./table")) {
+    caption <- xml2::xml_text(xml2::xml_find_first(table, "preceding-sibling::p[1]"))
+    headers <- switch(caption,
+      "Coefficients" = c("Model", "Term", "B", "Std. Error", "Beta", "t", "Sig. (2-tailed)"),
+      "Independent Samples Test" = c("Assumption", "Levene F", "Levene Sig.",
+                                      "t", "df", "Sig. (2-tailed)", "Mean Diff."),
+      xml2::xml_text(xml2::xml_find_all(table, "./thead/tr/th"))
+    )
+    rows <- xml2::xml_find_all(table, "./tbody/tr")
+    stopifnot(all(xml2::xml_length(rows) == length(headers)))
+    cells <- t(vapply(rows, function(row) xml2::xml_text(xml2::xml_children(row)), headers))
+    if (caption == "ANOVA" && hide_total_ss) cells[cells[, 1] == "Total", 2] <- ""
+    if (caption == "ANOVA" && hide_df) cells[, 3] <- ""
+    cat("\n\n", caption, "\n\n", sep = "")
+    cat(knitr::kable(cells, format = "latex", col.names = headers, booktabs = TRUE), sep = "\n")
+    cat("\n\n")
+  }
+}
+
+study_n <- c(27, 109)
+study_fits <- lapply(study_n, function(n) {
+  mock_regression(seq_len(n), intercept = 50, slope = 0.15, r = sqrt(.073))
+})
+study_rsq <- vapply(study_fits, function(fit) summary(fit)$r.squared, numeric(1))
+study_p <- vapply(study_fits, function(fit) coef(summary(fit))["x", "Pr(>|t|)"], numeric(1))
+
+age_fit <- mock_regression(seq(21, 62, length.out = 41), 202.4, 2.35, .54)
+reading_fit <- mock_regression(seq(3, 30, length.out = 43), 64.9, -1.75, .67)
+direction_n <- 33
+direction_t <- qt(.084 / 2, direction_n - 2)
+direction_r <- direction_t / sqrt(direction_t^2 + direction_n - 2)
+direction_fit <- mock_regression(seq(2, 18, length.out = direction_n), 57.8, -.685, direction_r)
+direction_p <- coef(summary(direction_fit))["x", "Pr(>|t|)"]
+
+audio <- mock_scores(12, 66.8, 3)
+text_only <- mock_scores(35, 62.6, 9.5)
+levene <- .spss_levene_result(c(audio, text_only), factor(rep(c("Audio", "Text only"), c(12, 35))))
+student_test <- t.test(audio, text_only, var.equal = TRUE)
+welch_test <- t.test(audio, text_only)
+
+spread_fit <- mock_anova(c(14, 15, 17), rss = 112, sse = 288)
+morning <- mock_scores(36, 52.6, 9)
+evening <- mock_scores(49, 48.3, 14)
+f_n <- c(12, 15, 18)
+f_fit <- mock_anova(f_n, rss = 160, sse = 420)
+
+written <- mock_scores(18, 34.5, 3)
+oral <- mock_scores(18, 29, 5)
+cooling_fit <- mock_regression(seq(5, 29, length.out = 32), 36.95, -.37, .61)
+
+formats <- c("Workshop", "Video", "Written", "Coaching")
+group_scores <- Map(mock_scores, c(14, 13, 16, 17), c(42.9, 38.7, 45.25, 43.8), c(5.25, 4.9, 4.75, 5.1))
+format_group <- relevel(factor(rep(formats, lengths(group_scores)), levels = formats), "Written")
+score <- unlist(group_scores)
+format_fit <- lm(score ~ format_group)
+
+stopifnot(study_p[1] > .05, study_p[2] < .05,
+          .spss_significance(direction_p) == ".084",
+          levene$p.value < .05, student_test$p.value > .05, welch_test$p.value < .05)
+```
+
+## Instructions
+
+This mock exam contains 18 questions: 12 multiple-choice questions and 6 numerical fill-in questions.
+
+For numerical questions, follow the rounding instruction stated in the question. For multiple-choice questions, select the single best answer.
+
+
+## Question 1
+
+The outcome in a regression analysis is strongly skewed. The residuals appear approximately normally distributed. What can the researcher conclude?
+
+A.  The normality assumption is violated because the outcome is skewed.
+B.  The normality assumption is satisfied whenever the predictor is normally distributed.
+C.  The skewness of the outcome alone does not violate the normality assumption.
+D.  The shape of the residuals shows that all regression assumptions are satisfied.
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: C.** The normality assumption is about the errors. We use the residuals to check it.")
+```
+
+\Needspace{16\baselineskip}
+
+## Question 2
+
+Two studies use simple regression to predict quiz scores from time spent reading. Both slopes are positive. The table gives the two-sided p-value for each slope.
+
+```{r}
+#| results: asis
+knitr::kable(data.frame(Study = c("A", "B"), N = study_n,
+                        "R Square" = .spss_number(study_rsq),
+                        "Two-sided p-value" = .spss_significance(study_p),
+                        check.names = FALSE), align = c("l", "r", "r", "r"))
+```
+
+What do the results show?
+
+A.  The models explain similar proportions. Study B gives stronger evidence of an association.
+B.  Study B explains a larger proportion of the variation because its p-value is smaller.
+C.  The equal R² values imply equally strong evidence of a linear association.
+D.  Study A's result shows there is no association, while Study B's shows there is one.
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: A.** Both models explain 7.3% of the variation in their samples. Study B has a larger sample and a smaller p-value for the test of a zero slope.")
+```
+
+\Needspace{11\baselineskip}
+
+## Question 3
+
+A simple linear regression with an intercept explains some, but not all, of the variation in the outcome. You double every outcome value and fit the model again. What happens to TSS, SSE and R²?
+
+| Option | TSS | SSE | R² |
+|:-------|:----|:----|:---|
+| A | Doubles | Doubles | Unchanged |
+| B | Quadruples | Unchanged | Increases |
+| C | Quadruples | Quadruples | Doubles |
+| D | Quadruples | Quadruples | Unchanged |
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: D.** Both the deviations from the outcome mean and the residuals double. Squaring multiplies both sums of squares by four, so SSE/TSS and R² stay the same.")
+```
+
+\Needspace{14\baselineskip}
+
+## Question 4
+
+A regression predicts response time in milliseconds from age in years. What does the standardized slope for age mean?
+
+```{r}
+#| results: asis
+print_spss(spss_regression_html(age_fit, title = NULL, format = "testvision", tables = "coefficients",
+                               term_labels = c(x = "Age")))
+```
+
+A.  For each extra year, the predicted response time increases by .54 milliseconds.
+B.  For each 1 SD increase in age, the predicted response time increases by .54 SD.
+C.  For each 1 SD increase in age, the predicted response time increases by .54 milliseconds.
+D.  Age explains 54% of the variation in response time.
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: B.** A one-SD increase in age corresponds to a .54-SD increase in predicted response time. The unstandardized slope B gives the increase in milliseconds per year.")
+```
+
+\Needspace{9\baselineskip}
+
+## Question 5
+
+Researchers measure several plants in each greenhouse. Plants in the same greenhouse get the same light and watering. The researchers use leaf width to predict plant height and treat all plants as independent. Which assumption is likely violated?
+
+A.  The errors are normally distributed.
+B.  The relationship between $x$ and $y$ is linear.
+C.  The error variance is constant.
+D.  The errors are independent.
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: D.** Plants in the same greenhouse may have similar errors because they share growing conditions.")
+```
+
+\Needspace{17\baselineskip}
+
+## Question 6
+
+A simple regression uses a distraction score to predict reading speed. What proportion of the variation in reading speed does the model explain? Choose the answer rounded to two decimals.
+
+```{r}
+#| results: asis
+print_spss(spss_regression_html(reading_fit, title = NULL, format = "testvision", tables = c("model", "coefficients"),
+                               hide_model = c("R", "R Square", "Adjusted R Square"),
+                               term_labels = c(x = "Distraction")))
+```
+
+A.  .67
+B.  $-.67$
+C.  .45
+D.  .55
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: C.** In simple regression, the standardized slope equals Pearson's $r$. The explained proportion is $R^2=(-.670)^2=.4489$, which rounds to .45.")
+```
+
+\Needspace{13\baselineskip}
+
+## Question 7
+
+Before collecting data, a researcher predicts that people who spend more time planning a route will score higher on a navigation test. The table gives two-sided p-values. What is the one-sided p-value for the alternative hypothesis that the population slope is positive?
+
+```{r}
+#| results: asis
+print_spss(spss_regression_html(direction_fit, title = NULL, format = "testvision", tables = "coefficients",
+                               term_labels = c(x = "Planning time")))
+```
+
+A.  .042
+B.  .958
+C.  .084
+D.  .916
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: B.** The estimate is negative and the alternative predicts a positive slope. The area to the right of the observed $t$ is $1-.084/2=.958$.")
+```
+
+\Needspace{10\baselineskip}
+
+## Question 8
+
+A regression with an intercept and a 0/1 dummy variable compares two independent groups. The estimated slope is nonzero. The researcher swaps the 0 and 1 codes and fits the model again. What happens?
+
+A.  The slope and its $t$-statistic change sign. The two-sided p-value stays the same.
+B.  The slope changes sign. The $t$-statistic and two-sided p-value stay the same.
+C.  The slope and its $t$-statistic change sign. The two-sided p-value is cut in half.
+D.  The slope stays the same. The $t$-statistic changes sign and the two-sided p-value stays the same.
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: A.** Reversing the group difference reverses the slope. Its standard error stays the same, so $t$ reverses sign while its absolute value and the two-sided p-value stay the same.")
+```
+
+\Needspace{18\baselineskip}
+
+## Question 9
+
+Students receive either audio or text-only feedback and then take a quiz. The researchers use Levene's test at $\alpha=.05$ to choose a row in the table. They compare the means with a two-sided test at the same significance level. What can they conclude?
+
+```{r}
+#| results: asis
+print_spss(spss_t_test_html(audio, text_only, group_labels = c("Audio", "Text only")))
+```
+
+A.  There is insufficient evidence that the population means differ.
+B.  The test shows that the two population means are equal.
+C.  There is evidence that the population mean is lower with audio feedback.
+D.  There is evidence that the population mean is higher with audio feedback.
+
+```{r}
+#| results: asis
+show_answer(sprintf("**Correct answer: D.** Levene's test gives $p=%s$, so use the Equal variances not assumed row. In that row, the two-sided p-value is %s and the mean difference is positive. This supports a higher population mean with audio feedback.",
+                    .spss_significance(levene$p.value), .spss_significance(welch_test$p.value)))
+```
+
+\Needspace{10\baselineskip}
+
+## Question 10
+
+One observation has a large residual and a Cook's distance close to zero. What would happen if you removed it and fit the model again?
+
+A.  The fitted line would change substantially because the residual is large.
+B.  The fitted line would change relatively little.
+C.  The fitted line would change substantially because a large residual indicates high leverage.
+D.  All the remaining observations would have smaller absolute residuals.
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: B.** The large residual means the model predicts this observation poorly. The small Cook's distance tells us the fitted line would barely change if we removed it.")
+```
+
+\Needspace{22\baselineskip}
+
+## Question 11
+
+The plot shows residuals from a linear regression against the observed outcome values. Which assumption is likely violated?
+
+```{r}
+#| fig-width: 5
+#| fig-height: 2.6
+#| fig-align: center
+set.seed(42706)
+x <- seq(-3, 3, length.out = 93)
+# Keep the two ends of the curve distinct on the observed outcome axis.
+y <- 25 + 8.5 * x + 1.05 * x^2 + rnorm(length(x), sd = .47)
+curve_fit <- lm(y ~ x)
+errors <- residuals(curve_fit)
+par(mar = c(3.5, 3.7, .4, .3), mgp = c(2.25, .63, 0), las = 1)
+plot(y, errors, type = "n", bty = "l", xlab = "Observed value", ylab = "Residual")
+abline(h = 0, lty = 2, col = "#888888")
+points(y, errors, pch = 16, cex = .65, col = "#216788")
+```
+
+A.  The errors have constant variance.
+B.  The errors are independent.
+C.  The relationship between $x$ and $y$ is linear.
+D.  The errors are normally distributed.
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: C.** The residuals are mostly positive at both ends and negative in the middle. A straight line misses the curve in the data.")
+```
+
+\Needspace{10\baselineskip}
+
+## Question 12
+
+A researcher compares four groups with six pairwise $t$-tests. Each test uses $\alpha=.05$, with no adjustment for multiple comparisons. If all four population means are equal, what problem can this cause?
+
+A.  The chance of at least one Type I error is greater than for a single test.
+B.  The chance of a Type I error for each individual test is greater than 5%.
+C.  The estimates of the pairwise mean differences are systematically biased.
+D.  The chance of at least one Type I error stays at 5% because the tests use the same data.
+
+```{r}
+#| results: asis
+show_answer("**Correct answer: A.** With several tests, there are more chances to reject at least one true null hypothesis. The tests use some of the same data, so they are dependent.")
+```
+
+\Needspace{9\baselineskip}
+
+## Question 13
+
+A one-way ANOVA compares scores across three training formats. What proportion of the variation in scores is left unexplained? Round your answer to two decimal places.
+
+```{r}
+#| results: asis
+print_spss(spss_anova_html(spread_fit), hide_total_ss = TRUE)
+```
+
+```{r}
+#| results: asis
+show_answer(r"(Answer: 0.72. The total sum of squares is $112+288=400$. The unexplained proportion is $\mathrm{SSE}/\mathrm{TSS}=288/400=0.72$.)")
+```
+
+\Needspace{9\baselineskip}
+
+## Question 14
+
+Independent morning and evening groups complete the same task. Calculate Welch's $t$-statistic for the null hypothesis of equal population means. Use Morning minus Evening. Round your answer to two decimal places.
+
+```{r}
+#| results: asis
+print_spss(spss_t_test_html(morning, evening, group_labels = c("Morning", "Evening"),
+                           display = "statistics"))
+```
+
+```{r}
+#| results: asis
+show_answer(r"(Answer: 1.72. Welch's standard error is $\sqrt{9^2/36+14^2/49}=2.50$. The test statistic is $(52.60-48.30)/2.50=1.72$.)")
+```
+
+\Needspace{10\baselineskip}
+
+## Question 15
+
+A one-way ANOVA compares three instruction formats. Their sample sizes are `r f_n[1]`, `r f_n[2]` and `r f_n[3]`. What is the overall $F$-statistic? Round your answer to two decimal places.
+
+```{r}
+#| results: asis
+print_spss(spss_anova_html(f_fit, hide_calculations = TRUE), hide_df = TRUE)
+```
+
+```{r}
+#| results: asis
+show_answer(r"(Answer: 8.00. There are $45$ observations. The between-groups and within-groups degrees of freedom are $3-1=2$ and $45-3=42$. Thus $\mathrm{MSR}=160/2=80$, $\mathrm{MSE}=420/42=10$ and $F=80/10=8.00$.)")
+```
+
+\Needspace{12\baselineskip}
+
+## Question 16
+
+Two studies compare written and oral instructions. In both studies, the sample mean for Written is 5.50 points higher than for Oral. Study 1 reports Cohen's $d=0.88$. The table shows Study 2.
+
+```{r}
+#| results: asis
+print_spss(spss_t_test_html(written, oral, group_labels = c("Written", "Oral"),
+                           display = "statistics"))
+```
+
+Use Written minus Oral for Cohen's $d$. What is the difference in Cohen's $d$ (Study 2 minus Study 1)? Round your answer to two decimal places.
+
+```{r}
+#| results: asis
+show_answer(r"(Answer: 0.45. The groups have equal sample sizes, so Study 2's pooled variance is $(3^2+5^2)/2=17$. Its effect size is $5.50/\sqrt{17}$. Subtracting $0.88$ gives about $0.454$, which rounds to $0.45$.)")
+```
+
+\Needspace{10\baselineskip}
+
+## Question 17
+
+A linear model predicts a solution's temperature in °C from its cooling time in minutes. After 18 minutes the observed temperature is 28.54 °C. What is the residual in °C? Round your answer to two decimal places.
+
+```{r}
+#| results: asis
+print_spss(spss_regression_html(cooling_fit, title = NULL, format = "testvision", tables = "coefficients",
+                               term_labels = c(x = "Cooling time")))
+```
+
+```{r}
+#| results: asis
+show_answer(r"(Answer: −1.75 °C. The predicted temperature is $36.95+(-0.370)\times18=30.29$ °C. The residual is $28.54-30.29=-1.75$ °C.)")
+```
+
+\Needspace{15\baselineskip}
+
+## Question 18
+
+A regression predicts a skills score from the preparation format. The table shows the dummy codes. What mean score does the model predict for Coaching? Round your answer to two decimal places.
+
+| Format | D1 | D2 | D3 |
+|:-------|---:|---:|---:|
+| Workshop | 1 | 0 | 0 |
+| Video | 0 | 1 | 0 |
+| Written | 0 | 0 | 0 |
+| Coaching | 0 | 0 | 1 |
+
+```{r}
+#| results: asis
+print_spss(spss_regression_html(format_fit, title = NULL, format = "testvision", tables = "coefficients",
+                               term_labels = c(format_groupWorkshop = "D1", format_groupVideo = "D2",
+                                               format_groupCoaching = "D3")))
+```
+
+```{r}
+#| results: asis
+show_answer("Answer: 43.80 points. Coaching is coded $(0,0,1)$. Add the D3 coefficient to the intercept to get $45.25-1.45=43.80$.")
+```
