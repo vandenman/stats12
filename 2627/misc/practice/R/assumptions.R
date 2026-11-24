@@ -1,7 +1,7 @@
 assumption_templates <- list(
   c("qq", "funnel", "shapiro"),
   c("qq", "funnel", "curve", "influence", "shapiro", "omnibus"),
-  c("qq", "funnel", "curve", "ordered", "influence", "shapiro", "omnibus")
+  c("qq", "funnel", "curve", "independence", "influence", "shapiro", "omnibus")
 )
 
 # Fixed patterns keep the visual signal clear across seeds. In the residual
@@ -11,13 +11,6 @@ assumption_plot_data <- function(type, direction) {
     y <- direction * qexp(ppoints(32))^1.5
     return(list(y = as.numeric(scale(y)), xlab = "Theoretical normal quantiles",
                 ylab = "Ordered standardized residuals"))
-  }
-
-  if (type == "ordered") {
-    x <- seq_len(32)
-    order <- c(seq(17, 31, 2), seq(32, 2, -2), seq(1, 15, 2))
-    y <- direction * qnorm(ppoints(32))[order]
-    return(list(x = x, y = y, xlab = "Order of observation", ylab = "Residual"))
   }
 
   if (type == "influence") {
@@ -42,7 +35,7 @@ assumption_plot_data <- function(type, direction) {
 
 build_assumption_plots <- function() {
   # Render once in Quarto. WebR samples the embedded plots without a graphics device.
-  types <- c("qq", "funnel", "curve", "ordered", "influence")
+  types <- c("qq", "funnel", "curve", "influence")
   plots <- lapply(types, function(type) {
     vapply(c(-1L, 1L), function(direction) {
       spec <- assumption_plot_data(type, direction)
@@ -76,11 +69,48 @@ build_assumption_plots <- function() {
 
 practice_assumption_question <- function(difficulty, type = NA_character_) {
   if (is.na(type)) type <- pick_one(assumption_templates[[difficulty]])
-  question <- function(prompt, choices, hint, solution, stimulus_html) {
+  question <- function(prompt, choices, hint, solution, stimulus_html = NULL) {
     order <- sample.int(length(choices))
     list(topic = "assumptions", type = type, difficulty = difficulty, prompt = prompt,
          choices = unname(choices[order]), answer = match(1L, order),
          hint = hint, solution = solution, stimulus_html = stimulus_html)
+  }
+
+  if (type == "independence") {
+    scenario <- pick_one(list(
+      list(
+        story = paste("A researcher compares reading scores across teaching methods.",
+          "They recruit several students from each classroom and enter one row per student."),
+        choices = c("Students in the same classroom share a teacher and classroom experiences.",
+                    "Reading scores are recorded in points for every student.",
+                    "Teaching method is a categorical variable.",
+                    "There are more students than teaching methods."),
+        why = "Students in the same classroom share experiences that may make their reading scores more similar, even after accounting for teaching method."
+      ),
+      list(
+        story = paste("A study compares how clearly people understand two versions of a questionnaire.",
+          "Each volunteer rates both versions and contributes a separate row for each rating.",
+          "The researcher changes which version is shown first across volunteers."),
+        choices = c("Each volunteer contributes ratings for both versions.",
+                    "Different volunteers see the versions in different orders.",
+                    "Participants use the same rating scale for both versions.",
+                    "The versions ask about the same topic."),
+        why = "Two ratings from the same person can be related. Changing the presentation order does not remove that link."
+      ),
+      list(
+        story = paste("To study commuting stress, a researcher recruits employees",
+          "and asks them to invite other members of their household.",
+          "The analysis has one row per person and predicts stress from commute duration."),
+        choices = c("Several people in the sample may live in the same household.",
+                    "Commute duration is measured in minutes.",
+                    "Some people volunteer to take part.",
+                    "There is one row for each person."),
+        why = "People from the same household can share routines and circumstances that affect stress. That shared setting can make their errors related."
+      )
+    ))
+    return(question(paste(scenario$story, "Which feature of the sampling plan most directly puts independence at risk?"),
+      scenario$choices, "Think about what each row represents and what different rows may share.",
+      scenario$why))
   }
 
   if (type == "shapiro") {
@@ -94,7 +124,7 @@ practice_assumption_question <- function(difficulty, type = NA_character_) {
     choices <- c("There is evidence that the residual distribution departs from normality.",
                  "There is insufficient evidence of a departure from residual normality.",
                  "There is evidence that the residual variance changes across fitted values.",
-                 "There is evidence that successive observations are dependent.")
+                 "There is evidence that the predictor is not normally distributed.")
     if (!reject) choices[1:2] <- choices[2:1]
     comparison <- if (reject) "below .05" else "above .05"
     return(question(
@@ -135,26 +165,24 @@ practice_assumption_question <- function(difficulty, type = NA_character_) {
       sprintf('<img class="pq-diagnostic-plot" src="%s" alt="%s">', assumption_plots[[type]][variant], alt)))
   }
 
-  plot_type <- if (type == "ordered") "residuals in observation order" else "residuals against fitted values"
   alt <- switch(type,
     qq = "The ordered residual points bend strongly away from the diagonal reference line, particularly in the tails.",
     funnel = sprintf("Residuals centre near the zero line. The points spread out on the %s side and bunch near zero on the other side.",
                      if (variant == 1) "left" else "right"),
     curve = sprintf("The middle fitted values lie mostly %s zero, while both ends mostly lie on the other side.",
-                    if (variant == 1) "above" else "below"),
-    ordered = "Successive residuals form long runs on the same side of zero before switching sides.")
-  choices <- c(qq = "Normality of the errors", funnel = "Constant error variance (homoscedasticity)",
-               curve = "A linear relationship in the conditional mean", ordered = "Independence of errors")
+                    if (variant == 1) "above" else "below"))
+  choices <- c(normality = "The errors are normally distributed.",
+               funnel = "The error variance is the same at all fitted values.",
+               curve = "The relationship between x and y is linear.",
+               independence = "The observations are independent.")
   hint <- switch(type,
     qq = "A normal Q–Q plot compares the residual quantiles with normal quantiles.",
     funnel = "Compare the vertical spread at small and large fitted values.",
-    curve = "Track the centre of the residual cloud across fitted values.",
-    ordered = "Look for runs of observations with residuals of the same sign.")
+    curve = "Look at where the residuals sit relative to zero across the plot.")
   explanation <- switch(type,
     qq = "The systematic bend away from the normal reference line is evidence of non-normal residuals.",
     funnel = "The size of the prediction errors changes with the fitted value. This is evidence of unequal error variance.",
-    curve = "The residuals form a systematic curve. The fitted straight line misses a pattern in the conditional mean.",
-    ordered = "Long runs of residuals with the same sign suggest that nearby errors are related.")
+    curve = "A straight line leaves a curved pattern in the residuals. That suggests the relationship between x and y is not linear.")
   stimulus <- sprintf('<img class="pq-diagnostic-plot" src="%s" alt="%s">',
                       assumption_plots[[type]][variant], esc(alt))
   if (type == "qq") {
@@ -162,9 +190,9 @@ practice_assumption_question <- function(difficulty, type = NA_character_) {
       c("The points curve away from the line in the tails, suggesting non-normal residuals.",
         "The points follow the line closely, giving little evidence against normality.",
         "The error variance increases across the fitted values.",
-        "Successive residuals show evidence of dependence."),
+        "The predictor has a skewed distribution."),
       hint, explanation, stimulus))
   }
-  question(sprintf("The figure shows %s. Which assumption does the pattern most directly call into question?", plot_type),
+  question("The figure shows residuals against fitted values. Which assumption does the pattern most directly call into question?",
            c(choices[type], choices[names(choices) != type]), hint, explanation, stimulus)
 }

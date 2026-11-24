@@ -263,11 +263,12 @@ stopifnot(identical(generate_practice_set(18492, 5, 2),
           all(vapply(generate_practice_set(1234, 5, topics = "anova", exam = "resit"),
                      `[[`, "", "topic") == "anova"))
 
-assumption_plots <- setNames(rep(list(rep("data:image/png;base64,test", 2)), 5),
-                             c("qq", "funnel", "curve", "ordered", "influence"))
+assumption_plots <- setNames(rep(list(rep("data:image/png;base64,test", 2)), 4),
+                             c("qq", "funnel", "curve", "influence"))
 first_half_types <- character()
 z_wrong_tail <- t_wrong_tail <- FALSE
 shapiro_decisions <- logical()
+independence_examples <- character()
 for (seed in 1:60) {
   set.seed(seed)
   for (level in 1:3) {
@@ -310,13 +311,24 @@ for (seed in 1:60) {
       stopifnot(grepl(if (significant) "There is evidence" else "There is insufficient evidence",
                       q$choices[q$answer], fixed = TRUE))
       shapiro_decisions <- union(shapiro_decisions, significant)
+    } else if (q$type == "independence") {
+      stopifnot(is.null(q$stimulus_html), grepl("sampling plan", q$prompt, fixed = TRUE))
+      independence_examples <- union(independence_examples, q$choices[q$answer])
     } else if (q$type != "omnibus") {
       stopifnot(grepl('src="data:image/png;base64,', q$stimulus_html, fixed = TRUE))
+      if (q$type == "curve") {
+        stopifnot(q$choices[q$answer] == "The relationship between x and y is linear.")
+      }
     }
   }
 }
 stopifnot(setequal(first_half_types, c("independent_joint", "directed_one_sample_t")),
-          z_wrong_tail, t_wrong_tail, setequal(shapiro_decisions, c(FALSE, TRUE)))
+          z_wrong_tail, t_wrong_tail, setequal(shapiro_decisions, c(FALSE, TRUE)),
+          setequal(independence_examples, c(
+            "Students in the same classroom share a teacher and classroom experiences.",
+            "Each volunteer contributes ratings for both versions.",
+            "Several people in the sample may live in the same household."
+          )))
 
 for (direction in c(-1L, 1L)) {
   funnel <- assumption_plot_data("funnel", direction)
@@ -330,8 +342,6 @@ for (direction in c(-1L, 1L)) {
   ends <- abs(curve$x - median(curve$x)) > 7
   stopifnot(mean(curve$y[middle]) * direction < -1, mean(curve$y[ends]) * direction > 1)
 
-  ordered <- assumption_plot_data("ordered", direction)
-  stopifnot(cor(head(ordered$y, -1), tail(ordered$y, -1)) > .7)
   qq <- assumption_plot_data("qq", direction)
   stopifnot(shapiro.test(qq$y)$p.value < .001)
   influence <- assumption_plot_data("influence", direction)
