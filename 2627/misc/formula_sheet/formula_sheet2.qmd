@@ -55,6 +55,11 @@ format:
 \setlength{\belowdisplayshortskip}{4pt}
 ~~~
 
+Mean:
+$$
+\bar{X} = \frac{1}{N}\sum_{i=1}^nx_i
+$$
+
 Variance
 $$
 s_x^2 = \frac{\sum_{i=1}^n (x_i-\bar x)^2}{n-1}
