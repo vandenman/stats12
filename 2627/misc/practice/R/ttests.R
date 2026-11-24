@@ -50,8 +50,28 @@ ttest_critical <- function(df, alpha) {
 generate_t_test_question <- function(difficulty = 1) {
   difficulty <- clamp(difficulty, 1, 3, 1)
   if (difficulty == 1) return(ttest_question_statistic(difficulty))
+  if (pick_one(c(FALSE, TRUE))) return(ttest_question_directed(difficulty))
   if (difficulty == 2) return(ttest_question_critical(difficulty))
   ttest_question_data(difficulty)
+}
+
+ttest_question_directed <- function(difficulty) {
+  n <- pick_one(9:14)
+  s <- pick_one(3:6)
+  mu <- pick_one(c(20, 30, 40))
+  shift <- pick_one(c(-2.4, -1.8, -1, 1, 1.8, 2.4)) * s / sqrt(n)
+  scores <- mu + shift + s * as.numeric(scale(seq_len(n)))
+  test <- t.test(scores, mu = mu)
+  direction <- pick_one(c(-1, 1))
+  word <- if (direction == 1) "higher" else "lower"
+  p <- as.numeric(.spss_significance(test$p.value))
+  directed <- practice_directed_p(test$statistic, p, direction)
+  practice_number_question("t", "directed_one_sample_t", difficulty,
+    sprintf("A researcher expects the population mean score to be %s than %s. What is the one-sided p-value?",
+            word, mu), directed$p,
+    "Check the sign of t before deciding which tail area to use.",
+    directed$working,
+    spss_t_test_html(scores, mu = mu, group_labels = "Score"), digits = 4L)
 }
 
 # The closing lines of a solution: the degrees of freedom, the critical value

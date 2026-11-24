@@ -37,7 +37,7 @@
   list(caption = caption, headers = headers, rows = rows, column_groups = column_groups)
 }
 
-.spss_anova_table <- function(model, regression = FALSE, f = NULL) {
+.spss_anova_table <- function(model, regression = FALSE, f = NULL, hide_calculations = FALSE) {
   anova <- stats::anova(model)
   residual_row <- nrow(anova)
   model_ss <- sum(anova[-residual_row, "Sum Sq"])
@@ -52,14 +52,15 @@
     p <- stats::pf(f, model_df, residual_df, lower.tail = FALSE)
   }
   labels <- if (regression) c("Regression", "Residual") else c("Between Groups", "Within Groups")
+  model_tests <- if (hide_calculations) rep("", 3L) else
+    c(.spss_number(model_ms), .spss_number(if (is.null(f)) NA_real_ else f), .spss_significance(p))
+  residual_mean_square <- if (hide_calculations) "" else .spss_number(residual_ms)
   .spss_table(
     "ANOVA",
     .spss_headings(c(if (regression) "Model", "Source", "Sum of Squares", "df",
                      "Mean Square", "F", "Sig.")),
-    c(.spss_row(labels[1], c(.spss_number(model_ss), model_df, .spss_number(model_ms),
-                             .spss_number(if (is.null(f)) NA_real_ else f), .spss_significance(p)),
-                 if (regression) "1"),
-      .spss_row(labels[2], c(.spss_number(residual_ss), residual_df, .spss_number(residual_ms),
+    c(.spss_row(labels[1], c(.spss_number(model_ss), model_df, model_tests), if (regression) "1"),
+      .spss_row(labels[2], c(.spss_number(residual_ss), residual_df, residual_mean_square,
                              "", ""), if (regression) ""),
       .spss_row("Total", c(.spss_number(model_ss + residual_ss), model_df + residual_df,
                            "", "", ""), if (regression) ""))
@@ -68,13 +69,17 @@
 
 # term_labels is a named character vector keyed by coefficient name.
 spss_regression_html <- function(model, file = NULL, title = "Regression output",
-                                 term_labels = NULL, format = c("standalone", "testvision")) {
+                                 term_labels = NULL, format = c("standalone", "testvision"),
+                                 tables = c("model", "anova", "coefficients"), hide_beta = FALSE,
+                                 hide_model = character()) {
   format <- match.arg(format)
+  tables <- match.arg(tables, several.ok = TRUE)
   if (!identical(class(model), "lm")) {
     stop("model must be a single-response fit from lm().")
   }
   fit <- summary(model)
   fit_numbers <- .spss_number(c(sqrt(fit$r.squared), fit$r.squared, fit$adj.r.squared))
+  fit_numbers[c("R", "R Square", "Adjusted R Square") %in% hide_model] <- ""
   model_summary <- .spss_table(
     "Model Summary",
     .spss_headings(c("Model", "R", "R Square", "Adjusted R Square", "Std. Error of the Estimate")),
@@ -86,7 +91,7 @@ spss_regression_html <- function(model, file = NULL, title = "Regression output"
   terms <- rownames(estimates)
   slopes <- terms != "(Intercept)"
   beta <- rep(NA_real_, nrow(estimates))
-  if (any(slopes)) {
+  if (any(slopes) && !hide_beta) {
     estimated_columns <- model$qr$pivot[seq_len(nrow(estimates))]
     design <- stats::model.matrix(model)[, estimated_columns[slopes], drop = FALSE]
     response <- model$fitted.values + model$residuals
@@ -122,7 +127,8 @@ spss_regression_html <- function(model, file = NULL, title = "Regression output"
     "Coefficients", coefficient_headers, coefficient_rows,
     sprintf('  <colgroup span="%d"></colgroup>', c(2L, 2L, 1L, 2L))
   )
-  .spss_output(list(model_summary, anova_table, coefficients_table), file, title, format)
+  available <- list(model = model_summary, anova = anova_table, coefficients = coefficients_table)
+  .spss_output(available[tables], file, title, format)
 }
 
 .spss_output <- function(tables, file, title, format) {
@@ -168,11 +174,13 @@ spss_regression_html <- function(model, file = NULL, title = "Regression output"
 }
 
 # model is a one-factor lm() or aov() fit, or a Welch result from oneway.test().
+# hide_calculations blanks the mean squares, F and Sig. in a classical ANOVA.
 spss_anova_html <- function(model, file = NULL, title = NULL,
-                            format = c("testvision", "standalone")) {
+                            format = c("testvision", "standalone"), hide_calculations = FALSE) {
   format <- match.arg(format)
   if (inherits(model, "htest") &&
       identical(model$method, "One-way analysis of means (not assuming equal variances)")) {
+    if (hide_calculations) stop("This option is for classical one-way ANOVA.")
     table <- .spss_table(
       "Robust Tests of Equality of Means",
       .spss_headings(c("Method", "Statistic", "df1", "df2", "Sig.")),
@@ -192,7 +200,7 @@ spss_anova_html <- function(model, file = NULL, title = NULL,
     if (!is.factor(predictor) && !is.character(predictor)) {
       stop("Use a factor or character vector as the ANOVA predictor.")
     }
-    table <- .spss_anova_table(model)
+    table <- .spss_anova_table(model, hide_calculations = hide_calculations)
   }
   .spss_output(list(table), file, title, format)
 }
@@ -220,10 +228,13 @@ spss_levene_html <- function(x, group, file = NULL, title = NULL,
 
 # Independent samples show Student's and Welch's rows. Use y = NULL for a
 # one-sample test, or paired = TRUE for a test on matched x - y differences.
+# display can show only the descriptive table or leave t and its p-value blank.
 spss_t_test_html <- function(x, y = NULL, paired = FALSE, mu = 0, group_labels = NULL,
                              file = NULL, title = NULL,
-                             format = c("testvision", "standalone")) {
+                             format = c("testvision", "standalone"),
+                             display = c("full", "statistics", "hide_t")) {
   format <- match.arg(format)
+  display <- match.arg(display)
   if (paired) {
     if (is.null(y) || length(x) != length(y)) {
       stop("A paired test needs two samples of the same length.")
@@ -258,6 +269,13 @@ spss_t_test_html <- function(x, y = NULL, paired = FALSE, mu = 0, group_labels =
                      "Std. Error Mean")),
     statistics_rows
   )
+  if (display == "statistics") {
+    return(.spss_output(list(statistics), file, title, format))
+  }
+  test_statistic <- function(test) {
+    if (display == "hide_t") return(c("", ""))
+    c(.spss_number(test$statistic), .spss_significance(test$p.value))
+  }
 
   if (independent) {
     student <- stats::t.test(x, y, mu = mu, var.equal = TRUE)
@@ -265,8 +283,9 @@ spss_t_test_html <- function(x, y = NULL, paired = FALSE, mu = 0, group_labels =
     group <- factor(rep(1:2, c(length(x), length(y))))
     levene <- .spss_levene_result(c(x, y), group)
     test_values <- function(test) {
-      c(.spss_number(test$statistic), .spss_df(test$parameter),
-        .spss_significance(test$p.value), .spss_number(test$estimate[1] - test$estimate[2]))
+      statistic <- test_statistic(test)
+      c(statistic[1], .spss_df(test$parameter), statistic[2],
+        .spss_number(test$estimate[1] - test$estimate[2]))
     }
     headers <- c(
       '    <tr><th scope="col" rowspan="2">Assumption</th>',
@@ -291,12 +310,12 @@ spss_t_test_html <- function(x, y = NULL, paired = FALSE, mu = 0, group_labels =
     comparison <- if (paired) paste(group_labels, collapse = " - ") else group_labels[1]
     # The one-sample test reports the mean and interval relative to the null value.
     shift <- if (paired) 0 else mu
+    statistic <- test_statistic(test)
     results <- .spss_table(
       test_caption,
       .spss_headings(c("Sample", "t", "df", "Sig. (2-tailed)", "Mean Difference",
                        "95% CI Lower", "95% CI Upper")),
-      .spss_row(comparison, c(.spss_number(test$statistic), .spss_df(test$parameter),
-                              .spss_significance(test$p.value),
+      .spss_row(comparison, c(statistic[1], .spss_df(test$parameter), statistic[2],
                               .spss_number(c(test$estimate, test$conf.int) - shift)))
     )
   }
@@ -323,5 +342,21 @@ spss_correlation_html <- function(x, y, labels = c("X", "Y"), file = NULL, title
       .spss_row("Sig. (2-tailed)", c(p, ""), ""),
       .spss_row("N", c(n, n), ""))
   )
+  .spss_output(list(table), file, title, format)
+}
+
+# Supply a named list of score or residual vectors, one per group or model.
+spss_shapiro_html <- function(samples, file = NULL, title = NULL,
+                              format = c("testvision", "standalone")) {
+  format <- match.arg(format)
+  rows <- vapply(names(samples), function(label) {
+    scores <- samples[[label]]
+    scores <- scores[!is.na(scores)]
+    test <- stats::shapiro.test(scores)
+    .spss_row(label, c(.spss_number(test$statistic), length(scores),
+                      .spss_significance(test$p.value)))
+  }, character(1))
+  table <- .spss_table("Tests of Normality (Shapiro–Wilk)",
+    .spss_headings(c("Sample", "Statistic", "df", "Sig.")), rows)
   .spss_output(list(table), file, title, format)
 }

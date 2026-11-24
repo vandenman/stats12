@@ -13,25 +13,12 @@
 # that file is always loaded, whichever topics the student selects.
 # ---------------------------------------------------------------------------
 
-# A Z-test setup: a tidy standard error, a population mean and a z value with
-# a sign, plus the sample mean that goes with them.
-#   direction = "two"     give z either sign
-#   direction = "greater" give a positive z, for H1: mu > mu_0
-#   direction = "less"    give a negative z, for H1: mu < mu_0
-ztest_setup <- function(direction = "two") {
+ztest_setup <- function() {
   setup <- pick_one(clt_setups(whole_se = TRUE))
   setup$mu <- pick_one(clt_means[clt_means > 2.5 * setup$se])
 
   magnitude <- pick_one(clt_interval_z())
-  sign <- if (direction == "less") {
-    -1
-  } else if (direction == "greater") {
-    1
-  } else {
-    pick_one(c(-1, 1))
-  }
-
-  setup$z <- sign * magnitude
+  setup$z <- pick_one(c(-1, 1)) * magnitude
   setup$xbar <- setup$mu + setup$z * setup$se
   setup
 }
@@ -106,7 +93,8 @@ ztest_question_full <- function(difficulty) {
 # conclusion is in the worked solution, because the answer is a number.
 ztest_question_pvalue <- function(difficulty) {
   direction <- pick_one(c("two", "greater", "less"))
-  setup <- ztest_setup(direction = direction)
+  # A directional hypothesis is fixed before observing the sample.
+  setup <- ztest_setup()
   magnitude <- abs(setup$z)
   upper_tail <- round_prob(1 - phi_from_table(magnitude))
 
@@ -121,17 +109,17 @@ ztest_question_pvalue <- function(difficulty) {
       sprintf("%.4f", answer), "\n"
     )
   } else if (direction == "greater") {
-    answer <- upper_tail
+    answer <- round_prob(1 - phi_from_table(setup$z))
     alternative <- paste0("H1: mu > ", setup$mu)
     p_lines <- paste0(
-      "  P(Z > ", fmt_z(magnitude), ") = 1 - Phi(", fmt_z(magnitude), ") = 1 - ",
-      sprintf("%.4f", phi_from_table(magnitude)), " = ",
+      "  P(Z > ", fmt_z(setup$z), ") = 1 - Phi(", fmt_z(setup$z), ") = 1 - ",
+      sprintf("%.4f", phi_from_table(setup$z)), " = ",
       sprintf("%.4f", answer), "\n"
     )
   } else {
-    answer <- phi_from_table(-magnitude)
+    answer <- phi_from_table(setup$z)
     alternative <- paste0("H1: mu < ", setup$mu)
-    p_lines <- paste0("  ", phi_line(-magnitude), "\n")
+    p_lines <- paste0("  ", phi_line(setup$z), "\n")
   }
 
   conclusion <- if (answer < 0.05) "we reject H0" else "we do not reject H0"
@@ -152,8 +140,8 @@ ztest_question_pvalue <- function(difficulty) {
     tolerance = 0.0015,
     hint = paste0(
       "Standardise first: SE = sigma / sqrt(n), then Z = (xbar - mu) / SE. ",
-      "Then look up the area beyond Z in the z table. A two-tailed test uses ",
-      "both tails, so double the area beyond the test statistic."
+      "For a one-sided test, use the tail specified by H1 and keep the sign of Z. ",
+      "For a two-sided test, double the area above |Z|."
     ),
     solution = paste0(
       "First the standard error:\n\n",

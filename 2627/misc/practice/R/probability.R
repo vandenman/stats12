@@ -255,6 +255,14 @@ probability_question_missing <- function(difficulty) {
 #   difficulty 3: a conditional probability from a table with a value missing
 generate_probability_question <- function(difficulty = 1) {
   difficulty <- clamp(difficulty, 1, 3, 1)
+  if (difficulty <= 2 && pick_one(c(FALSE, FALSE, TRUE))) {
+    p <- sample(seq(.2, .8, .05), 2)
+    return(practice_number_question("probability", "independent_joint", difficulty,
+      sprintf("Events A and B are independent. P(A) = %s and P(B) = %s. What is P(A and B)?",
+              p[1], p[2]),
+      prod(p), "What does independence tell us about the joint probability?",
+      sprintf("P(A and B) = P(A) × P(B) = %s × %s", p[1], p[2]), digits = 4L))
+  }
   if (difficulty == 1) return(probability_question_simple(difficulty))
   if (difficulty == 2) return(probability_question_conditional(difficulty))
   probability_question_missing(difficulty)

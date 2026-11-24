@@ -7,7 +7,18 @@
 # ---------------------------------------------------------------------------
 
 # The topics the practice tool knows about, in the order the form lists them.
-known_topics <- c("probability", "Z", "t", "normal", "clt", "bayes")
+known_topics <- c("probability", "Z", "t", "normal", "clt", "bayes", "descriptives")
+exam2_topics <- c("regression", "diagnostics", "dummies", "independent_t", "anova")
+
+practice_topics <- function(exam, selectable = FALSE) {
+  second_half <- c(exam2_topics, if (selectable) "assumptions")
+  switch(exam,
+    exam1 = known_topics,
+    exam2 = second_half,
+    resit = c(known_topics, second_half),
+    stop("Unknown exam: ", exam)
+  )
+}
 
 # Probabilities are reported to four decimals, i.e. to the precision of the
 # z table that students use.
@@ -53,9 +64,9 @@ clean_seed <- function(seed) {
 }
 
 # Only the topics we know about, in the order the form lists them.
-clean_topics <- function(topics) {
-  topics <- unique(topics[topics %in% known_topics])
-  if (length(topics) == 0) topics <- known_topics
+clean_topics <- function(topics, allowed = known_topics) {
+  topics <- unique(topics[topics %in% allowed])
+  if (length(topics) == 0) topics <- allowed
   topics
 }
 
@@ -68,6 +79,13 @@ topic_label <- function(topic) {
     normal      = "Normal distribution",
     clt         = "Central limit theorem",
     bayes       = "Bayes theorem",
+    descriptives = "Descriptive statistics",
+    regression  = "Regression and fit",
+    diagnostics = "Regression diagnostics",
+    dummies     = "Dummy coding",
+    independent_t = "Independent-samples t-tests",
+    anova       = "One-way ANOVA",
+    assumptions = "Assumption checks and interpretation",
     topic
   )
 }
@@ -133,6 +151,38 @@ check_answer_text <- function(student, correct, tolerance) {
   "Not correct yet. Check which quantities the question asks for, and the arithmetic in your working."
 }
 
+practice_number_question <- function(topic, type, difficulty, prompt, answer, hint, working,
+                                     stimulus_html = NULL, whole = FALSE, digits = 2L) {
+  if (whole) digits <- 0L
+  instruction <- switch(as.character(digits),
+    "0" = "Give a whole number.",
+    "2" = "Round your answer to two decimal places.",
+    "4" = "Round your answer to four decimal places."
+  )
+  list(
+    topic = topic, type = type, difficulty = difficulty,
+    prompt = paste(prompt, instruction, sep = "\n\n"),
+    answer = answer, tolerance = if (whole) 0 else 0.5 * 10^-digits + 1e-8,
+    hint = hint,
+    solution = paste0(working, "\n\nAnswer = ",
+                      formatC(round(answer, digits), format = "f", digits = digits, decimal.mark = ".")),
+    stimulus_html = stimulus_html
+  )
+}
+
+# The table p-value is for a two-sided test against zero.
+practice_directed_p <- function(estimate, two_sided, direction) {
+  aligned <- estimate * direction > 0
+  list(
+    p = if (aligned) two_sided / 2 else 1 - two_sided / 2,
+    working = if (aligned) {
+      sprintf("The estimate points in the direction of H₁.\nOne-sided p = %s / 2", two_sided)
+    } else {
+      sprintf("The estimate points in the opposite direction to H₁.\nOne-sided p = 1 - %s / 2", two_sided)
+    }
+  )
+}
+
 # --- turning questions into HTML -------------------------------------------
 
 # One question, as HTML.  The browser shows this and hands the typed answer
@@ -148,15 +198,32 @@ question_html <- function(question, number) {
   } else {
     "pq-prompt"
   }
+  stimulus <- if (!is.null(question$stimulus_html) && nzchar(question$stimulus_html)) {
+    # The stimulus is markup produced by the course's table formatters.
+    paste0('<div class="pq-stimulus">\n', question$stimulus_html, '\n</div>\n')
+  } else {
+    ""
+  }
+  answer_widget <- if (is.null(question$choices)) {
+    paste0('<p><label>Your answer: <input type="text" class="pq-answer" size="12"',
+           ' data-correct="', fmt_num(question$answer, digits = 12), '"',
+           ' data-tolerance="', fmt_num(question$tolerance, digits = 12), '"></label> ')
+  } else {
+    choices <- paste0(
+      '<label><input type="radio" class="pq-choice" name="pq-choice-', number,
+      '" value="', seq_along(question$choices), '"> ', esc(question$choices), '</label>'
+    )
+    paste0('<fieldset class="pq-choices" data-correct="', question$answer, '">',
+           '<legend>Choose one answer</legend>', paste(choices, collapse = "\n"), '</fieldset>\n<p>')
+  }
 
   paste0(
     '<div class="pq-question">\n',
     '<h3>Question ', number, ' <span class="pq-topic">',
     esc(topic_label(question$topic)), '</span></h3>\n',
     '<p class="', prompt_class, '">', esc(question$prompt), '</p>\n',
-    '<p><label>Your answer: <input type="text" class="pq-answer" size="12"',
-    ' data-correct="', fmt_num(question$answer, digits = 12), '"',
-    ' data-tolerance="', fmt_num(question$tolerance, digits = 12), '"></label> ',
+    stimulus,
+    answer_widget,
     '<button type="button" class="pq-check">Check answer</button></p>\n',
     '<p class="pq-feedback"></p>\n',
     '<p><button type="button" class="pq-hint-button">Show hint</button> ',
@@ -172,13 +239,13 @@ question_html <- function(question, number) {
 # The whole practice set: the settings it was generated from, then the
 # questions.  This is the function the browser calls.
 practice_html <- function(seed, n_questions = 10, difficulty = 1,
-                          topics = known_topics) {
+                          topics = practice_topics(exam), exam = "exam1") {
   seed <- clean_seed(seed)
   n_questions <- clamp(n_questions, 1, 50, 10)
   difficulty <- clamp(difficulty, 1, 3, 1)
-  topics <- clean_topics(topics)
+  topics <- clean_topics(topics, practice_topics(exam, selectable = TRUE))
 
-  questions <- generate_practice_set(seed, n_questions, difficulty, topics)
+  questions <- generate_practice_set(seed, n_questions, difficulty, topics, exam)
 
   header <- paste0(
     '<div class="pq-header">\n',

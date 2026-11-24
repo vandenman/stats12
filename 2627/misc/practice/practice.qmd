@@ -5,23 +5,24 @@ format:
     embed-resources: true
 ---
 
-This page generates practice questions. It is for
-practising calculations and procedures, choosing the right formula, standardising, using the Z-table, $t$-table and doing the arithmetic. This does not generate or practice conceptual questions.
+Use this page to practise calculations and procedures from Statistics 1.
 
 How it works:
 
-- choose a **seed** (any whole number), a **difficulty**, the number of  **questions** and which **topics** to include;
-- press **Generate practice set**;
-- Use the formula sheet ([link](https://vandenman.github.io/stats12/2627/misc/formula_sheet/formula_sheet.html)) for equations, z and $t$-tables.
-- type your answer in the box and press **Check answer**;
-- if you are stuck, ask for a **hint**, or open the **worked solution**.
+- Choose an **exam**, the **topics**, a **difficulty**, and the number of **questions**.
+- Enter a whole-number **seed** and press **Generate practice set**.
+- Use the <a id="practice-formula-sheet" href="https://vandenman.github.io/stats12/2627/misc/formula_sheet/formula_sheet2.html">Formula sheet (Exam 2 and resit)</a>.
+- Enter or select your answer and press **Check answer**. You can also show a **hint** or the **worked solution**.
 
-The questions are generated from the seed: the same seed with the same settings always gives exactly the same set of questions. So you can write down "seed 18492, difficulty 2, question 4" and come back to that question later. Generate as many sets as you like. No data is saved or sent anywhere.
+The same seed and settings give the same questions. To find a question again, keep its exam, topics, seed, difficulty, set size, and question number. Generation and grading run in your browser.
 
 <!-- A little styling, nothing more: readability matters, polish does not. -->
 <style>
 .practice-controls label { margin-right: 1rem; }
 .practice-controls input[type="checkbox"] { margin-left: 0.75rem; }
+.practice-controls legend { font-size: 1em; margin-bottom: 0.25rem; }
+#practice-topics { margin: 0.75rem 0 1rem; }
+.practice-bank { margin-bottom: 0.35rem; }
 .pq-header { background: #f4f6f8; border-left: 4px solid #4a6785; padding: 0.5rem 0.75rem; margin: 1rem 0; }
 .pq-header p { margin: 0; }
 .pq-tip { font-size: 0.9rem; }
@@ -30,6 +31,14 @@ The questions are generated from the seed: the same seed with the same settings 
 .pq-topic { font-size: 0.8rem; font-weight: normal; color: #666666; }
 .pq-prompt { white-space: pre-line; }
 .pq-prompt-fixed { white-space: pre-wrap; font-family: monospace; }
+.pq-stimulus { overflow-x: auto; margin-bottom: 1rem; }
+.pq-stimulus table { border-collapse: collapse; margin-bottom: 1rem; font-variant-numeric: tabular-nums; }
+.pq-stimulus th, .pq-stimulus td { border: 1px solid #ddd; padding: 0.25em 0.55em; }
+.pq-stimulus thead { background: #f4f6f8; }
+.pq-stimulus td { text-align: right; }
+.pq-diagnostic-plot { max-width: 100%; height: auto; }
+.pq-choices label { display: block; margin-bottom: 0.4rem; }
+.pq-choices input { margin-right: 0.35rem; }
 .pq-feedback { min-height: 1.2rem; font-weight: bold; }
 .pq-correct { color: #116329; }
 .pq-wrong { color: #a40e26; }
@@ -45,14 +54,15 @@ The questions are generated from the seed: the same seed with the same settings 
 
 ## Generate a practice set
 
+~~~{=html}
 <div class="practice-controls">
   <p>
     <label>Seed: <input id="practice-seed" type="number" value="1234" step="1" size="8"></label>
     <label>Difficulty:
       <select id="practice-difficulty">
-        <option value="1">1 - one step</option>
-        <option value="2">2 - two steps</option>
-        <option value="3">3 - work backwards</option>
+        <option value="1">1 - Easy</option>
+        <option value="2">2 - Medium</option>
+        <option value="3">3 - Challenging</option>
       </select>
     </label>
     <label>Questions:
@@ -63,16 +73,37 @@ The questions are generated from the seed: the same seed with the same settings 
       </select>
     </label>
   </p>
-  <p>Topics:
-    <label><input id="practice-probability" type="checkbox" checked> Probability Theory</label>
-    <label><input id="practice-Z" type="checkbox" checked> Z-test</label>
-    <label><input id="practice-t" type="checkbox" checked> t-test</label>
-    <label><input id="practice-normal" type="checkbox" checked> Normal distribution</label>
-    <label><input id="practice-clt" type="checkbox" checked> Central limit theorem</label>
-    <label><input id="practice-bayes" type="checkbox" checked> Bayes theorem</label>
-  </p>
+  <fieldset id="practice-exam">
+    <legend>Exam</legend>
+    <label><input type="radio" name="practice-exam" value="exam1"> Exam 1</label>
+    <label><input type="radio" name="practice-exam" value="exam2" checked> Exam 2</label>
+    <label><input type="radio" name="practice-exam" value="resit"> Resit</label>
+  </fieldset>
+  <fieldset id="practice-topics">
+    <legend>Topics</legend>
+    <div class="practice-bank" data-exam="exam1" hidden>
+      <strong class="practice-bank-name" hidden>Exam 1</strong>
+      <label><input id="practice-probability" value="probability" type="checkbox" checked> Probability Theory</label>
+      <label><input id="practice-Z" value="Z" type="checkbox" checked> Z-test</label>
+      <label><input id="practice-t" value="t" type="checkbox" checked> One-sample t-test</label>
+      <label><input id="practice-normal" value="normal" type="checkbox" checked> Normal distribution</label>
+      <label><input id="practice-clt" value="clt" type="checkbox" checked> Central limit theorem</label>
+      <label><input id="practice-bayes" value="bayes" type="checkbox" checked> Bayes theorem</label>
+      <label><input value="descriptives" type="checkbox" checked> Descriptive statistics</label>
+    </div>
+    <div class="practice-bank" data-exam="exam2">
+      <strong class="practice-bank-name" hidden>Exam 2</strong>
+      <label><input value="regression" type="checkbox" checked> Regression and fit</label>
+      <label><input value="diagnostics" type="checkbox" checked> Regression diagnostics</label>
+      <label><input value="dummies" type="checkbox" checked> Dummy coding</label>
+      <label><input value="independent_t" type="checkbox" checked> Independent-samples t-tests</label>
+      <label><input value="anova" type="checkbox" checked> One-way ANOVA</label>
+      <label><input value="assumptions" type="checkbox"> Assumption checks and interpretation</label>
+    </div>
+  </fieldset>
   <p><button id="practice-generate" type="button">Generate practice set</button></p>
 </div>
+~~~
 
 <p id="practice-status"><em>Starting R&hellip;</em></p>
 
@@ -87,28 +118,42 @@ The questions are generated from the seed: the same seed with the same settings 
 
   const output = document.getElementById("practice-output");
   const status = document.getElementById("practice-status");
+  const examControls = document.getElementById("practice-exam");
+  const topicControls = document.getElementById("practice-topics");
+  const formulaSheet = document.getElementById("practice-formula-sheet");
+  const exam2Sheet = formulaSheet.href;
+  const exam1Sheet = new URL("formula_sheet.html", exam2Sheet).href;
   let webR = null;   // the R session, once the module script below has it
+  let generation = 0;
 
   // A JavaScript string written as R source.  JSON escaping is close enough
   // to R's own for the values we pass across.
   const rString = (text) => JSON.stringify(text);
 
-  // The current settings, read straight off the form.
-  const settings = () => {
-    const topics = [];
-    if (document.getElementById("practice-probability").checked) topics.push("probability");
-    if (document.getElementById("practice-Z").checked) topics.push("Z");
-    if (document.getElementById("practice-t").checked) topics.push("t");
-    if (document.getElementById("practice-normal").checked) topics.push("normal");
-    if (document.getElementById("practice-clt").checked) topics.push("clt");
-    if (document.getElementById("practice-bayes").checked) topics.push("bayes");
-    return {
-      seed: Number(document.getElementById("practice-seed").value),
-      difficulty: Number(document.getElementById("practice-difficulty").value),
-      n_questions: Number(document.getElementById("practice-n").value),
-      topics: topics
-    };
+  const selectedExam = () => examControls.querySelector(":checked").value;
+  const updateExam = () => {
+    const exam = selectedExam();
+    for (const bank of topicControls.querySelectorAll("[data-exam]")) {
+      bank.hidden = exam !== "resit" && bank.dataset.exam !== exam;
+      bank.querySelector(".practice-bank-name").hidden = exam !== "resit";
+    }
+    formulaSheet.href = exam === "exam1" ? exam1Sheet : exam2Sheet;
+    formulaSheet.textContent = exam === "exam1" ? "Formula sheet (Exam 1)" : "Formula sheet (Exam 2 and resit)";
+    // Discard any set still being generated for the previous mode.
+    generation++;
+    output.replaceChildren();
   };
+  examControls.addEventListener("change", updateExam);
+  updateExam();
+
+  const settings = () => ({
+    exam: selectedExam(),
+    seed: Number(document.getElementById("practice-seed").value),
+    difficulty: Number(document.getElementById("practice-difficulty").value),
+    n_questions: Number(document.getElementById("practice-n").value),
+    topics: Array.from(topicControls.querySelectorAll("[data-exam]:not([hidden]) input:checked"),
+                       (checkbox) => checkbox.value)
+  });
 
   // Show an error rather than leaving the page stuck.
   const showError = (error) => {
@@ -121,6 +166,7 @@ The questions are generated from the seed: the same seed with the same settings 
 
   // Generate a set.
   const generate = async () => {
+    const request = ++generation;
     if (webR === null) {
       output.innerHTML = "<p><strong>R is still starting up.</strong></p>";
       return;
@@ -135,10 +181,11 @@ The questions are generated from the seed: the same seed with the same settings 
       const call =
         "practice_html(" +
         chosen.seed + ", " + chosen.n_questions + ", " + chosen.difficulty + ", c(" +
-        chosen.topics.map(rString).join(", ") + "))";
-      output.innerHTML = await webR.evalRString(call);
+        chosen.topics.map(rString).join(", ") + "), exam = " + rString(chosen.exam) + ")";
+      const html = await webR.evalRString(call);
+      if (request === generation) output.innerHTML = html;
     } catch (error) {
-      showError(error);
+      if (request === generation) showError(error);
     }
   };
 
@@ -164,8 +211,17 @@ The questions are generated from the seed: the same seed with the same settings 
     }
 
     if (button.classList.contains("pq-check")) {
-      const input = question.querySelector(".pq-answer");
       const feedback = question.querySelector(".pq-feedback");
+      const choices = question.querySelector(".pq-choices");
+      if (choices) {
+        const selected = choices.querySelector(":checked");
+        const correct = selected?.value === choices.dataset.correct;
+        feedback.textContent = !selected ? "Choose an answer first." :
+          correct ? "Correct!" : "Not correct yet. Try the hint or another answer.";
+        feedback.className = correct ? "pq-feedback pq-correct" : "pq-feedback pq-wrong";
+        return;
+      }
+      const input = question.querySelector(".pq-answer");
       feedback.textContent = "Checking...";
       try {
         feedback.textContent = await webR.evalRString(
@@ -190,7 +246,7 @@ The questions are generated from the seed: the same seed with the same settings 
     status.textContent = "R is running. Choose your settings and press \u201cGenerate practice set\u201d.";
   };
   window.practiceFailed = (error) => {
-    status.innerHTML = "<strong>R could not be started:</strong> " + String(error);
+    status.textContent = "R could not be started. " + String(error);
   };
 })();
 </script>
@@ -225,12 +281,16 @@ try {
 # Emit one hidden code block holding every R helper file, in load order.
 helper_files <- c(
   "R/utils.R", "R/probability.R", "R/normal.R", "R/clt.R", "R/bayes.R",
-  "R/ztests.R", "R/ttests.R", "R/generators.R"
+  "R/ztests.R", "R/ttests.R", "../../lecture13/scripts/spss_regression_html.r",
+  "R/descriptives.R", "R/exam2.R", "R/assumptions.R", "R/generators.R"
 )
 
+source("R/assumptions.R", local = TRUE, encoding = "UTF-8")
 cat("::: {.practice-source}\n\n```\n")
 for (file in helper_files) {
-  cat(paste(readLines(file), collapse = "\n"), "\n")
+  cat(paste(readLines(file, encoding = "UTF-8"), collapse = "\n"), "\n")
 }
+cat("assumption_plots <-\n")
+dput(build_assumption_plots())
 cat("```\n\n:::\n")
 ```
