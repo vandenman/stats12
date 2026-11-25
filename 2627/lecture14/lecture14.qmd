@@ -1,0 +1,101 @@
+---
+title: "One-way ANOVA / Q&A"
+subtitle: "Lecture 14 - LAS"
+author: "Don van den Bergh"
+date: 2026-11-30
+date-format: "DD-MM-YYYY"
+format:
+    dtslides-revealjs:
+        theme: [../common_resources/css/tilburg-university.scss]
+        logo: ../common_resources/logos/logo_tu_small.svg
+        slide-number: c/t
+        toc: false
+        toc-depth: 1
+        toc-title: "Today"
+        embed-resources: false
+filters:
+  - reveal-auto-agenda
+auto-agenda:
+  bullets: none
+  heading: "Today"
+  clickable: true
+---
+
+# Recap
+
+<!--
+Use the Hogwarts example from Lecture 13. Ask students to identify the reference house
+and explain what the Slytherin coefficient compares before revealing the answers.
+-->
+
+## Treatment coding for Hogwarts houses
+
+We used House to predict Machiavellianism, with $k-1 = 3$ dummy variables.
+
+| House | Hufflepuff | Ravenclaw | Slytherin | Fitted mean |
+|---|:---:|:---:|:---:|---:|
+| Gryffindor | 0 | 0 | 0 | $a$ |
+| Hufflepuff | 1 | 0 | 0 | $a+b_1$ |
+| Ravenclaw | 0 | 1 | 0 | $a+b_2$ |
+| Slytherin | 0 | 0 | 1 | $a+b_3$ |
+
+. . .
+
+The intercept $a$ is Gryffindor's mean. Each slope is a house mean minus Gryffindor's mean.
+
+## Testing house differences
+
+| Question | Test | SPSS table |
+|---|---|---|
+| Does Slytherin differ from Gryffindor? | $t$-test for $b_3$ | Coefficients |
+| Are all four population means equal? | Overall $F$-test | ANOVA |
+
+. . .
+
+The overall $F$-test compares between-house and within-house mean squares, with $k-1$ and $N-k$ degrees of freedom.
+
+For Hogwarts, $F(3,843)=36.26$ and $p<.001$. House explains $11.4\%$ of the observed variation in Machiavellianism ($\eta^2=R^2=.114$).
+
+# Treatment coding and sum coding
+
+<!--
+Keep the Hogwarts data and fit the same regression in SPSS using sum-coded columns.
+Use Gryffindor as the omitted level. Give it -1 in each column, and give each other
+house 1 in its own column and 0 in the other columns.
+
+Put the treatment-coded and sum-coded Coefficients tables side by side. Ask what
+the intercept means in each. With sum coding it is the equally weighted average of
+the four house means. Each displayed slope is a deviation from that average.
+The two fits give identical house means, R-squared, and overall F-tests. Ask which
+comparison each individual coefficient t-test now answers.
+-->
+
+# Contrasts for ordered predictors
+
+<!--
+Use exam score as the outcome and study duration (0, 10, 20, or 30 minutes) as the
+single categorical predictor. Ask whether the group means show a linear trend.
+
+Apply the weights (-3, -1, 1, 3) to the four means in order. Point out that the
+weights sum to zero and show how the weighted comparison captures a linear trend.
+Use one worked contrast. For categories such as low, medium, and high, discuss
+comparing adjacent levels when only their order is known.
+-->
+
+# Reporting a group comparison
+
+<!--
+Return to Hogwarts. Make Hufflepuff the reference house and use the Coefficients
+table to report the Slytherin minus Hufflepuff estimate and its 95% confidence
+interval. Ask students to interpret both in Machiavellianism points.
+
+Ask how interpreting the comparison changes if it was selected after examining
+all six house pairs. Revisit the multiple-testing problem from Lecture 13.
+-->
+
+# Q&A
+
+<!--
+Reserve the second half of the lecture for student questions. If needed, start
+with a question about choosing a test, reading SPSS output, or checking assumptions.
+-->
